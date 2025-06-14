@@ -1,9 +1,8 @@
-// src/server.js - version corrigée
+// src/server.js - version cohérente avec ton architecture
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const deviceAuth = require('./middleware/deviceAuth'); // ADD
 require('dotenv').config();
 
 const app = express();
@@ -17,19 +16,21 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'X-Device-ID', 'Authorization']
 }));
 
-// Rate limiting
-const limiter = rateLimit({
+app.use(rateLimit({
   windowMs: 60 * 1000,
   max: 5,
   message: { error: 'Rate limit exceeded' }
-});
+}));
 
-app.use(limiter);
 app.use(express.json());
 
-// Route chat avec auth
-const { handleChat } = require('./controllers/chatController');
-app.post('/api/chat', deviceAuth, handleChat); // ADD deviceAuth
+// Routes chat existantes
+const chatRoutes = require('./routes/chat');
+app.use('/api', chatRoutes);
+
+// Nouvelles routes admin
+const adminRoutes = require('./routes/admin');
+app.use('/api/admin', adminRoutes);
 
 app.listen(PORT, () => {
   console.log(`🌟 MoodCycle API running on port ${PORT}`);
