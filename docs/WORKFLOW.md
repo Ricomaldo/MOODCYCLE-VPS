@@ -94,21 +94,21 @@ Développement Local:
 ├── API: localhost:4000 (npm run dev)
 └── Admin: localhost:3000 (Lovable)
 
-Production Weekend:
-├── App: Reste local (pas de déploiement)
-├── API: VPS Hostinger (npm start)  
-└── Admin: admin.irimwebforge.com
+Production VPS Hostinger:
+├── App: Reste local (pas de déploiement Sprint 1)
+├── API: PM2 moodcycle-api (port 4000)
+└── Admin: moodcycle.irimwebforge.com (statique)
 ```
 
 ### **Déploiement API Production**
 ```bash
-# VPS Hostinger - Configuration
-ssh user@vps-hostinger
-cd /var/www/moodcycle-api
+# Connexion VPS Hostinger
+ssh user@69.62.107.136
+cd /srv/www/internal/moodcycle/api/current
 
 # Deploy API après Sprint 1
 git pull origin feature/admin-mvp
-npm install
+npm install --production
 pm2 restart moodcycle-api
 
 # Variables environnement production
@@ -119,17 +119,23 @@ NODE_ENV=production
 
 ### **Déploiement Admin Lovable**
 ```bash
-# Lovable → Production automatique
-# URL générée: admin.irimwebforge.com
-# Configuration API endpoint: 
-# https://api.irimwebforge.com/api/admin
+# Build local
+cd packages/admin
+npm run build
+
+# Deploy automatique via Git hooks
+git push production main
+# → Deploy vers /srv/www/internal/moodcycle/admin/current
+
+# Configuration API endpoint
+REACT_APP_API_URL=https://moodcycle.irimwebforge.com/api
 ```
 
 ### **App React Native (Sprint 2)**
 ```bash
 # Configuration API production
 cd packages/app
-echo "REACT_APP_API_URL=https://api.irimwebforge.com" > .env.production
+echo "REACT_APP_API_URL=https://moodcycle.irimwebforge.com/api" > .env.production
 
 # Build test
 npx expo build:ios --release-channel production-test
@@ -235,13 +241,16 @@ cd packages/admin && npm run dev
 ### **Debug & Monitoring**
 ```bash
 # Logs API production
-ssh vps-hostinger "pm2 logs moodcycle-api"
+ssh user@69.62.107.136 "pm2 logs moodcycle-api"
+
+# Status PM2
+ssh user@69.62.107.136 "pm2 status"
 
 # Debug app locale
 cd packages/app && npx expo start --debug
 
-# Monitoring admin
-# Interface Lovable analytics intégrées
+# Monitoring admin (Nginx logs)
+ssh user@69.62.107.136 "tail -f /var/log/nginx/access.log"
 ```
 
 ---

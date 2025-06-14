@@ -17,7 +17,9 @@ MoodCycle/
 
 ### **Hébergement Strategy**
 - **App Mobile** : App Store (Apple)
-- **API + Admin** : VPS Hostinger (admin.irimwebforge.com)
+- **API + Admin** : VPS Hostinger 69.62.107.136
+- **Domaine** : moodcycle.irimwebforge.com
+- **SSL** : Let's Encrypt automatique
 - **Développement** : Local-first avec fallbacks
 
 ## 📱 MoodCycleApp - React Native
@@ -189,7 +191,7 @@ const adminWorkflow = {
 
 ### **Structure Générée par Lovable**
 ```
-MoodCycleAdmin/ [GÉNÉRÉ PAR LOVABLE]
+packages/admin/ [GÉNÉRÉ PAR LOVABLE]
 ├── src/components/InsightsList.jsx
 ├── src/components/VariantEditor.jsx  
 ├── src/components/Preview.jsx
@@ -197,13 +199,111 @@ MoodCycleAdmin/ [GÉNÉRÉ PAR LOVABLE]
 └── src/App.jsx
 ```
 
-### **API Express - Endpoints Sprint 1**
+### **Déploiement Admin**
+- **Build**: React statique via `npm run build`
+- **VPS**: `/srv/www/internal/moodcycle/admin/current`
+- **Nginx**: Servir fichiers statiques + fallback SPA
+- **CI/CD**: Git hooks automatiques (comme irimwebforge.com)
+
+## 🌐 Architecture VPS Production
+
+### **Infrastructure Hostinger**
+```
+VPS: 69.62.107.136
+Domaine: moodcycle.irimwebforge.com
+SSL: Let's Encrypt automatique
+OS: Ubuntu/Debian
+Web Server: Nginx
+Process Manager: PM2 pour Node.js
+```
+
+### **Structure Déploiement**
+```
+/srv/www/internal/moodcycle/
+├── api/
+│   ├── releases/2024-01-15-143022/
+│   └── current/ -> releases/latest/
+│       ├── src/server.js
+│       ├── package.json
+│       └── .env.production
+├── admin/
+│   ├── releases/2024-01-15-144530/
+│   └── current/ -> releases/latest/
+│       ├── index.html
+│       ├── assets/
+│       └── dist/
+└── shared/
+    ├── data/
+    │   ├── insights.json      # 890 variants créés par Jeza
+    │   └── phases.json        # Configuration phases
+    └── logs/
+```
+
+### **Configuration PM2 API**
 ```javascript
-// À implémenter dans MoodCycleAPI
-GET  /api/admin/insights     // Liste 178 insights base
-POST /api/admin/insights     // CRUD variants
-GET  /api/admin/phases       // Retour phases.json
-POST /api/admin/auth         // Auth simple Jeza
+// ecosystem.config.js
+module.exports = {
+  apps: [{
+    name: 'moodcycle-api',
+    script: './src/server.js',
+    cwd: '/srv/www/internal/moodcycle/api/current',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 4000,
+      CLAUDE_API_KEY: process.env.CLAUDE_API_KEY
+    },
+    instances: 1,
+    autorestart: true,
+    watch: false,
+    max_memory_restart: '1G'
+  }]
+};
+```
+
+### **Configuration Nginx Production**
+```nginx
+server {
+    server_name moodcycle.irimwebforge.com;
+    
+    # Admin Interface (Lovable Build Statique)
+    location / {
+        root /srv/www/internal/moodcycle/admin/current;
+        try_files $uri $uri.html $uri/ /index.html;
+        
+        # Cache headers pour assets
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+            expires 30d;
+            add_header Cache-Control "public, no-transform";
+        }
+    }
+    
+    # API Node.js (PM2 Proxy)
+    location /api/ {
+        proxy_pass http://localhost:4000/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+    
+    # SSL Certificate (Let's Encrypt)
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/moodcycle.irimwebforge.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/moodcycle.irimwebforge.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+}
+
+# HTTP to HTTPS redirect
+server {
+    listen 80;
+    server_name moodcycle.irimwebforge.com;
+    return 301 https://$host$request_uri;
+}
 ```
 
 ## 🎭 Système Personas Technique Détaillé
@@ -321,10 +421,11 @@ packages/app: localhost + simulateur ✅
 packages/api: localhost:4000 ✅
 packages/admin: localhost:3000 (à créer)
 
-# Production (Prévu)
-packages/app: App Store
-packages/api: VPS Hostinger
-packages/admin: admin.irimwebforge.com
+# Production VPS Hostinger
+moodcycle.irimwebforge.com: Nginx + SSL ✅
+packages/api: PM2 localhost:4000 → /api/ proxy
+packages/admin: Build statique → racine /
+VPS: 69.62.107.136 (Hostinger)
 ```
 
 ### **Configuration Environnements**

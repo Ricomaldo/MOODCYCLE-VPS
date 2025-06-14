@@ -94,6 +94,60 @@ cd packages/api && npm run dev
 cd packages/admin && npm run dev
 ```
 
+## 🚀 Déploiement Production
+
+### Infrastructure VPS
+- **Serveur**: 69.62.107.136 (Hostinger)
+- **Domaine**: moodcycle.irimwebforge.com
+- **SSL**: Let's Encrypt automatique
+- **Process Manager**: PM2 pour l'API Node.js
+
+### Architecture Production
+```
+moodcycle.irimwebforge.com/
+├── /                  # Interface Admin (Lovable statique)
+├── /api/              # API Node.js (proxy vers localhost:4000)
+└── SSL automatique    # HTTPS obligatoire
+```
+
+### Déploiement API (Node.js + PM2)
+```bash
+# Sur le serveur VPS
+cd /srv/www/internal/moodcycle/api/current
+npm install --production
+pm2 start src/server.js --name moodcycle-api
+pm2 save && pm2 startup
+```
+
+### Déploiement Admin (Statique)
+```bash
+# Build local
+cd packages/admin && npm run build
+
+# Deploy vers VPS (CI/CD via Git hooks)
+git push production main
+```
+
+### Configuration Nginx
+```nginx
+server {
+    server_name moodcycle.irimwebforge.com;
+    
+    # Admin Interface (Statique)
+    location / {
+        root /srv/www/internal/moodcycle/admin/current;
+        try_files $uri $uri.html $uri/ /index.html;
+    }
+    
+    # API Proxy (Node.js + PM2)
+    location /api/ {
+        proxy_pass http://localhost:4000/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
 ## Documentation
 
 - 📋 [Tasks](docs/TASKS.md) - Source de vérité du projet
@@ -108,6 +162,7 @@ cd packages/admin && npm run dev
 - **AI**: Anthropic Claude
 - **Tools**: Expo, Vite, Lovable
 - **Languages**: TypeScript, JavaScript
+- **Infrastructure**: VPS Hostinger, Nginx, PM2, Let's Encrypt
 
 ## Contribution
 
