@@ -40,3 +40,10 @@ app.listen(PORT, () => {
   console.log(`🌟 MoodCycle API running on port ${PORT}`);
 });
 
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
+});
