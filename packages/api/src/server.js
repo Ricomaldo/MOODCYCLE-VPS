@@ -33,18 +33,13 @@ app.use(rateLimit({
 
 app.use(express.json());
 
-// Routes chat existantes
+// Routes chat - SANS /api prefix
 const chatRoutes = require('./routes/chat');
-app.use('/api', chatRoutes);
+app.use('/', chatRoutes);
 
-// Nouvelles routes admin
+// Routes admin - SANS /api prefix  
 const adminRoutes = require('./routes/admin');
-app.use('/api/admin', adminRoutes);
-
-// Route simple pour test
-app.get('/', (req, res) => {
-  res.json({ message: 'MoodCycle API is running' });
-});
+app.use('/admin', adminRoutes);
 
 app.listen(PORT, () => {
   console.log(`🌟 MoodCycle API running on port ${PORT}`);
