@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clara - Profil Persona | InsightsEditor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #CDDC39 0%, #D4E157 100%);
+            min-height: 100vh;
+            color: #212121;
+            line-height: 1.6;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #FFFFFF;
+            color: #212121;
+            border: 2px solid #E0E0E0;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-btn:hover {
+            background: #D81B60;
+            color: #FFFFFF;
+            border-color: #D81B60;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(216, 27, 96, 0.3);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 80px 20px 40px;
+        }
+        
+        .profile-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        
+        .persona-photo {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background-image: url('../assets/images/personas/Clara.jpg');
+            background-size: cover;
+            background-position: center;
+            border: 4px solid #CDDC39;
+            flex-shrink: 0;
+        }
+        
+        .persona-info h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #CDDC39;
+            margin-bottom: 8px;
+        }
+        
+        .persona-subtitle {
+            font-size: 18px;
+            color: #CDDC39;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .persona-tagline {
+            font-size: 16px;
+            color: #757575;
+            font-style: italic;
+            margin-bottom: 16px;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .tag {
+            background: #CDDC39;
+            color: #212121;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .profile-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .highlight-quote {
+            background: linear-gradient(135deg, #F9FBE7, #F0F4C3);
+            border-left: 4px solid #CDDC39;
+            padding: 20px;
+            border-radius: 8px;
+            font-style: italic;
+            font-size: 18px;
+            margin-bottom: 32px;
+            color: #212121;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .section {
+            margin-bottom: 28px;
+        }
+        
+        .section h2 {
+            color: #CDDC39;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .quick-facts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .fact-item {
+            background: #FAFAFA;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #CDDC39;
+        }
+        
+        .fact-label {
+            font-size: 12px;
+            color: #757575;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        
+        .fact-value {
+            color: #212121;
+            font-weight: 500;
+        }
+        
+        .communication-guide {
+            background: linear-gradient(135deg, #F9FBE7, #F0F4C3);
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #CDDC39;
+        }
+        
+        .communication-guide h3 {
+            color: #CDDC39;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .comm-tips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        
+        .tip-group h4 {
+            color: #CDDC39;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .tip-group ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .tip-group li {
+            font-size: 13px;
+            margin-bottom: 4px;
+            padding-left: 12px;
+            position: relative;
+        }
+        
+        .tip-group li:before {
+            content: "•";
+            color: #CDDC39;
+            position: absolute;
+            left: 0;
+        }
+        
+        /* === NAVIGATION PERSONAS === */
+        .persona-navigation {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .persona-navigation h4 {
+            color: #CDDC39;
+            font-size: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .nav-personas {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-persona {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #212121;
+            padding: 12px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            min-width: 80px;
+        }
+        
+        .nav-persona:hover {
+            background: rgba(205, 220, 57, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-persona.current {
+            background: rgba(205, 220, 57, 0.15);
+            cursor: default;
+        }
+        
+        .nav-photo {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        .nav-persona span {
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 24px;
+            }
+            
+            .persona-photo {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .persona-info h1 {
+                font-size: 24px;
+            }
+            
+            .profile-content {
+                padding: 20px;
+            }
+            
+            .quick-facts {
+                grid-template-columns: 1fr;
+            }
+            
+            .comm-tips {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-personas {
+                gap: 12px;
+            }
+            
+            .nav-persona {
+                min-width: 60px;
+                padding: 8px;
+            }
+            
+            .nav-photo {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Retour à l'éditeur</a>
+    
+    <div class="container">
+        <div class="profile-header">
+            <div class="persona-photo"></div>
+            <div class="persona-info">
+                <h1>Clara</h1>
+                <div class="persona-subtitle">27 ans • Dev Web Freelance</div>
+                <div class="persona-tagline">"L'Enthousiaste Connectée"</div>
+                <div class="tags">
+                    <span class="tag">Super User</span>
+                    <span class="tag">Tech Addict</span>
+                    <span class="tag">Communauté</span>
+                    <span class="tag">Innovation</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-content">
+            <div class="highlight-quote">
+                "MoodCycle a transformé ma manière de vivre mon cycle, je ne pourrais plus m'en passer ! C'est bien plus qu'une application, c'est une communauté et un outil de bien-être indispensable."
+            </div>
+            
+            <div class="quick-facts">
+                <div class="fact-item">
+                    <div class="fact-label">Profil</div>
+                    <div class="fact-value">Célibataire, centre-ville<br>Revenu variable mais confortable</div>
+                </div>
+                <div class="fact-item">
+                    <div class="fact-label">Tech</div>
+                    <div class="fact-value">User avancée<br>Réseaux sociaux actifs</div>
+                </div>
+                <div class="fact-item">
+                    <div class="fact-label">MoodCycle</div>
+                    <div class="fact-value">Depuis le lancement<br>Toutes les mises à jour</div>
+                </div>
+                <div class="fact-item">
+                    <div class="fact-label">Rôle</div>
+                    <div class="fact-value">Feedback & tests bêta<br>Ambassadrice communauté</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>🚀 Son engagement</h2>
+                <p>Clara utilise MoodCycle <strong>quotidiennement et participe activement aux forums</strong>. Elle teste chaque nouvelle fonctionnalité dès sa sortie et <strong>partage ses découvertes sur les réseaux sociaux</strong> pour encourager d'autres femmes. Elle souhaite devenir ambassadrice et contribuer au développement de l'app.</p>
+            </div>
+            
+            <div class="communication-guide">
+                <h3>💬 Guide de Communication pour Clara</h3>
+                <div class="comm-tips">
+                    <div class="tip-group">
+                        <h4>✅ Ton à adopter</h4>
+                        <ul>
+                            <li>Innovant et tech-friendly</li>
+                            <li>Reconnaissance expertise</li>
+                            <li>Early adopter privilégiée</li>
+                            <li>Communauté & partage</li>
+                        </ul>
+                    </div>
+                    <div class="tip-group">
+                        <h4>📝 Langage</h4>
+                        <ul>
+                            <li>Vocabulaire tech avancé</li>
+                            <li>Features & intégrations</li>
+                            <li>Data & métriques</li>
+                            <li>Mots-clés: optimise, intègre, connecte</li>
+                        </ul>
+                    </div>
+                    <div class="tip-group">
+                        <h4>💡 Contenu privilégié</h4>
+                        <ul>
+                            <li>Nouvelles fonctionnalités en avant-première</li>
+                            <li>Intégrations avec autres apps</li>
+                            <li>Interface personnalisable</li>
+                            <li>Badges & récompenses</li>
+                        </ul>
+                    </div>
+                    <div class="tip-group">
+                        <h4>❌ À éviter</h4>
+                        <ul>
+                            <li>Conseils trop basiques</li>
+                            <li>Fonctionnalités limitées</li>
+                            <li>Bugs non corrigés rapidement</li>
+                            <li>Manque de nouveautés</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation entre profils -->
+        <div class="persona-navigation">
+            <h4>Explorer les autres personas</h4>
+            <div class="nav-personas">
+                <a href="emma.html" class="nav-persona">
+                    <div class="nav-photo" style="background: #F44336;">👩</div>
+                    <span>Emma</span>
+                </a>
+                <a href="laure.html" class="nav-persona">
+                    <div class="nav-photo" style="background: #FFC107; color: #212121;">👩‍💼</div>
+                    <span>Laure</span>
+                </a>
+                <a href="sylvie.html" class="nav-persona">
+                    <div class="nav-photo" style="background: #00BCD4;">👩‍💻</div>
+                    <span>Sylvie</span>
+                </a>
+                <a href="christine.html" class="nav-persona">
+                    <div class="nav-photo" style="background: #673AB7;">👩‍⚕️</div>
+                    <span>Christine</span>
+                </a>
+                <div class="nav-persona current">
+                    <div class="nav-photo" style="background: #CDDC39; color: #212121;">👩‍🔬</div>
+                    <span>Clara</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

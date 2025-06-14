@@ -1,0 +1,144 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+// === CONTAINER PRINCIPAL ===
+.main-container {
+  @include container;
+  padding: $space-6;
+  
+  // Desktop : Grid avec sidebar automatique
+  @include desktop-up {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: $space-8;
+    max-width: 1600px;
+    padding: $space-8;
+  }
+}
+
+// === LAYOUT CONTENU 2 COLONNES ===
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  
+  // Desktop : 2 colonnes égales
+  @include desktop-up {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-8;
+    grid-column: 1;
+  }
+}
+
+// === COLONNES ===
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  
+  @include desktop-up {
+    gap: $space-8;
+    @include slide-up();
+  }
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  
+  @include desktop-up {
+    gap: $space-8;
+    @include slide-up();
+  }
+}
+
+// === ANIMATIONS D'ENTRÉE ===
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// === PROGRESS BAR ===
+.progress-compact {
+  @include flex-start;
+  gap: $space-3;
+  @include body-small;
+  min-width: 0;
+  
+  .progress-bar {
+    width: 120px;
+    height: 6px;
+    background: $gray-300;
+    border-radius: $radius-sm;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: $success;
+    transition: width $transition-base;
+  }
+}
+
+// === LAYOUT AVEC SIDEBAR ===
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-2;
+  @include container;
+  padding: 0 $space-4;
+  
+  &.with-sidebar {
+    grid-template-columns: 1fr $sidebar-width;
+    gap: $space-3;
+    
+    .sidebar {
+      display: block;
+    }
+    
+    .show-sidebar-btn {
+      display: none;
+    }
+  }
+}
+
+// === RESPONSIVE MOBILE ===
+@include mobile-only {
+  .main-container {
+    padding: $space-4;
+  }
+  
+  .content-wrapper {
+    gap: $space-4;
+  }
+  
+  .left-column,
+  .right-column {
+    gap: $space-4;
+  }
+  
+  .main-layout {
+    padding: 0 $space-2;
+    gap: $space-2;
+  }
+}

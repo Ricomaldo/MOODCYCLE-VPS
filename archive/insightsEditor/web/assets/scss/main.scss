@@ -1,0 +1,84 @@
+// ===== INSIGHTSEDITOR - ARCHITECTURE SIMPLIFIÉE =====
+
+// === FONDATIONS ===
+@use 'abstracts/variables';
+@use 'abstracts/mixins';
+
+// === BASE ===
+@use 'base/reset';
+@use 'base/typography';
+@use 'base/utilities';
+
+// === LAYOUT ===
+@use 'layout/grid';
+@use 'layout/header';
+@use 'layout/context';
+@use 'layout/workspace';
+
+// === COMPOSANTS RÉELS (CONNECTÉS HTML) ===
+@use 'components/sidebar';
+
+// === UTILITAIRES ===
+@use 'base/utilities';
+
+// === ANIMATIONS GLOBALES ===
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-family-base;
+  color: $text-primary;
+  background: $background;
+  line-height: $line-height-base;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// === STYLES GLOBAUX PRIORITAIRES ===
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// === FOCUS GLOBAL ===
+:focus-visible {
+  @include focus-ring();
+}
+
+// === SCROLLBAR MODERNE ===
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $gray-400;
+  border-radius: $radius-base;
+  
+  &:hover {
+    background: $gray-500;
+  }
+}
+
+// === RESPONSIVE IMAGES ===
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+// === PRINT STYLES ===
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}

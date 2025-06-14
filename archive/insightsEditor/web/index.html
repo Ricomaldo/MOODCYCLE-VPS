@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightsEditor Pro - Éditeur Personas</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <!-- === HEADER COMPACT (NAVIGATION PRINCIPALE) === -->
+    <header class="app-header-clean">
+        <div class="header-container">
+            <!-- Navigation Insights -->
+            <div class="insights-nav">
+                <button id="prevBtn" class="nav-btn" disabled title="Insight précédent">‹</button>
+                <div class="insight-info">
+                    <h1 class="app-title">InsightsEditor</h1>
+                    <span id="globalCounter" class="insight-counter">1/178</span>
+                </div>
+                <button id="nextBtn" class="nav-btn" title="Insight suivant">›</button>
+            </div>
+
+            <!-- Persona actuelle (compact) -->
+            <div class="current-persona-compact">
+                <div class="persona-avatar">
+                    <img src="assets/images/personas/avatars/Emma.jpg" alt="Emma">
+                </div>
+                <div class="persona-name">Emma</div>
+                <button class="personas-menu-btn" title="Changer de persona">▼</button>
+            </div>
+
+            <!-- Actions principales -->
+            <div class="header-actions">
+                <button id="validateBtn" class="btn-validate primary">
+                    <span class="icon">✓</span>
+                    <span class="text">Valider</span>
+                </button>
+                <button class="btn-menu" title="Menu">☰</button>
+            </div>
+        </div>
+
+        <!-- Progress bar discrète -->
+        <div class="progress-bar-header">
+            <div class="progress-fill" style="width: 1%"></div>
+        </div>
+    </header>
+
+    <!-- === ZONE PRINCIPALE (PRIORITÉ 1) === -->
+    <main class="main-workspace">
+        
+        <!-- Contexte discret -->
+        <section class="context-bar">
+            <div class="context-pills">
+                <span class="pill phase-pill" data-phase="menstrual">
+                    🌙 <span id="insightPhase">Sorcière</span>
+                </span>
+                <span class="pill">
+                    🎯 <span id="insightTone">Coach</span>
+                </span>
+                <span class="pill">
+                    ⭐ <span class="rating-display">3/5</span>
+                </span>
+            </div>
+            <div class="context-actions">
+                <button class="btn-context" title="Voir le contexte détaillé">📊</button>
+                <button class="btn-preview" title="Aperçu personas">👁️</button>
+            </div>
+        </section>
+
+        <!-- ZONE D'ÉDITION (CŒUR DE L'INTERFACE) -->
+        <div class="editing-workspace">
+            
+            <!-- Contenu de base (référence) -->
+            <section class="base-content-card">
+                <div class="card-header">
+                    <h2>📝 Contenu de base</h2>
+                    <button class="edit-base-btn" title="Éditer">✏️</button>
+                </div>
+                <div id="baseContent" class="base-content-text">
+                    Tes crampes te parlent aujourd'hui ! 💕 Ton corps fait un travail incroyable. Essaie une bouillotte bien chaude et écoute ce qu'il te demande.
+                </div>
+            </section>
+
+            <!-- Zone d'adaptation (PRIORITÉ ABSOLUE) -->
+            <section class="adaptation-workspace">
+                <div class="adaptation-header">
+                    <h2>✨ Adaptation pour <span class="current-persona-name">Emma</span></h2>
+                    <div class="adaptation-tools">
+                        <button class="emoji-toggle" title="Emojis">🎨</button>
+                        <span class="word-count">0 mots</span>
+                    </div>
+                </div>
+                
+                <div class="editor-container">
+                    <textarea 
+                        id="contentTextarea" 
+                        class="main-editor"
+                        placeholder="💡 Adaptez le contenu pour Emma (16-25 ans)...
+
+Conseils :
+• Utilisez un ton énergique et bienveillant
+• Ajoutez des exemples concrets
+• Encouragez la découverte de son corps
+• Restez accessible et déculpabilisant
+
+🎯 Créez du contenu authentique qui lui ressemble !"
+                        spellcheck="true">
+                    </textarea>
+                    
+                    <!-- Sélecteur d'emojis compact -->
+                    <div class="emoji-panel collapsed" id="emojiGrid">
+                        <div class="emoji-row">
+                            <button class="emoji-btn">✨</button>
+                            <button class="emoji-btn">💕</button>
+                            <button class="emoji-btn">💖</button>
+                            <button class="emoji-btn">🤗</button>
+                            <button class="emoji-btn">🌊</button>
+                            <button class="emoji-btn">🌸</button>
+                            <button class="emoji-btn">🌙</button>
+                            <button class="emoji-btn">💎</button>
+                            <button class="emoji-btn">💪</button>
+                            <button class="emoji-btn">🔥</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions principales -->
+                <div class="editor-actions">
+                    <div class="primary-action">
+                        <button id="validateMainBtn" class="btn-validate-large">
+                            <span class="icon">✨</span>
+                            <span class="text">Valider & Continuer</span>
+                            <span class="shortcut">Cmd+S</span>
+                        </button>
+                    </div>
+                    <div class="secondary-actions">
+                        <button id="exportBtn" class="btn-secondary">
+                            📤 Export
+                        </button>
+                        <button class="btn-secondary">
+                            🔄 Reset
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- === SIDEBAR (CONTEXTE SECONDAIRE) === -->
+    <aside class="sidebar-contextual collapsed" id="contextSidebar">
+        <div class="sidebar-header">
+            <h3>Contexte détaillé</h3>
+            <button class="sidebar-close">×</button>
+        </div>
+        <div class="sidebar-content">
+            <!-- Rating stars -->
+            <div class="rating-section">
+                <label>Qualité du contenu</label>
+                <div class="star-rating" id="scoreStars">
+                    <span class="star filled" data-score="1">⭐</span>
+                    <span class="star filled" data-score="2">⭐</span>
+                    <span class="star filled" data-score="3">⭐</span>
+                    <span class="star" data-score="4">⭐</span>
+                    <span class="star" data-score="5">⭐</span>
+                </div>
+            </div>
+
+            <!-- Journey badges -->
+            <div class="journey-section">
+                <label>Parcours</label>
+                <div id="journeyBadges" class="journey-badges">
+                    <span class="badge-journey">💪 Incarnation</span>
+                    <span class="badge-journey">✨ Déploiement</span>
+                    <span class="badge-journey">💕 Apaisement</span>
+                </div>
+            </div>
+
+            <!-- Metadata -->
+            <div class="metadata-section">
+                <div class="meta-item">
+                    <label>Phase</label>
+                    <span class="meta-value phase-display">Sorcière</span>
+                </div>
+                <div class="meta-item">
+                    <label>Préférences</label>
+                    <span class="meta-value">Phases</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- === PERSONAS PREVIEW PANEL === -->
+    <aside class="preview-panel collapsed" id="previewPanel">
+        <div class="panel-header">
+            <h3>Aperçu Personas</h3>
+            <button class="panel-close">×</button>
+        </div>
+        <div class="preview-content">
+            <div class="persona-variants">
+                <div class="variant-card" data-persona="emma">
+                    <div class="variant-header">
+                        <img src="assets/images/personas/avatars/Emma.jpg" alt="Emma">
+                        <span class="variant-name">Emma</span>
+                    </div>
+                    <div class="variant-content empty">À rédiger...</div>
+                </div>
+                <div class="variant-card" data-persona="laure">
+                    <div class="variant-header">
+                        <img src="assets/images/personas/avatars/Laure.jpg" alt="Laure">
+                        <span class="variant-name">Laure</span>
+                    </div>
+                    <div class="variant-content empty">À rédiger...</div>
+                </div>
+                <div class="variant-card" data-persona="sylvie">
+                    <div class="variant-header">
+                        <img src="assets/images/personas/avatars/Sylvie.jpg" alt="Sylvie">
+                        <span class="variant-name">Sylvie</span>
+                    </div>
+                    <div class="variant-content">Contenu adapté pour Sylvie...</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- === PERSONA SELECTOR DROPDOWN === -->
+    <div class="persona-dropdown collapsed" id="personaDropdown">
+        <div class="dropdown-content">
+            <div class="persona-option active" data-persona="emma">
+                <img src="assets/images/personas/avatars/Emma.jpg" alt="Emma">
+                <div class="persona-info">
+                    <div class="name">Emma</div>
+                    <div class="age">16-25 ans</div>
+                </div>
+                <div class="progress">15/180</div>
+            </div>
+            <div class="persona-option" data-persona="laure">
+                <img src="assets/images/personas/avatars/Laure.jpg" alt="Laure">
+                <div class="persona-info">
+                    <div class="name">Laure</div>
+                    <div class="age">25-35 ans</div>
+                </div>
+                <div class="progress">8/180</div>
+            </div>
+            <!-- Autres personas... -->
+        </div>
+    </div>
+
+    <!-- === MODALES === -->
+    
+    <!-- MODALE ÉDITION CONTENU DE BASE -->
+    <div class="modal-overlay" id="baseContentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Éditer le contenu de base</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="baseContentTextarea" class="modal-textarea" rows="10" placeholder="Saisissez le contenu de base qui sera adapté pour chaque persona..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel">Annuler</button>
+                <button class="btn-save">💾 Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zone de notifications -->
+    <div class="notification-zone" id="notificationContainer"></div>
+
+    <!-- Progress indicator fixe (motivation) -->
+    <div class="progress-indicator-fixed">
+        <div class="progress-ring">
+            <span class="progress-text">1%</span>
+        </div>
+    </div>
+
+    <!-- === SCRIPTS === -->
+    <script src="assets/js/core/motivation.js"></script>
+    <script src="assets/js/core/insight-editor.js"></script>
+    <script src="assets/js/core/interface.js"></script>
+    <script src="assets/js/core/app-init.js"></script>
+</body>
+</html> 

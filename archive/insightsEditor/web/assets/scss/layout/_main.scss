@@ -1,0 +1,401 @@
+// ===== ZONE PRINCIPALE (PRIORITÉ 1) =====
+
+.main-workspace {
+  margin-top: 70px; // Compensation du header fixe
+  padding: 0 24px 24px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: calc(100vh - 70px);
+}
+
+// === CONTEXTE DISCRET ===
+.context-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+  
+  .context-pills {
+    display: flex;
+    gap: 12px;
+    
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 20px;
+      font-size: 14px;
+      color: #555;
+      font-weight: 500;
+      
+      &.phase-pill {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+      }
+      
+      .rating-display {
+        color: #ffa726;
+        font-weight: 600;
+      }
+    }
+  }
+  
+  .context-actions {
+    display: flex;
+    gap: 8px;
+    
+    .btn-context,
+    .btn-preview {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+      }
+    }
+  }
+}
+
+// === ZONE D'ÉDITION (CŒUR DE L'INTERFACE) ===
+.editing-workspace {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+
+// === CONTENU DE BASE (RÉFÉRENCE) ===
+.base-content-card {
+  background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .edit-base-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(102, 126, 234, 0.1);
+      color: #667eea;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(102, 126, 234, 0.2);
+        transform: translateY(-1px);
+      }
+    }
+  }
+  
+  .base-content-text {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+}
+
+// === ZONE D'ADAPTATION (PRIORITÉ ABSOLUE) ===
+.adaptation-workspace {
+  background: white;
+  border: 2px solid #667eea;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.1);
+  position: relative;
+  
+  // Indicateur de priorité
+  &::before {
+    content: '✨ PRIORITÉ 1';
+    position: absolute;
+    top: -12px;
+    left: 24px;
+    background: #667eea;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  
+  .adaptation-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    
+    h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+      
+      .current-persona-name {
+        color: #667eea;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+    
+    .adaptation-tools {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      
+      .emoji-toggle {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
+        color: white;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+        }
+      }
+      
+      .word-count {
+        font-size: 14px;
+        color: #666;
+        font-weight: 500;
+        padding: 6px 12px;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+      }
+    }
+  }
+  
+  .editor-container {
+    position: relative;
+    
+    .main-editor {
+      width: 100%;
+      min-height: 200px;
+      padding: 20px;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-radius: 16px;
+      font-size: 16px;
+      line-height: 1.6;
+      resize: vertical;
+      transition: all 0.2s ease;
+      background: rgba(248, 249, 255, 0.5);
+      
+      &:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background: white;
+      }
+      
+      &::placeholder {
+        color: #999;
+        font-style: italic;
+      }
+    }
+    
+    // === SÉLECTEUR D'EMOJIS COMPACT ===
+    .emoji-panel {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      transition: all 0.2s ease;
+      
+      &:not(.collapsed) {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: all;
+      }
+      
+      .emoji-row {
+        display: flex;
+        gap: 8px;
+        
+        .emoji-btn {
+          width: 32px;
+          height: 32px;
+          border: none;
+          border-radius: 6px;
+          background: transparent;
+          cursor: pointer;
+          font-size: 16px;
+          transition: all 0.2s ease;
+          
+          &:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: scale(1.1);
+          }
+        }
+      }
+    }
+  }
+  
+  // === ACTIONS PRINCIPALES ===
+  .editor-actions {
+    margin-top: 24px;
+    
+    .primary-action {
+      margin-bottom: 16px;
+      
+      .btn-validate-large {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 16px 24px;
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        color: white;
+        border: none;
+        border-radius: 16px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 16px rgba(76, 175, 80, 0.2);
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+        }
+        
+        .icon {
+          font-size: 20px;
+        }
+        
+        .shortcut {
+          opacity: 0.8;
+          font-size: 14px;
+          font-weight: 400;
+        }
+      }
+    }
+    
+    .secondary-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      
+      .btn-secondary {
+        padding: 10px 20px;
+        background: rgba(0, 0, 0, 0.05);
+        border: none;
+        border-radius: 12px;
+        color: #666;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          background: rgba(0, 0, 0, 0.1);
+          color: #333;
+        }
+      }
+    }
+  }
+}
+
+// === RESPONSIVE ===
+@media (max-width: 1024px) {
+  .main-workspace {
+    padding: 0 16px 16px;
+  }
+  
+  .adaptation-workspace {
+    padding: 20px;
+    
+    .adaptation-header h2 {
+      font-size: 20px;
+    }
+    
+    .editor-container .main-editor {
+      min-height: 150px;
+      padding: 16px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .context-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    
+    .context-pills {
+      flex-wrap: wrap;
+    }
+  }
+  
+  .adaptation-workspace {
+    &::before {
+      display: none;
+    }
+    
+    .adaptation-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      
+      h2 {
+        font-size: 18px;
+      }
+    }
+    
+    .editor-actions .primary-action .btn-validate-large {
+      font-size: 16px;
+      padding: 14px 20px;
+      
+      .shortcut {
+        display: none;
+      }
+    }
+  }
+} 

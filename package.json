@@ -1,0 +1,32 @@
+{
+  "name": "moodcycle-monorepo",
+  "version": "1.0.0",
+  "description": "MoodCycle - Monorepo pour App, API et Admin",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "npm run start --workspace=app",
+    "start:api": "npm run dev --workspace=api",
+    "start:admin": "npm run dev --workspace=admin",
+    "start:all": "concurrently \"npm run start:api\" \"npm run start:admin\"",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
+    "install:all": "npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "author": "IrimWebForge",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/moodcycle.git"
+  }
+} 

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laure - Profil Persona | InsightsEditor</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/personas.css">
+    <style>
+        .persona-profile {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #4ecdc4 0%, #6ed4d0 100%);
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .persona-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .persona-info h1 {
+            font-size: 2.5em;
+            margin: 0 0 10px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .persona-tagline {
+            font-size: 1.3em;
+            opacity: 0.9;
+            font-style: italic;
+        }
+        
+        .profile-content {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-section {
+            margin-bottom: 30px;
+        }
+        
+        .profile-section h2 {
+            color: #4ecdc4;
+            border-bottom: 2px solid #4ecdc4;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .highlight-quote {
+            background: #f0fffe;
+            border-left: 4px solid #4ecdc4;
+            padding: 20px;
+            font-style: italic;
+            font-size: 1.1em;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tag {
+            background: #4ecdc4;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .persona-photo {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .profile-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Retour à l'éditeur</a>
+    
+    <div class="container">
+        <div class="persona-profile">
+            <div class="profile-header">
+                <img src="../assets/images/personas/Laure.jpg" alt="Laure" class="persona-photo">
+                <div class="persona-info">
+                    <h1>💼 Laure</h1>
+                    <div class="persona-tagline">"La Professionnelle Équilibrée"</div>
+                    <div class="tags">
+                        <span class="tag">25-35 ans</span>
+                        <span class="tag">Efficacité</span>
+                        <span class="tag">Active</span>
+                        <span class="tag">Responsable</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-content">
+            <div class="profile-section">
+                <h2>🎯 Profil Démographique</h2>
+                <ul>
+                    <li><strong>Âge :</strong> 34 ans</li>
+                    <li><strong>Statut :</strong> Responsable marketing</li>
+                    <li><strong>Situation :</strong> Vie en couple</li>
+                    <li><strong>Activités :</strong> Pratique le yoga et la méditation</li>
+                    <li><strong>Revenus :</strong> Confortables</li>
+                </ul>
+            </div>
+            
+            <div class="profile-section">
+                <h2>📚 Contexte</h2>
+                <p>Laure a déjà utilisé plusieurs applications de suivi de cycle. Elle s'intéresse à l'approche holistique de la santé et cherche à optimiser sa productivité en fonction de son cycle.</p>
+            </div>
+            
+            <div class="profile-section">
+                <h2>🎯 Objectifs</h2>
+                <ul>
+                    <li>Harmoniser sa vie professionnelle avec son cycle hormonal</li>
+                    <li>Approfondir sa connexion spirituelle avec son corps</li>
+                    <li>Adapter son alimentation et ses activités physiques selon les phases</li>
+                </ul>
+            </div>
+            
+            <div class="highlight-quote">
+                "Je suis convaincue que comprendre mon cycle peut m'aider à être plus épanouie, tant personnellement que professionnellement."
+            </div>
+            
+            <div class="profile-section">
+                <h2>💭 Style de Communication</h2>
+                <p><strong>Pour Laure, privilégier :</strong></p>
+                <ul>
+                    <li><strong>Ton pragmatique et orienté action</strong> - "Optimise ta journée..."</li>
+                    <li><strong>Vocabulaire professionnel</strong> - Efficacité, stratégie, méthode</li>
+                    <li><strong>Solutions concrètes</strong> - "Planifie", "organise", "structure"</li>
+                    <li><strong>Approche performance</strong> - Productivité et organisation</li>
+                    <li><strong>Conseils pratiques</strong> - Actions à implémenter</li>
+                </ul>
+            </div>
+            
+            <div class="profile-section">
+                <h2>✨ Attentes pour MoodCycle</h2>
+                <ul>
+                    <li>Dashboard personnalisable mettant en avant ses priorités</li>
+                    <li>Conseils spécifiques pour optimiser son travail selon chaque phase</li>
+                    <li>Contenus approfondis sur les aspects spirituels et énergétiques</li>
+                    <li>Recommandations nutritionnelles et sportives précises</li>
+                    <li>Absence totale de publicités et garantie de confidentialité</li>
+                    <li>Visualisations sophistiquées pour identifier des patterns</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

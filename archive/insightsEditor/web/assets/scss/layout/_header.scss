@@ -1,0 +1,165 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+// ===== HEADER COMPACT (NAVIGATION PRINCIPALE) =====
+
+.app-header-clean {
+  @include flex-between;
+  padding: $space-4 $space-6;
+  background: $header-bg;
+  border-bottom: 1px solid $header-border;
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: $z-sticky;
+  height: $header-height;
+  
+  .header-container {
+    @include flex-between;
+    width: 100%;
+    gap: $space-6;
+  }
+  
+  // === NAVIGATION INSIGHTS ===
+  .insights-nav {
+    @include flex-start;
+    gap: $space-4;
+    
+    .nav-btn {
+      @include button-icon;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+    }
+    
+    .insight-info {
+      @include flex-start;
+      flex-direction: column;
+      gap: $space-1;
+      
+      .app-title {
+        @include heading-3;
+        margin: 0;
+        color: $primary;
+      }
+      
+      .insight-counter {
+        @include caption;
+        color: $text-muted;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+  
+  // === PERSONA COMPACT ===
+  .current-persona-compact {
+    @include flex-start;
+    gap: $space-3;
+    padding: $space-2 $space-4;
+    background: $background-subtle;
+    border: 1px solid $border-light;
+    border-radius: $radius-full;
+    cursor: pointer;
+    transition: $transition-base;
+    position: relative;
+    
+    &:hover {
+      background: $hover-bg;
+      border-color: $hover-border;
+    }
+    
+    .persona-avatar {
+      @include persona-avatar(32px);
+    }
+    
+    .persona-name {
+      @include body-base;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+    }
+    
+    .personas-menu-btn {
+      @include button-icon;
+      width: 24px;
+      height: 24px;
+      font-size: $font-size-xs;
+      color: $text-muted;
+    }
+  }
+  
+  // === ACTIONS HEADER ===
+  .header-actions {
+    @include flex-start;
+    gap: $space-3;
+    
+    .btn-validate {
+      @include button-primary;
+      @include flex-start;
+      gap: $space-2;
+      
+      .icon {
+        font-size: $font-size-base;
+      }
+    }
+    
+    .btn-menu {
+      @include button-icon;
+    }
+  }
+  
+  // === PROGRESS BAR ===
+  .progress-bar-header {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: $gray-200;
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, $primary, $secondary);
+      transition: width $transition-base;
+      border-radius: $radius-sm;
+    }
+  }
+}
+
+// === RESPONSIVE ===
+@include mobile-only {
+  .app-header-clean {
+    padding: $space-3 $space-4;
+    
+    .header-container {
+      gap: $space-3;
+    }
+    
+    .insights-nav {
+      gap: $space-2;
+      
+      .insight-info .app-title {
+        font-size: $font-size-base;
+      }
+    }
+    
+    .current-persona-compact {
+      padding: $space-2 $space-3;
+      
+      .persona-name {
+        display: none;
+      }
+    }
+    
+    .header-actions {
+      gap: $space-2;
+      
+      .btn-validate .text {
+        display: none;
+      }
+    }
+  }
+} 

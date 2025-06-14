@@ -1,0 +1,281 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+// === CONTEXT BAR RÉELLE ===
+.context-bar {
+  @include flex-between;
+  padding: $space-3 $space-6;
+  background: $background-subtle;
+  border-bottom: 1px solid $border-light;
+  margin-bottom: $space-4;
+  
+  .context-pills {
+    @include flex-start;
+    gap: $space-3;
+    
+    .pill {
+      @include pill-base;
+      @include flex-start;
+      gap: $space-2;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      
+      &.phase-pill {
+        &[data-phase="menstrual"] { @include pill-theme(menstrual); }
+        &[data-phase="follicular"] { @include pill-theme(follicular); }
+        &[data-phase="ovulatory"] { @include pill-theme(ovulatory); }
+        &[data-phase="luteal"] { @include pill-theme(luteal); }
+      }
+    }
+    
+    .rating-display {
+      color: $text-primary;
+      font-weight: $font-weight-semibold;
+    }
+  }
+  
+  .context-actions {
+    @include flex-start;
+    gap: $space-2;
+    
+    .btn-context,
+    .btn-preview {
+      @include button-ghost;
+      padding: $space-2;
+      font-size: $font-size-base;
+      border-radius: $radius-md;
+      
+      &:hover {
+        background: $hover-bg;
+      }
+    }
+  }
+}
+
+// === SIDEBAR CONTEXTUEL (RÉELLE) ===
+.sidebar-contextual {
+  @include sidebar-base;
+  right: -$sidebar-width;
+  
+  &:not(.collapsed) {
+    right: 0;
+  }
+  
+  .sidebar-header {
+    @include sidebar-header;
+  }
+  
+  .sidebar-content {
+    @include sidebar-content;
+    
+    // === RATING SECTION ===
+    .rating-section {
+      margin-bottom: $space-6;
+      
+      label {
+        @include label-base;
+        margin-bottom: $space-2;
+      }
+      
+      .star-rating {
+        @include flex-start;
+        gap: $space-1;
+        
+        .star {
+          cursor: pointer;
+          font-size: $font-size-lg;
+          transition: $transition-base;
+          
+          &.filled {
+            color: $warning;
+          }
+          
+          &:not(.filled) {
+            color: $gray-300;
+            
+            &:hover {
+              color: $warning;
+            }
+          }
+        }
+      }
+    }
+    
+    // === JOURNEY SECTION ===
+    .journey-section {
+      margin-bottom: $space-6;
+      
+      label {
+        @include label-base;
+        margin-bottom: $space-3;
+      }
+      
+      .journey-badges {
+        @include flex-start;
+        flex-wrap: wrap;
+        gap: $space-2;
+        
+        .badge-journey {
+          @include pill-base;
+          background: $info-light;
+          color: $info-dark;
+          font-size: $font-size-xs;
+          font-weight: $font-weight-medium;
+          
+          &:hover {
+            background: $info;
+            color: white;
+          }
+        }
+      }
+    }
+    
+    // === METADATA SECTION ===
+    .metadata-section {
+      .meta-item {
+        @include flex-between;
+        align-items: flex-start;
+        margin-bottom: $space-3;
+        
+        label {
+          @include label-base;
+          flex-shrink: 0;
+          margin-bottom: 0;
+        }
+        
+        .meta-value {
+          @include body-sm;
+          color: $text-secondary;
+          text-align: right;
+          
+          &.phase-display {
+            @include pill-base;
+            font-size: $font-size-xs;
+            background: $secondary-light;
+            color: $secondary-dark;
+          }
+        }
+      }
+    }
+  }
+}
+
+// === PREVIEW PANEL (RÉEL) ===
+.preview-panel {
+  @include sidebar-base;
+  right: -$sidebar-width;
+  width: 400px;
+  
+  &:not(.collapsed) {
+    right: 0;
+  }
+  
+  .panel-header {
+    @include sidebar-header;
+  }
+  
+  .preview-content {
+    @include sidebar-content;
+    
+    .persona-variants {
+      display: grid;
+      gap: $space-4;
+      
+      .variant-card {
+        @include card-base;
+        padding: $space-4;
+        border-radius: $radius-lg;
+        
+        .variant-header {
+          @include flex-start;
+          gap: $space-3;
+          margin-bottom: $space-3;
+          
+          img {
+            @include persona-avatar(40px);
+          }
+          
+          .variant-name {
+            @include body-base;
+            font-weight: $font-weight-semibold;
+            color: $text-primary;
+          }
+        }
+        
+        .variant-content {
+          @include body-sm;
+          color: $text-secondary;
+          line-height: 1.5;
+          
+          &.empty {
+            font-style: italic;
+            color: $text-muted;
+          }
+        }
+        
+        // Couleurs personas
+        &[data-persona="emma"] {
+          border-left: 4px solid $persona-emma;
+        }
+        &[data-persona="laure"] {
+          border-left: 4px solid $persona-laure;
+        }
+        &[data-persona="sylvie"] {
+          border-left: 4px solid $persona-sylvie;
+        }
+        &[data-persona="christine"] {
+          border-left: 4px solid $persona-christine;
+        }
+        &[data-persona="clara"] {
+          border-left: 4px solid $persona-clara;
+        }
+      }
+    }
+  }
+}
+
+// === RESPONSIVE ===
+@include tablet-only {
+  .context-bar {
+    padding: $space-3 $space-4;
+    
+    .context-pills {
+      gap: $space-2;
+      
+      .pill {
+        font-size: $font-size-xs;
+        padding: $space-1 $space-2;
+      }
+    }
+  }
+  
+  .sidebar-contextual,
+  .preview-panel {
+    width: 320px;
+    right: -320px;
+  }
+}
+
+@include mobile-only {
+  .context-bar {
+    flex-direction: column;
+    gap: $space-3;
+    padding: $space-3 $space-4;
+    
+    .context-pills {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .context-actions {
+      justify-content: center;
+    }
+  }
+  
+  .sidebar-contextual,
+  .preview-panel {
+    width: 100%;
+    right: -100%;
+    left: 0;
+  }
+} 

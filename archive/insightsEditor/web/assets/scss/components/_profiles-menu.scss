@@ -1,0 +1,240 @@
+/* === MENU PROFILS PERSONAS === */
+.profiles-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    
+    &.show {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.profiles-menu-content {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s ease;
+    
+    .profiles-menu.show & {
+        transform: scale(1) translateY(0);
+    }
+}
+
+.profiles-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #E0E0E0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    
+    h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+    
+    .close-profiles-menu {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+    }
+}
+
+.profiles-menu-list {
+    padding: 16px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.profile-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #212121;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    margin-bottom: 8px;
+    
+    &:hover {
+        background: #F5F5F5;
+        transform: translateX(4px);
+        border-color: #E0E0E0;
+    }
+    
+    &:last-child {
+        margin-bottom: 0;
+    }
+    
+    // Couleurs par persona
+    &.emma:hover {
+        border-color: #E91E63;
+        background: linear-gradient(135deg, #FCE4EC, #F8BBD9);
+    }
+    
+    &.laure:hover {
+        border-color: #2196F3;
+        background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    }
+    
+    &.sylvie:hover {
+        border-color: #FF9800;
+        background: linear-gradient(135deg, #FFF3E0, #FFCC02);
+    }
+    
+    &.christine:hover {
+        border-color: #9C27B0;
+        background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+    }
+    
+    &.clara:hover {
+        border-color: #4CAF50;
+        background: linear-gradient(135deg, #E8F5E8, #C8E6C9);
+    }
+}
+
+.profile-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid #E0E0E0;
+    
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.profile-info {
+    flex: 1;
+    
+    h4 {
+        margin: 0 0 4px 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #212121;
+    }
+    
+    p {
+        margin: 0;
+        font-size: 13px;
+        color: #757575;
+        line-height: 1.4;
+    }
+}
+
+.profile-arrow {
+    font-size: 18px;
+    color: #BDBDBD;
+    transition: all 0.2s ease;
+    
+    .profile-link:hover & {
+        color: #757575;
+        transform: translateX(4px);
+    }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .profiles-menu-content {
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .profiles-menu-header {
+        padding: 16px 20px;
+        
+        h3 {
+            font-size: 16px;
+        }
+    }
+    
+    .profiles-menu-list {
+        padding: 12px;
+    }
+    
+    .profile-link {
+        padding: 12px;
+        gap: 12px;
+        
+        &:hover {
+            transform: none;
+        }
+    }
+    
+    .profile-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .profile-info {
+        h4 {
+            font-size: 14px;
+        }
+        
+        p {
+            font-size: 12px;
+        }
+    }
+}
+
+/* === ANIMATIONS === */
+@keyframes profileMenuSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes profileMenuSlideOut {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+} 

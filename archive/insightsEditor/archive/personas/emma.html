@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emma - Profil Persona | InsightsEditor</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .persona-profile {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .persona-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .persona-info h1 {
+            font-size: 2.5em;
+            margin: 0 0 10px 0;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .persona-tagline {
+            font-size: 1.3em;
+            color: rgba(255, 255, 255, 0.9);
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tag {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            backdrop-filter: blur(10px);
+        }
+        
+        .profile-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-section {
+            margin-bottom: 30px;
+        }
+        
+        .profile-section h2 {
+            color: #ff6b9d;
+            border-bottom: 2px solid #ff6b9d;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        
+        .highlight-quote {
+            background: #fff0f6;
+            border-left: 4px solid #ff6b9d;
+            padding: 20px;
+            font-style: italic;
+            font-size: 1.1em;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .persona-photo {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Retour à l'éditeur</a>
+    
+    <div class="persona-profile">
+        <div class="profile-header">
+            <img src="../assets/images/personas/Emma.jpg" alt="Emma" class="persona-photo">
+            <div class="persona-info">
+                <h1>👩 Emma</h1>
+                <div class="persona-tagline">"La Novice Curieuse"</div>
+                <div class="tags">
+                    <span class="tag">16-25 ans</span>
+                    <span class="tag">Découverte</span>
+                    <span class="tag">Apprentissage</span>
+                    <span class="tag">Étudiante</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-content">
+            <div class="profile-section">
+                <h2>🎯 Profil Démographique</h2>
+                <ul>
+                    <li><strong>Âge :</strong> 18 ans</li>
+                    <li><strong>Statut :</strong> Étudiante en première année d'université</li>
+                    <li><strong>Logement :</strong> Habite en colocation</li>
+                    <li><strong>Technologie :</strong> Utilise principalement son smartphone pour tout</li>
+                    <li><strong>Budget :</strong> Limité</li>
+                </ul>
+            </div>
+            
+            <div class="profile-section">
+                <h2>📚 Contexte</h2>
+                <p>Emma a ses règles depuis 5 ans mais n'a jamais vraiment prêté attention à son cycle. Elle remarque des variations d'humeur et d'énergie qu'elle ne comprend pas et subit parfois des douleurs menstruelles qui perturbent ses études.</p>
+            </div>
+            
+            <div class="profile-section">
+                <h2>🎯 Objectifs</h2>
+                <ul>
+                    <li>Comprendre les bases de son cycle menstruel</li>
+                    <li>Prévoir ses règles pour mieux s'organiser</li>
+                    <li>Trouver des solutions naturelles pour gérer ses symptômes</li>
+                </ul>
+            </div>
+            
+            <div class="profile-section">
+                <h2>😤 Frustrations</h2>
+                <ul>
+                    <li>Se sent dépassée par les informations médicales trop complexes</li>
+                    <li>N'a pas de suivi régulier</li>
+                    <li>Les applications existantes lui semblent soit trop basiques, soit trop axées sur la fertilité</li>
+                </ul>
+            </div>
+            
+            <div class="highlight-quote">
+                "J'aimerais juste comprendre pourquoi je me sens si différente selon les semaines et comment je pourrais mieux gérer mes énergies."
+            </div>
+            
+            <div class="profile-section">
+                <h2>💭 Style de Communication</h2>
+                <p><strong>Pour Emma, privilégier :</strong></p>
+                <ul>
+                    <li><strong>Ton encourageant et éducatif</strong> - "C'est normal, ton corps apprend..."</li>
+                    <li><strong>Vocabulaire accessible</strong> - Éviter le jargon médical</li>
+                    <li><strong>Explications simples</strong> - "Cycle 101"</li>
+                    <li><strong>Réassurance</strong> - Valider ses expériences</li>
+                    <li><strong>Approche découverte</strong> - "Explore", "découvre", "apprends"</li>
+                </ul>
+            </div>
+            
+            <div class="profile-section">
+                <h2>✨ Attentes pour MoodCycle</h2>
+                <ul>
+                    <li>Interface intuitive avec des explications simples</li>
+                    <li>Contenu éducatif adapté aux débutantes</li>
+                    <li>Représentation visuelle claire des phases</li>
+                    <li>Solutions pratiques et accessibles</li>
+                    <li>Design attrayant qu'elle n'aura pas honte d'utiliser en public</li>
+                    <li>Langage inclusif et positif, sans tabou ni infantilisation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

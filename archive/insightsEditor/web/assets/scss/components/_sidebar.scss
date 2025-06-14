@@ -1,0 +1,470 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+// === SIDEBARS NOUVELLE HIÉRARCHIE ===
+
+// === CONTEXT SIDEBAR (Gauche) ===
+.context-sidebar {
+  @include sidebar-left;
+  
+  .sidebar-header {
+    @include flex-between;
+    padding: $space-4 $space-5;
+    border-bottom: 1px solid $border-light;
+    
+    h3 {
+      @include heading-3;
+      margin: 0;
+    }
+    
+    .sidebar-close {
+      @include button-icon;
+    }
+  }
+  
+  .sidebar-content {
+    padding: $space-5;
+    display: flex;
+    flex-direction: column;
+    gap: $space-6;
+  }
+  
+  // Phase actuelle
+  .current-phase {
+    @include pill-neutral;
+    justify-content: center;
+    
+    &[data-phase="menstrual"] {
+      @include phase-theme(menstrual);
+      background: var(--phase-color-light);
+      color: var(--phase-color);
+      border-color: var(--phase-color-medium);
+    }
+    
+    &[data-phase="follicular"] {
+      @include phase-theme(follicular);
+      background: var(--phase-color-light);
+      color: var(--phase-color);
+      border-color: var(--phase-color-medium);
+    }
+    
+    &[data-phase="ovulatory"] {
+      @include phase-theme(ovulatory);
+      background: var(--phase-color-light);
+      color: var(--phase-color);
+      border-color: var(--phase-color-medium);
+    }
+    
+    &[data-phase="luteal"] {
+      @include phase-theme(luteal);
+      background: var(--phase-color-light);
+      color: var(--phase-color);
+      border-color: var(--phase-color-medium);
+    }
+  }
+  
+  // Rating stars
+  .star-rating {
+    @include flex-start;
+    gap: $space-2;
+    
+    .star {
+      width: 24px;
+      height: 24px;
+      color: $gray-300;
+      cursor: pointer;
+      transition: $transition-fast;
+      
+      &:hover,
+      &.filled {
+        color: $warning;
+      }
+    }
+  }
+  
+  // Journey badges
+  .journey-badges {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    
+    .badge-journey {
+      @include pill-neutral;
+      cursor: pointer;
+      transition: $transition-base;
+      justify-content: center;
+      
+      &:hover {
+        background: $hover-bg;
+        border-color: $hover-border;
+      }
+      
+      &.active {
+        @include pill-primary;
+      }
+    }
+  }
+  
+  // Mots-clés
+  .keywords-section {
+    .keywords-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $space-2;
+      margin-top: $space-3;
+      
+      .keyword-tag {
+        @include pill-neutral;
+        font-size: $font-size-xs;
+        cursor: pointer;
+        
+        &:hover {
+          background: $hover-bg;
+        }
+        
+        &.active {
+          @include pill-success;
+        }
+      }
+    }
+  }
+}
+
+// === PREVIEW PANEL (Droite) ===
+.preview-panel {
+  @include sidebar-right;
+  
+  .panel-header {
+    @include flex-between;
+    padding: $space-4 $space-5;
+    border-bottom: 1px solid $border-light;
+    
+    h3 {
+      @include heading-3;
+      margin: 0;
+    }
+    
+    .panel-close {
+      @include button-icon;
+    }
+  }
+  
+  .panel-content {
+    padding: $space-5;
+    display: flex;
+    flex-direction: column;
+    gap: $space-6;
+  }
+  
+  // Aperçu personas
+  .personas-preview {
+    .persona-variant {
+      @include card-base;
+      margin-bottom: $space-4;
+      cursor: pointer;
+      transition: $transition-base;
+      
+      &:hover {
+        @include hover-lift;
+      }
+      
+      &.current {
+        border-color: $primary;
+        background: rgba($primary, 0.05);
+      }
+      
+      &.empty {
+        border-style: dashed;
+        border-color: $gray-300;
+        opacity: 0.7;
+        
+        .persona-text {
+          font-style: italic;
+          color: $text-muted;
+        }
+      }
+      
+      .persona-header {
+        @include flex-start;
+        gap: $space-3;
+        margin-bottom: $space-3;
+        
+        .persona-avatar {
+          @include persona-avatar(32px);
+        }
+        
+        .persona-info {
+          h4 {
+            @include body-base;
+            font-weight: $font-weight-semibold;
+            margin: 0 0 $space-1 0;
+          }
+          
+          .persona-age {
+            @include caption;
+            color: $text-muted;
+          }
+        }
+      }
+      
+      .persona-text {
+        @include body-small;
+        line-height: $line-height-relaxed;
+        color: $text-secondary;
+      }
+      
+      .word-count {
+        @include caption;
+        color: $text-muted;
+        margin-top: $space-3;
+        text-align: right;
+      }
+    }
+  }
+}
+
+// === PERSONA DROPDOWN ===
+.persona-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: $white;
+  border: 1px solid $border-light;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  z-index: $z-dropdown;
+  max-height: 400px;
+  overflow-y: auto;
+  transition: $transition-base;
+  
+  &.collapsed {
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .persona-option {
+    @include flex-start;
+    gap: $space-3;
+    padding: $space-4;
+    cursor: pointer;
+    transition: $transition-base;
+    border-bottom: 1px solid $border-light;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &:hover {
+      background: $hover-bg;
+    }
+    
+    &.active {
+      background: rgba($primary, 0.05);
+      border-left: 3px solid $primary;
+    }
+    
+    .persona-avatar {
+      @include persona-avatar(40px);
+    }
+    
+    .persona-details {
+      flex: 1;
+      
+      .persona-name {
+        @include body-base;
+        font-weight: $font-weight-semibold;
+        margin: 0 0 $space-1 0;
+        color: $text-primary;
+      }
+      
+      .persona-description {
+        @include caption;
+        color: $text-muted;
+      }
+    }
+    
+    .persona-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: $gray-300;
+      
+      &.active {
+        background: $success;
+      }
+    }
+  }
+}
+
+// === BOUTONS TOGGLE ===
+.btn-context,
+.btn-preview {
+  @include button-ghost;
+  @include center-content;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: $radius-lg;
+  
+  &.active {
+    background: rgba($primary, 0.1);
+    color: $primary;
+  }
+}
+
+// === CONTEXT BAR (Horizontal) ===
+.context-bar {
+  @include flex-between;
+  padding: $space-3 $space-4;
+  background: $background-subtle;
+  border-bottom: 1px solid $border-light;
+  gap: $space-4;
+  
+  .context-info {
+    @include flex-start;
+    gap: $space-4;
+    
+    .context-item {
+      @include flex-start;
+      gap: $space-2;
+      
+      .context-label {
+        @include caption;
+        color: $text-muted;
+      }
+      
+      .context-value {
+        @include body-small;
+        color: $text-primary;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+  
+  .context-actions {
+    @include flex-start;
+    gap: $space-2;
+  }
+}
+
+// === PROGRESS INDICATOR FIXE ===
+.progress-indicator {
+  position: fixed;
+  bottom: $space-4;
+  right: $space-4;
+  background: $white;
+  border: 1px solid $border-light;
+  border-radius: $radius-full;
+  padding: $space-3 $space-4;
+  box-shadow: $shadow-lg;
+  z-index: $z-fixed;
+  
+  @include flex-start;
+  gap: $space-3;
+  
+  .progress-circle {
+    width: 32px;
+    height: 32px;
+    position: relative;
+    
+    .progress-ring {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+      
+      circle {
+        fill: none;
+        stroke-width: 3;
+        
+        &.progress-background {
+          stroke: $gray-200;
+        }
+        
+        &.progress-fill {
+          stroke: $primary;
+          stroke-linecap: round;
+          transition: stroke-dashoffset $transition-base;
+        }
+      }
+    }
+    
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      @include caption;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+    }
+  }
+  
+  .progress-label {
+    @include body-small;
+    color: $text-secondary;
+  }
+}
+
+// === RESPONSIVE ===
+@include mobile-only {
+  .context-sidebar,
+  .preview-panel {
+    width: 100vw;
+    left: 0;
+    right: auto;
+    border-radius: 0;
+    
+    &:not(.collapsed) {
+      transform: translateX(0);
+    }
+    
+    &.collapsed {
+      transform: translateX(-100%);
+    }
+  }
+  
+  .context-bar {
+    padding: $space-2 $space-3;
+    gap: $space-2;
+    
+    .context-info {
+      gap: $space-3;
+    }
+  }
+  
+  .progress-indicator {
+    bottom: $space-3;
+    right: $space-3;
+    padding: $space-2 $space-3;
+    
+    .progress-circle {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+// === ÉTATS D'ANIMATION ===
+.sidebar-enter {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.sidebar-enter-active {
+  transform: translateX(0);
+  opacity: 1;
+  transition: $transition-slow;
+}
+
+.sidebar-exit {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.sidebar-exit-active {
+  transform: translateX(100%);
+  opacity: 0;
+  transition: $transition-slow;
+}

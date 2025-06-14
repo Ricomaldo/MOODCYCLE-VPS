@@ -1,0 +1,556 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+@use 'sass:color';
+
+// === SYSTÈME DE NOTIFICATIONS MOTIVANTES ===
+
+.notification-system {
+  position: fixed;
+  top: $space-4;
+  right: $space-4;
+  z-index: 1100;
+  max-width: 380px;
+  pointer-events: none;
+  
+  @include mobile-only {
+    top: $space-3;
+    right: $space-3;
+    left: $space-3;
+    max-width: none;
+  }
+}
+
+// === TOASTS SIMPLES ===
+.toast {
+  position: fixed;
+  top: $space-4;
+  right: $space-4;
+  z-index: 1200;
+  background: $surface;
+  color: $text-primary;
+  padding: $space-3 $space-4;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-lg;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  max-width: 300px;
+  border-left: 4px solid var(--toast-color, $primary);
+  
+  &.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  
+  &.hide {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  
+  &.success {
+    --toast-color: #{$success};
+  }
+  
+  &.info {
+    --toast-color: #{$info};
+  }
+  
+  &.warning {
+    --toast-color: #{$warning};
+  }
+  
+  &.error {
+    --toast-color: #{$error};
+  }
+  
+  @include mobile-only {
+    top: $space-3;
+    right: $space-3;
+    left: $space-3;
+    max-width: none;
+  }
+}
+
+// === NOTIFICATION DE BASE ===
+.notification {
+  @include card-elevated;
+  background: $surface;
+  border-radius: $border-radius-lg;
+  padding: $space-4;
+  margin-bottom: $space-3;
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: all;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border-left: 4px solid var(--notif-color, $primary);
+  position: relative;
+  overflow: hidden;
+  
+  &.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  
+  &.hide {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  
+  // === TYPES DE NOTIFICATIONS ===
+  &.success {
+    --notif-color: #{$success};
+    --notif-bg: rgba(#{red($success)}, #{green($success)}, #{blue($success)}, 0.1);
+  }
+  
+  &.achievement {
+    --notif-color: #{$accent};
+    --notif-bg: rgba(#{red($accent)}, #{green($accent)}, #{blue($accent)}, 0.1);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent 30%, rgba($accent, 0.1) 50%, transparent 70%);
+      animation: shimmer 2s infinite;
+    }
+  }
+  
+  &.milestone {
+    --notif-color: #{$primary};
+    --notif-bg: rgba(#{red($primary)}, #{green($primary)}, #{blue($primary)}, 0.1);
+    
+    .confetti {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      pointer-events: none;
+      
+      &::before,
+      &::after {
+        content: '🎉';
+        position: absolute;
+        font-size: 1.2rem;
+        animation: confettiFall 3s ease-out;
+      }
+      
+      &::before {
+        top: 0;
+        left: 20%;
+        animation-delay: 0.5s;
+      }
+      
+      &::after {
+        top: 0;
+        right: 20%;
+        animation-delay: 1s;
+      }
+    }
+  }
+  
+  &.streak {
+    --notif-color: #{$warning};
+    --notif-bg: rgba(#{red($warning)}, #{green($warning)}, #{blue($warning)}, 0.1);
+    
+    .fire-animation {
+      display: inline-block;
+      animation: flame 1s ease-in-out infinite alternate;
+    }
+  }
+  
+  &.persona-complete {
+    --notif-color: #{$info};
+    --notif-bg: rgba(#{red($info)}, #{green($info)}, #{blue($info)}, 0.1);
+    
+    background: linear-gradient(135deg, var(--notif-bg) 0%, rgba(var(--notif-color), 0.05) 100%);
+  }
+}
+
+// === CONTENU NOTIFICATION ===
+.notification-content {
+  position: relative;
+  z-index: 2;
+  
+  .notification-header {
+    @include flex-between;
+    margin-bottom: $space-2;
+    
+    .icon {
+      @include flex-center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--notif-bg);
+      color: var(--notif-color);
+      font-size: 1.1rem;
+      
+      &.bounce {
+        animation: bounceIn 0.6s ease;
+      }
+    }
+    
+    .close-btn {
+      @include button-ghost;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      opacity: 0.6;
+      font-size: 0.8rem;
+      
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+  
+  .notification-body {
+    .title {
+      font-size: $font-size-lg;
+      font-weight: 700;
+      color: var(--notif-color);
+      margin: 0 0 $space-1 0;
+      font-weight: 700;
+    }
+    
+    .message {
+      @include body-base;
+      color: $text-secondary;
+      margin: 0 0 $space-2 0;
+      line-height: $line-height-relaxed;
+    }
+    
+    .details {
+      @include text-meta;
+      color: $text-light;
+      margin: 0;
+      font-style: italic;
+    }
+  }
+  
+  .notification-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $space-2;
+    margin-top: $space-3;
+    
+    .action-btn {
+      @include button-ghost;
+      padding: $space-1 $space-3;
+      font-size: $font-size-sm;
+      
+      &.primary {
+        @include button-primary;
+        background: var(--notif-color);
+        
+                 &:hover {
+           background: var(--notif-color-dark, #{color.scale($primary, $lightness: -10%)});
+         }
+      }
+    }
+  }
+}
+
+// === BARRE DE PROGRESSION ===
+.notification-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--notif-color);
+  border-radius: 0 0 $border-radius-lg $border-radius-lg;
+  transform-origin: left;
+  animation: progressBar 5s linear forwards;
+}
+
+// === NOTIFICATIONS SPÉCIALES ===
+
+// === AUTO-SAVE SUCCESS ===
+.autosave-notification {
+  @include flex-center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background: rgba($success, 0.1);
+  color: $success;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  
+  .save-icon {
+    font-size: 0.9rem;
+    animation: checkmark 0.5s ease;
+  }
+}
+
+// === MILESTONE CELEBRATION ===
+.milestone-celebration {
+  text-align: center;
+  
+  .milestone-number {
+    @include heading-1;
+    color: var(--notif-color);
+    margin-bottom: $space-2;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(var(--notif-color), 0.3);
+    animation: scaleIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+  
+  .celebration-text {
+    @include body-base;
+    margin-bottom: $space-3;
+    
+    .highlight {
+      font-weight: 700;
+      color: var(--notif-color);
+    }
+  }
+  
+  .next-goal {
+    @include text-meta;
+    color: $text-light;
+    padding: $space-2;
+    background: rgba(var(--notif-color), 0.05);
+    border-radius: $border-radius;
+  }
+}
+
+// === STREAK NOTIFICATION ===
+.streak-notification {
+  .streak-counter {
+    @include flex-center;
+    gap: $space-2;
+    margin-bottom: $space-2;
+    
+    .fire-icon {
+      font-size: 1.5rem;
+      animation: flame 1s ease-in-out infinite alternate;
+    }
+    
+    .streak-number {
+      @include heading-2;
+      color: var(--notif-color);
+      font-weight: 800;
+    }
+    
+    .streak-label {
+      @include text-meta;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  }
+  
+  .streak-message {
+    text-align: center;
+    
+    .motivation {
+      @include body-base;
+      font-style: italic;
+      color: var(--notif-color);
+      font-weight: 500;
+    }
+  }
+}
+
+// === PERSONA COMPLETION ===
+.persona-completion {
+  .completion-header {
+    @include flex-center;
+    gap: $space-3;
+    margin-bottom: $space-4;
+    
+    .persona-avatar {
+      @include avatar-base(60px);
+      border: 3px solid var(--notif-color);
+      box-shadow: 0 0 0 3px rgba(var(--notif-color), 0.2);
+    }
+    
+    .completion-info {
+      .persona-name {
+        @include heading-3;
+        color: var(--notif-color);
+        margin: 0;
+      }
+      
+      .completion-status {
+        @include badge-base;
+        background: var(--notif-color);
+        color: white;
+        margin-top: $space-1;
+      }
+    }
+  }
+  
+  .completion-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-3;
+    margin: $space-3 0;
+    
+    .stat {
+      text-align: center;
+      padding: $space-2;
+      background: rgba(var(--notif-color), 0.05);
+      border-radius: $border-radius;
+      
+      .number {
+        @include heading-3;
+        color: var(--notif-color);
+        margin: 0;
+      }
+      
+      .label {
+        @include text-meta;
+        color: $text-secondary;
+      }
+    }
+  }
+  
+  .next-persona {
+    text-align: center;
+    padding: $space-3;
+    background: rgba($accent, 0.1);
+    border-radius: $border-radius;
+    margin-top: $space-3;
+    
+    .next-text {
+      @include body-base;
+      color: $accent;
+      margin: 0;
+      font-weight: 500;
+    }
+  }
+}
+
+// === TOAST MINIMALISTE ===
+.toast {
+  @include flex-center;
+  gap: $space-2;
+  padding: $space-3 $space-4;
+  background: rgba($black, 0.8);
+  color: white;
+  border-radius: $border-radius-xl;
+  backdrop-filter: blur(10px);
+  font-size: $font-size-sm;
+  
+  .toast-icon {
+    font-size: 1rem;
+  }
+  
+  &.success {
+    background: rgba($success, 0.9);
+  }
+  
+  &.warning {
+    background: rgba($warning, 0.9);
+  }
+  
+  &.error {
+    background: rgba($error, 0.9);
+  }
+}
+
+// === ANIMATIONS ===
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(40px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes flame {
+  0% {
+    transform: scale(1) rotate(-2deg);
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    transform: scale(1.1) rotate(2deg);
+    filter: hue-rotate(10deg);
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes progressBar {
+  0% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+
+// === RESPONSIVE ===
+@include mobile-only {
+  .notification {
+    margin-bottom: $space-2;
+    padding: $space-3;
+    
+    .notification-header .icon {
+      width: 28px;
+      height: 28px;
+      font-size: 1rem;
+    }
+    
+    .milestone-number {
+      font-size: 2rem;
+    }
+    
+    .persona-completion .completion-header {
+      flex-direction: column;
+      text-align: center;
+      
+      .persona-avatar {
+        @include avatar-base(50px);
+      }
+    }
+  }
+} 
