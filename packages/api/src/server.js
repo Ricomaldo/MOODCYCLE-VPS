@@ -28,9 +28,11 @@ app.use(cors({
 app.use(rateLimit({
   windowMs: 60 * 1000,
   max: 5,
-  message: { error: 'Rate limit exceeded' }
+  message: { error: 'Rate limit exceeded' },
+  trustProxy: true,
+  standardHeaders: true,
+  legacyHeaders: false
 }));
-
 app.use(express.json());
 
 // Routes chat - SANS /api prefix
