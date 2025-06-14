@@ -1,4 +1,6 @@
 // src/server.js - version cohérente avec ton architecture
+// API Version 1.0.2 - Hook test deployment
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
