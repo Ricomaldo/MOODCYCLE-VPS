@@ -7,11 +7,11 @@
 ### **Mono-repo Structure**
 ```
 MoodCycle/
-├── MoodCycleApp/         # React Native + Expo
-├── MoodCycleAPI/         # Node.js + Express  
-├── MoodCycleAdmin/       # React + Vite (à créer)
-├── TASKS.md             # Source de vérité opérationnelle
-├── FOCUS-AGENT.md       # Instructions agent focus
+├── packages/app/         # React Native + Expo
+├── packages/api/         # Node.js + Express  
+├── packages/admin/       # React + Vite (à créer)
+├── docs/TASKS.md        # Source de vérité opérationnelle
+├── docs/FOCUS-AGENT.md  # Instructions agent focus
 └── README.md            # Vue d'ensemble
 ```
 
@@ -317,14 +317,14 @@ const deviceAuth = {
 ### **Environnements Opérationnels**
 ```bash
 # Développement (Actuel)
-MoodCycleApp: localhost + simulateur ✅
-MoodCycleAPI: localhost:4000 ✅
-MoodCycleAdmin: localhost:3000 (à créer)
+packages/app: localhost + simulateur ✅
+packages/api: localhost:4000 ✅
+packages/admin: localhost:3000 (à créer)
 
 # Production (Prévu)
-MoodCycleApp: App Store
-MoodCycleAPI: VPS Hostinger
-MoodCycleAdmin: admin.irimwebforge.com
+packages/app: App Store
+packages/api: VPS Hostinger
+packages/admin: admin.irimwebforge.com
 ```
 
 ### **Configuration Environnements**

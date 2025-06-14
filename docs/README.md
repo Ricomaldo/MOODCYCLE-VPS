@@ -62,11 +62,11 @@ MoodCycle est une application React Native qui accompagne les femmes dans la com
 
 ```
 MoodCycle/
-├── 📋 TASKS.md                      # Source de vérité - Suivi des tâches
-├── 🎯 FOCUS-AGENT.md               # Instructions agent de focus
-├── 🔧 TECHNICAL.md                 # Documentation technique détaillée
-├── 📝 WORKFLOW.md                  # Processus et branches Git
-├── MoodCycleApp/                   # 📱 Application React Native
+├── 📋 docs/TASKS.md                 # Source de vérité - Suivi des tâches
+├── 🎯 docs/FOCUS-AGENT.md          # Instructions agent de focus
+├── 🔧 docs/TECHNICAL.md            # Documentation technique détaillée
+├── 📝 docs/WORKFLOW.md             # Processus et branches Git
+├── packages/app/                   # 📱 Application React Native
 │   ├── app/                       # 🚀 Expo Router (Routes)
 │   │   ├── onboarding/            # 10 écrans conversationnels
 │   │   └── (tabs)/                # Navigation principale
@@ -75,14 +75,14 @@ MoodCycle/
 │   ├── utils/                     # Algorithme mapping personas
 │   ├── data/                      # Insights + phases.json
 │   └── config/                    # Configuration endpoints
-├── MoodCycleAPI/                  # 🌐 Backend Node.js/Express
+├── packages/api/                  # 🌐 Backend Node.js/Express
 │   ├── src/
 │   │   ├── server.js             # Configuration Express + middleware
 │   │   ├── controllers/          # Logique métier conversations
 │   │   ├── services/             # Claude API + PromptBuilder
 │   │   └── middleware/           # Authentification JWT
 │   └── package.json              # @anthropic-ai/sdk, express
-└── MoodCycleAdmin/                # 🎭 Interface d'administration
+└── packages/admin/                # 🎭 Interface d'administration
     └── [En développement]         # React interface pour Jeza
         ├── Gestion 178 insights  # → 890 variants
         ├── Édition phases.json   
@@ -98,17 +98,17 @@ MoodCycle/
 git clone [votre-repo]/MoodCycle.git && cd MoodCycle
 
 # 2. Backend API
-cd MoodCycleAPI && npm install
+cd packages/api && npm install
 cp .env.example .env
 # Ajouter CLAUDE_API_KEY=sk-ant-api03-your-key
 npm run dev  # Port 4000
 
 # 3. App Mobile (nouveau terminal)
-cd ../MoodCycleApp && npm install  
+cd ../packages/app && npm install  
 npm start    # Puis 'i' pour iOS ou 'a' pour Android
 
 # 4. Admin Interface (en développement)
-cd ../MoodCycleAdmin && npm install
+cd ../packages/admin && npm install
 npm run dev  # Port 3000
 ```
 
@@ -174,13 +174,13 @@ npm run dev  # Port 3000
 ### Scripts par Module
 ```bash
 # App Mobile - Développement
-cd MoodCycleApp && npm start
+cd packages/app && npm start
 
 # Backend API - Développement
-cd MoodCycleAPI && npm run dev
+cd packages/api && npm run dev
 
 # Admin Interface - À créer
-cd MoodCycleAdmin && npm run dev
+cd packages/admin && npm run dev
 ```
 
 ### Debug & Test

@@ -81,6 +81,19 @@ feature/app-notebook    # 📝 Développement app
 2. **Sprint App**: Finalisation notebook et intégrations
 3. **Sprint Intégration**: Tests e2e et déploiement
 
+### Commandes de développement
+
+```bash
+# App Mobile
+cd packages/app && npm start
+
+# API Backend
+cd packages/api && npm run dev
+
+# Admin Interface (après génération Lovable)
+cd packages/admin && npm run dev
+```
+
 ## Documentation
 
 - 📋 [Tasks](docs/TASKS.md) - Source de vérité du projet

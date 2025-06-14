@@ -7,9 +7,9 @@
 ### **Structure Mono-Repo Validée**
 ```
 MoodCycle/
-├── MoodCycleApp/     # React Native (dépôt sync)
-├── MoodCycleAPI/     # Node.js (local → push weekend)
-└── MoodCycleAdmin/   # Lovable (nouveau weekend)
+├── packages/app/     # React Native (dépôt sync)
+├── packages/api/     # Node.js (local → push weekend)
+└── packages/admin/   # Lovable (nouveau weekend)
 ```
 
 ### **Branches Principales**
@@ -27,12 +27,12 @@ main                  # Production stable
 git checkout -b feature/admin-mvp
 
 # Samedi - API endpoints
-cd MoodCycleAPI
+cd packages/api
 git add src/controllers/adminController.js
 git commit -m "feat: admin CRUD insights endpoints"
 
 # Samedi soir - Interface Lovable  
-cd ../MoodCycleAdmin
+cd ../packages/admin
 git add . 
 git commit -m "feat: Lovable admin interface MVP"
 
@@ -128,7 +128,7 @@ NODE_ENV=production
 ### **App React Native (Sprint 2)**
 ```bash
 # Configuration API production
-cd MoodCycleApp
+cd packages/app
 echo "REACT_APP_API_URL=https://api.irimwebforge.com" > .env.production
 
 # Build test
@@ -153,7 +153,7 @@ curl -X POST http://localhost:4000/api/admin/insights \
 ### **Tests Sprint 2 - App Finalisée**  
 ```bash
 # Tests bout-en-bout
-cd MoodCycleApp
+cd packages/app
 
 # Test connexion API insights
 npm run test:insights
@@ -215,18 +215,21 @@ Objectifs mesurables:
 
 ### **Commandes Essentielles**
 ```bash
-# Démarrage développement complet
+# Démarrage développement
 cd MoodCycle
-npm run dev:all  # Lance API + App + Admin en parallèle
 
-# Tests rapides
-npm run test:api     # Tests API endpoints
-npm run test:app     # Tests app React Native
-npm run test:admin   # Tests interface admin
+# Commandes disponibles (package.json racine)
+npm start           # Lance l'app mobile
+npm run start:api   # Lance l'API en dev
+npm run start:admin # Lance l'admin (après Lovable)
+npm run start:all   # Lance API + Admin
+npm run build       # Build tous les packages
+npm run test        # Test tous les packages
 
-# Déploiement
-npm run deploy:api   # Deploy API sur VPS
-npm run deploy:admin # Deploy Admin via Lovable
+# Développement par package
+cd packages/app && npm start
+cd packages/api && npm run dev
+cd packages/admin && npm run dev
 ```
 
 ### **Debug & Monitoring**
@@ -235,7 +238,7 @@ npm run deploy:admin # Deploy Admin via Lovable
 ssh vps-hostinger "pm2 logs moodcycle-api"
 
 # Debug app locale
-cd MoodCycleApp && npx expo start --debug
+cd packages/app && npx expo start --debug
 
 # Monitoring admin
 # Interface Lovable analytics intégrées
