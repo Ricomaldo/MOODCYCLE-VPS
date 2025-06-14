@@ -89,7 +89,7 @@ export const calculateAndAssignPersona = (userData) => {
 
 ### **Serveur Express Opérationnel**
 ```javascript
-// src/server.js - BASE VALIDÉE
+// packages/api/src/server.js - BASE VALIDÉE
 const app = express();
 const PORT = process.env.PORT || 4000;
 
@@ -111,7 +111,7 @@ app.post('/api/chat', deviceAuth, handleChat);
 
 ### **Services Existants Opérationnels**
 ```javascript
-// ClaudeService.js - OPÉRATIONNEL
+// packages/api/src/services/ClaudeService.js - OPÉRATIONNEL
 class ClaudeService {
   async sendMessage(userMessage, customSystemPrompt, deviceId) {
     const response = await this.client.messages.create({
@@ -125,7 +125,7 @@ class ClaudeService {
   }
 }
 
-// PromptBuilder.js - SOPHISTIQUÉ ET OPÉRATIONNEL
+// packages/api/src/services/PromptBuilder.js - SOPHISTIQUÉ ET OPÉRATIONNEL
 class PromptBuilder {
   buildContextualPrompt(contextData) {
     const { persona, userProfile, currentPhase, preferences } = contextData;
@@ -151,7 +151,7 @@ class PromptBuilder {
 
 ### **1. GET /api/admin/insights**
 ```javascript
-// routes/adminRoutes.js - À CRÉER
+// packages/api/src/routes/adminRoutes.js - À CRÉER
 router.get('/insights', adminAuth, async (req, res) => {
   try {
     // Lire les 178 insights de base depuis insights.json
@@ -162,7 +162,7 @@ router.get('/insights', adminAuth, async (req, res) => {
       data: {
         total: baseInsights.length,
         insights: baseInsights,
-        lastModified: fs.statSync('data/insights.json').mtime
+        lastModified: fs.statSync('packages/app/data/insights.json').mtime
       }
     });
   } catch (error) {
@@ -268,7 +268,7 @@ Headers: Authorization Bearer + Content-Type JSON."
 
 ### **Structure Lovable Attendue**
 ```
-MoodCycleAdmin/
+packages/admin/
 ├── src/
 │   ├── components/
 │   │   ├── InsightsList.jsx      # Liste 178 insights
@@ -288,7 +288,8 @@ MoodCycleAdmin/
 ### **Étapes Utilisateur Jeza**
 ```
 1. LOGIN
-   → URL: admin.moodcycle.local (développement)
+   → URL: moodcycle.irimwebforge.com (production)
+   → Développement: localhost:3000 ou localhost:5173
    → Credentials: jeza / password_simple
 
 2. LISTE INSIGHTS
@@ -338,7 +339,7 @@ const insightWithVariants = {
 
 ### **Variables .env Requises**
 ```bash
-# MoodCycleAPI/.env
+# packages/api/.env
 NODE_ENV=development
 PORT=4000
 CLAUDE_API_KEY=sk-ant-api03-*** # Existant
@@ -346,13 +347,13 @@ JWT_SECRET=your_super_long_secret_32_chars_min
 ADMIN_PASSWORD=admin_password_secure
 JEZA_PASSWORD=jeza_password_secure
 
-# CORS pour Lovable interface
-CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+# CORS pour développement + production
+CORS_ORIGINS=http://localhost:3000,http://localhost:5173,https://moodcycle.irimwebforge.com
 ```
 
 ### **Structure Fichiers API à Créer**
 ```
-MoodCycleAPI/src/
+packages/api/src/
 ├── routes/
 │   └── adminRoutes.js           # [CRÉER] Routes admin
 ├── controllers/  
@@ -361,4 +362,59 @@ MoodCycleAPI/src/
 │   └── adminAuth.js             # [CRÉER] Auth admin
 ├── utils/
 │   ├── insightsManager.js       # [CRÉER] Gestion fichiers
-│   └── validation.js            # [CRÉER]
+│   └── validation.js            # [CRÉER] Validation données
+└── data/                        # [CRÉER] Dossier données partagées
+    ├── insights.json            # Base + variants créés
+    └── phases.json              # Configuration phases
+```
+
+## 🚀 ARCHITECTURE VPS PRODUCTION
+
+### **Infrastructure Hostinger Configurée**
+```
+VPS: 69.62.107.136
+Domaine: moodcycle.irimwebforge.com
+SSL: Let's Encrypt automatique
+Process Manager: PM2 pour API Node.js
+```
+
+### **Structure Déploiement Production**
+```
+/srv/www/internal/moodcycle/
+├── api/
+│   ├── releases/2024-01-15-143022/
+│   └── current/ -> releases/latest/
+│       ├── packages/api/src/
+│       ├── package.json
+│       └── .env.production
+├── admin/
+│   ├── releases/2024-01-15-144530/
+│   └── current/ -> releases/latest/
+│       ├── index.html (Lovable build)
+│       └── assets/
+└── shared/
+    └── data/
+        ├── insights.json      # 890 variants Jeza
+        └── phases.json        # Config phases
+```
+
+### **Configuration PM2 API**
+```bash
+# Sur VPS après développement
+cd /srv/www/internal/moodcycle/api/current
+pm2 start packages/api/src/server.js --name moodcycle-api
+pm2 save && pm2 startup
+```
+
+### **Nginx Proxy Configuration**
+```nginx
+# moodcycle.irimwebforge.com
+location / {
+    root /srv/www/internal/moodcycle/admin/current;
+    try_files $uri $uri.html $uri/ /index.html;
+}
+
+location /api/ {
+    proxy_pass http://localhost:4000/;
+    proxy_set_header Host $host;
+}
