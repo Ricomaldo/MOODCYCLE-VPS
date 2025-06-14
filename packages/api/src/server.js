@@ -8,7 +8,12 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
+
+// Fix trust proxy AVANT tout middleware
 app.set('trust proxy', true);
+
+// Debug startup
+console.log('🚀 MoodCycle API starting...');
 
 const PORT = process.env.PORT || 4000;
 
@@ -36,14 +41,15 @@ app.use('/api', chatRoutes);
 const adminRoutes = require('./routes/admin');
 app.use('/api/admin', adminRoutes);
 
+// Route simple pour test
+app.get('/', (req, res) => {
+  res.json({ message: 'MoodCycle API is running' });
+});
+
 app.listen(PORT, () => {
   console.log(`🌟 MoodCycle API running on port ${PORT}`);
 });
 
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    version: '1.0.0'
-  });
+  res.json({ status: 'healthy' });
 });
