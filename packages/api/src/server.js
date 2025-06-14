@@ -25,14 +25,15 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'X-Device-ID', 'Authorization']
 }));
 
-app.use(rateLimit({
-  windowMs: 60 * 1000,
-  max: 5,
-  message: { error: 'Rate limit exceeded' },
-  trustProxy: true,
-  standardHeaders: true,
-  legacyHeaders: false
-}));
+// app.use(rateLimit({
+//   windowMs: 60 * 1000,
+//   max: 5,
+//   message: { error: 'Rate limit exceeded' },
+//   trustProxy: true,
+//   standardHeaders: true,
+//   legacyHeaders: false
+// }));
+
 app.use(express.json());
 
 // Routes chat - SANS /api prefix
