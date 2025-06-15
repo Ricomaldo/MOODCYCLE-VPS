@@ -44,19 +44,36 @@ class AdminController {
           });
         }
       }
-      
-      // TODO: Logique sauvegarde (Sprint dimanche)
-      res.json({
-        success: true,
-        data: { insightId, variantsCreated: 5 }
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: 'Erreur sauvegarde insights'
-      });
+      // 🌟 VRAIE LOGIQUE DE SAUVEGARDE
+    const insightsPath = path.join(__dirname, '../data/insights_validated.json');
+    const data = await fs.readFile(insightsPath, 'utf8');
+    const insights = JSON.parse(data);
+    
+    // Trouver et modifier l'insight
+    for (const phase in insights) {
+      const insightIndex = insights[phase].findIndex(insight => insight.id === insightId);
+      if (insightIndex !== -1) {
+        insights[phase][insightIndex].personaVariants = variants;
+        insights[phase][insightIndex].status = 'enriched';
+        insights[phase][insightIndex].lastModified = new Date().toISOString();
+        break;
+      }
     }
+    
+    // Sauvegarder le fichier
+    await fs.writeFile(insightsPath, JSON.stringify(insights, null, 2));
+    
+    res.json({
+      success: true,
+      data: { insightId, variantsCreated: 5 }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Erreur sauvegarde insights'
+    });
   }
+}
 
   // GET /api/admin/phases - Lire phases.json
   async getPhases(req, res) {
