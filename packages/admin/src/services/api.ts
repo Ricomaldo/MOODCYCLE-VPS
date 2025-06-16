@@ -1,5 +1,5 @@
 // packages/admin/src/services/api.ts
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://moodcycle.irimwebforge.com/api';
 
 class ApiClient {
   private baseURL: string;
