@@ -98,7 +98,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('moodcycle_user');
     setIsAuthenticated(false);
     setUser(null);
-    window.location.href = '/login';
+    window.location.href = '/admin/login';
   };
 
   return (

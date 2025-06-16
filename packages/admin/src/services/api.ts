@@ -39,7 +39,7 @@ class ApiClient {
       
       if (response.status === 401) {
         localStorage.removeItem('moodcycle_token');
-        window.location.href = '/login';
+        window.location.href = '/admin/login';
         throw new Error('Unauthorized');
       }
 
