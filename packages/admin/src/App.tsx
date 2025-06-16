@@ -29,7 +29,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => (
   <ThemeProvider>
     <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter basename="/admin">
+
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={
