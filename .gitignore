@@ -74,4 +74,4 @@ temp/
 # ===== KEEP ONLY ROOT LOCKS =====
 packages/*/package-lock.json
 packages/*/yarn.lock
-packages/*/pnpm-lock.yaml
+packages/*/pnpm-lock.yamlpackages/api/.env
