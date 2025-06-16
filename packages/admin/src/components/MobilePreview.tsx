@@ -22,12 +22,26 @@ const contextTexts = {
   emotional_control: "L'harmonie de cette période te permet de cultiver ta sérénité,"
 };
 
+interface InsightData {
+  id: string;
+  baseContent: string;
+  personaVariants?: Record<string, string>;
+  phase?: string;
+  jezaApproval?: number;
+}
+
+interface ClosingsData {
+  [personaId: string]: {
+    [journey: string]: string;
+  };
+}
+
 interface MobilePreviewProps {
-  insight: any;
+  insight: InsightData | null;
   selectedPersona: string;
   selectedJourney: string;
   showComparison: boolean;
-  closings: any;
+  closings: ClosingsData;
 }
 
 export function MobilePreview({ insight, selectedPersona, selectedJourney, showComparison, closings }: MobilePreviewProps) {

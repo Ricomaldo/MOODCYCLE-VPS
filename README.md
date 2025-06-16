@@ -1,3 +1,8 @@
+API :
+bashgit subtree push --prefix=packages/api api feature/admin-mvp
+Admin :
+bashgit subtree push --prefix=packages/admin admin feature/admin-mvp
+
 # MoodCycle Monorepo 🌙
 
 > Écosystème complet MoodCycle - App mobile, API et interface admin
@@ -246,3 +251,73 @@ Créer interface Lovable pour Jeza :
 **🚀 Made with ❤️ by IrimWebForge**
 
 *Monorepo structure optimized for rapid development and deployment* 
+
+# MoodCycle App 📱
+
+Application mobile React Native pour la gestion des cycles émotionnels.
+
+## 🚀 Technologies
+
+- **React Native** avec **Expo SDK 53**
+- **Expo Router** pour la navigation
+- **TypeScript** pour le typage statique
+- **Zustand** pour la gestion d'état
+- **React Query** pour la gestion des données
+- **React Native Reanimated** pour les animations
+
+## 📦 Installation
+
+```bash
+# Installer les dépendances
+npm install
+
+# Démarrer l'app en développement
+npm start
+
+# Lancer sur iOS (simulateur)
+npm run ios
+
+# Lancer sur Android (émulateur)
+npm run android
+
+# Lancer sur Web
+npm run web
+```
+
+## 🏗️ Builds de Production
+
+```bash
+# Construire pour iOS
+npm run build:ios
+
+# Construire pour Android
+npm run build:android
+
+# Soumettre sur App Store
+npm run submit:ios
+
+# Soumettre sur Play Store
+npm run submit:android
+```
+
+## 🔗 Configuration API
+
+L'application communique avec l'API MoodCycle déployée sur VPS.
+
+## 📱 Fonctionnalités
+
+- 🔄 Suivi des cycles émotionnels
+- 📊 Visualisations interactives
+- 💬 Chat avec Mélune (IA)
+- 📓 Journal personnel
+- 🎨 Interface moderne et intuitive
+
+## 🧪 Tests
+
+```bash
+npm test
+```
+
+## 📄 License
+
+MIT - IrimWebForge 

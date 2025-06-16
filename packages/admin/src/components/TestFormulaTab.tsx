@@ -31,6 +31,14 @@ const phases = [
   { id: "luteal", name: "Phase lutéale" }
 ];
 
+interface InsightData {
+  id: string;
+  baseContent: string;
+  personaVariants?: Record<string, string>;
+  targetJourney?: string[];
+  phase: string;
+}
+
 interface TestSession {
   id: string;
   timestamp: number;
@@ -38,7 +46,7 @@ interface TestSession {
   testName: string;
   journey: string;
   phase: string;
-  insight: any;
+  insight: InsightData;
 }
 
 export function TestFormulaTab() {
@@ -46,7 +54,7 @@ export function TestFormulaTab() {
   const [testName, setTestName] = useState("");
   const [selectedJourney, setSelectedJourney] = useState("body_disconnect");
   const [selectedPhase, setSelectedPhase] = useState("follicular");
-  const [currentInsight, setCurrentInsight] = useState<any>(null);
+  const [currentInsight, setCurrentInsight] = useState<InsightData | null>(null);
   const [showComparison, setShowComparison] = useState(false);
   const [sessions, setSessions] = useState<TestSession[]>([]);
 

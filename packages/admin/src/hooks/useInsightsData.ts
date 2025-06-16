@@ -63,7 +63,7 @@ export function useInsightsData() {
           if (Array.isArray(phaseArray)) {
             console.log(`Adding ${phaseArray.length} insights from phase array`);
             // Map API fields to interface, handling both content and baseContent
-            const mappedInsights = phaseArray.map((insight: any) => ({
+            const mappedInsights = phaseArray.map((insight: InsightData) => ({
               ...insight,
               baseContent: insight.baseContent || insight.content || '', // Fallback mapping
             }));
@@ -122,8 +122,9 @@ export function useInsightsData() {
       // Update local state
       updateInsight(insightId, { personaVariants: variants });
       console.log('Variants saved successfully');
-    } catch (err: any) {
-      setError(err.message || 'Failed to save variants');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save variants';
+      setError(errorMessage);
       console.error('Error saving variants:', err);
       throw err;
     } finally {

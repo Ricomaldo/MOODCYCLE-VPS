@@ -1,4 +1,54 @@
 // packages/admin/src/services/api.ts
+
+// Interface pour les données d'insight
+interface InsightData {
+  id: string;
+  baseContent: string;
+  content?: string;
+  personaVariants?: Record<string, string>;
+  targetPersonas?: string[];
+  targetPreferences: string[];
+  tone: string;
+  phase: string;
+  jezaApproval: number;
+  status: string;
+  lastModified: string;
+  targetJourney: string[];
+  enrichedBy?: string;
+}
+
+// Interface pour les phases
+interface PhaseData {
+  [key: string]: unknown;
+}
+
+// Interface pour les closings
+interface ClosingsData {
+  [key: string]: Record<string, string>;
+}
+
+// Interface pour les données d'insights par phase
+interface InsightsByPhase {
+  menstrual: InsightData[];
+  follicular: InsightData[];
+  ovulatory: InsightData[];
+  luteal: InsightData[];
+}
+
+// Interface pour la réponse API des insights
+interface InsightsApiResponse {
+  success: boolean;
+  data: {
+    total: number;
+    insights: {
+      exportDate: string;
+      totalInsights: number;
+      validatedCount: number;
+      insights: InsightsByPhase;
+    };
+  };
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://moodcycle.irimwebforge.com/api';
 
 class ApiClient {
@@ -61,27 +111,11 @@ class ApiClient {
     });
   }
 
-  async getInsights(): Promise<{
-    success: boolean;
-    data: {
-      total: number;
-      insights: {
-        exportDate: string;
-        totalInsights: number;
-        validatedCount: number;
-        insights: {
-          menstrual: any[];
-          follicular: any[];
-          ovulatory: any[];
-          luteal: any[];
-        };
-      };
-    };
-  }> {
+  async getInsights(): Promise<InsightsApiResponse> {
     return this.request('/admin/insights');
   }
 
-  async saveInsights(insights: any[]): Promise<void> {
+  async saveInsights(insights: InsightData[]): Promise<void> {
     return this.request('/admin/insights/bulk', {
       method: 'POST',
       body: JSON.stringify({ insights }),
@@ -95,22 +129,22 @@ class ApiClient {
     });
   }
 
-  async getPhases(): Promise<any> {
+  async getPhases(): Promise<PhaseData> {
     return this.request('/admin/phases');
   }
 
-  async getClosings(): Promise<any> {
+  async getClosings(): Promise<ClosingsData> {
     return this.request('/admin/closings');
   }
 
-  async savePhases(phases: any): Promise<any> {
+  async savePhases(phases: PhaseData): Promise<PhaseData> {
     return this.request('/admin/phases', {
       method: 'POST',
       body: JSON.stringify({ phases })
     });
   }
 
-  async saveClosings(closings: any): Promise<any> {
+  async saveClosings(closings: ClosingsData): Promise<ClosingsData> {
     return this.request('/admin/closings', {
       method: 'POST', 
       body: JSON.stringify({ closings })

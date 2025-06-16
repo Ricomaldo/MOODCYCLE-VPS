@@ -4,13 +4,15 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
+interface FilterData {
+  phase: string;
+  tone: string;
+  status: string;
+}
+
 interface InsightFiltersProps {
-  filters: {
-    phase: string;
-    tone: string;
-    status: string;
-  };
-  onFiltersChange: (filters: any) => void;
+  filters: FilterData;
+  onFiltersChange: (filters: FilterData) => void;
 }
 
 export function InsightFilters({ filters, onFiltersChange }: InsightFiltersProps) {

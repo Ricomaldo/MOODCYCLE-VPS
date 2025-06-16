@@ -16,7 +16,7 @@ export function ProfileSettings() {
   const [formData, setFormData] = useState({
     displayName: user?.displayName || '',
     role: user?.role || '',
-    email: `${user?.username}@moodcycle.com` || ''
+    email: user?.username ? `${user.username}@moodcycle.com` : ''
   });
 
   useEffect(() => {

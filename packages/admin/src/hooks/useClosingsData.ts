@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/services/api';
 
+// Interface pour les données de closings
+interface ClosingsData {
+  [key: string]: Record<string, string>;
+}
+
 export function useClosingsData() {
-  const [closings, setClosings] = useState<any>({});
+  const [closings, setClosings] = useState<ClosingsData>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

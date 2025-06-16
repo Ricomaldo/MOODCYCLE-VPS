@@ -17,17 +17,25 @@ const journeyMapping = {
   emotional_control: "Apaisement"
 };
 
+interface InsightData {
+  id: string;
+  baseContent: string;
+  personaVariants?: Record<string, string>;
+}
+
+interface SessionData {
+  id: string;
+  timestamp: number;
+  persona: string;
+  testName: string;
+  journey: string;
+  phase: string;
+  insight: InsightData;
+}
+
 interface SessionHistoryProps {
-  sessions: Array<{
-    id: string;
-    timestamp: number;
-    persona: string;
-    testName: string;
-    journey: string;
-    phase: string;
-    insight: any;
-  }>;
-  onLoadSession: (session: any) => void;
+  sessions: SessionData[];
+  onLoadSession: (session: SessionData) => void;
   onClearHistory: () => void;
 }
 
