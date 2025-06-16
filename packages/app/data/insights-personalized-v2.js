@@ -186,8 +186,8 @@ const calculateInsightRelevance = (insight, persona, userPreferences, phase) => 
     score += matchingPrefs * 10; // Bonus modéré pour préférences
   }
   
-  // 3. BONUS QUALITÉ (mirandaApproval)
-  score += (insight.mirandaApproval || 3) * 5;
+  // 3. BONUS QUALITÉ (jezaApproval)
+  score += (insight.jezaApproval || 3) * 5;
   
   // 4. BONUS STATUT (insights enrichis préférés)
   if (insight.status === 'enriched') {

@@ -55,7 +55,7 @@ try {
     "targetPreferences": ["symptoms"],
     "tone": "friendly",
     "phase": "menstrual",
-    "mirandaApproval": 4,
+    "jezaApproval": 4,
     "status": "enriched",
     "enrichedBy": "persona-system-v2"
   };
@@ -93,7 +93,7 @@ try {
     }
     
     // Qualité
-    score += (insight.mirandaApproval || 3) * 5;
+    score += (insight.jezaApproval || 3) * 5;
     
     // Status enriched
     if (insight.status === 'enriched') {
@@ -105,7 +105,7 @@ try {
   
   const mockInsight = {
     targetPersonas: ['emma', 'laure'],
-    mirandaApproval: 4,
+    jezaApproval: 4,
     status: 'enriched'
   };
   

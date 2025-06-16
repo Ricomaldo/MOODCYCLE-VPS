@@ -16,7 +16,7 @@ Le système d'insights personnalisés de MoodCycle génère des messages context
 - **Structure** : `{ phase: [insights...] }`
 - **Variants par persona** : `personaVariants: { emma: "texte", laure: "texte", ... }`
 - **Ciblage** : `targetPersonas`, `targetPreferences`, `tone`
-- **Qualité** : `mirandaApproval` (1-5), `status: "enriched"`
+- **Qualité** : `jezaApproval` (1-5), `status: "enriched"`
 
 ### `persona-closings.js` - Closings Personnalisés
 - **Structure** : `persona → journey → closing`
@@ -86,7 +86,7 @@ if (insight.targetPersonas?.includes(persona)) {
 score += matchingPrefs * 10;
 
 // BONUS QUALITÉ
-score += (insight.mirandaApproval || 3) * 5;
+score += (insight.jezaApproval || 3) * 5;
 
 // BONUS STATUT ENRICHI
 if (insight.status === 'enriched') {
@@ -229,7 +229,7 @@ const enrichedInsight = getPersonalizedInsightV2(
 ### Scoring Multi-Critères
 - **Persona Match** : 100 points (priorité absolue)
 - **Préférences Fortes** : 10 points par match
-- **Qualité Miranda** : 5 points par niveau
+- **Qualité Jeza** : 5 points par niveau
 - **Statut Enrichi** : 20 points bonus
 
 ### Enrichissement Contextuel

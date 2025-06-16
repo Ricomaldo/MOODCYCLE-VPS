@@ -7,14 +7,16 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "npm run start --workspace=app",
-    "start:api": "npm run dev --workspace=api",
-    "start:admin": "npm run dev --workspace=admin",
+    "start": "npm run start --workspace=moodcycle",
+    "start:api": "npm run dev --workspace=moodcycleapi",
+    "start:admin": "npm run dev --workspace=moodcycle-admin",
     "start:all": "concurrently \"npm run start:api\" \"npm run start:admin\"",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
-    "install:all": "npm install"
+    "install:all": "npm install",
+    "dev:api": "npm run dev --workspace=moodcycleapi",
+    "dev:app": "npm run start --workspace=moodcycle"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

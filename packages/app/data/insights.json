@@ -14,10 +14,11 @@
       "targetPreferences": ["symptoms"],
       "tone": "friendly",
       "phase": "menstrual",
-      "mirandaApproval": 4,
+      "jezaApproval": 4,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "body_disconnect"
     },
     {
       "id": "M_symptoms_friendly_02",
@@ -33,10 +34,11 @@
       "targetPreferences": ["symptoms"],
       "tone": "friendly",
       "phase": "menstrual",
-      "mirandaApproval": 3,
+      "jezaApproval": 3,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "body_disconnect"
     },
     {
       "id": "M_moods_inspiring_01",
@@ -52,10 +54,11 @@
       "targetPreferences": ["moods"],
       "tone": "inspiring",
       "phase": "menstrual",
-      "mirandaApproval": 5,
+      "jezaApproval": 5,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "emotional_control"
     },
     {
       "id": "M_phyto_professional_01",
@@ -71,10 +74,11 @@
       "targetPreferences": ["phyto"],
       "tone": "professional",
       "phase": "menstrual",
-      "mirandaApproval": 4,
+      "jezaApproval": 4,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "hiding_nature"
     }
   ],
   "follicular": [
@@ -92,10 +96,11 @@
       "targetPreferences": ["symptoms", "phases"],
       "tone": "friendly",
       "phase": "follicular",
-      "mirandaApproval": 4,
+      "jezaApproval": 4,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "body_disconnect"
     },
     {
       "id": "F_moods_friendly_01",
@@ -111,10 +116,11 @@
       "targetPreferences": ["moods"],
       "tone": "friendly",
       "phase": "follicular",
-      "mirandaApproval": 4,
+      "jezaApproval": 4,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "emotional_control"
     },
     {
       "id": "F_rituals_inspiring_01",
@@ -130,10 +136,11 @@
       "targetPreferences": ["rituals"],
       "tone": "inspiring",
       "phase": "follicular",
-      "mirandaApproval": 5,
+      "jezaApproval": 5,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "hiding_nature"
     }
   ],
   "ovulatory": [
@@ -151,10 +158,11 @@
       "targetPreferences": ["symptoms", "phases"],
       "tone": "friendly",
       "phase": "ovulatory",
-      "mirandaApproval": 4,
+      "jezaApproval": 4,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "hiding_nature"
     },
     {
       "id": "O_moods_inspiring_01",
@@ -170,10 +178,11 @@
       "targetPreferences": ["moods"],
       "tone": "inspiring",
       "phase": "ovulatory",
-      "mirandaApproval": 5,
+      "jezaApproval": 5,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "emotional_control"
     },
     {
       "id": "O_rituals_friendly_01",
@@ -189,10 +198,11 @@
       "targetPreferences": ["rituals"],
       "tone": "friendly",
       "phase": "ovulatory",
-      "mirandaApproval": 4,
+      "jezaApproval": 4,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "hiding_nature"
     }
   ],
   "luteal": [
@@ -210,10 +220,11 @@
       "targetPreferences": ["symptoms", "phases"],
       "tone": "friendly",
       "phase": "luteal",
-      "mirandaApproval": 4,
+      "jezaApproval": 4,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "body_disconnect"
     },
     {
       "id": "L_moods_inspiring_01",
@@ -229,10 +240,11 @@
       "targetPreferences": ["moods"],
       "tone": "inspiring",
       "phase": "luteal",
-      "mirandaApproval": 5,
+      "jezaApproval": 5,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "emotional_control"
     },
     {
       "id": "L_rituals_friendly_01",
@@ -248,10 +260,11 @@
       "targetPreferences": ["rituals"],
       "tone": "friendly",
       "phase": "luteal",
-      "mirandaApproval": 4,
+      "jezaApproval": 4,
       "status": "enriched",
       "lastModified": "2025-06-09T15:30:00.000Z",
-      "enrichedBy": "persona-system-v2"
+      "enrichedBy": "persona-system-v2",
+      "journeyChoice": "hiding_nature"
     }
   ]
 }

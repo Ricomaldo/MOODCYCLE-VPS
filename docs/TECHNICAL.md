@@ -117,8 +117,8 @@ const PERSONAS = {
 ### **Stack Backend Validé**
 - Node.js + Express
 - @anthropic-ai/sdk (Claude Haiku)
-- JWT device-based auth
-- Rate limiting multi-niveau
+- Device ID validation (header-based)
+- Rate limiting 5/minute
 
 ### **Architecture Validée (Score: 8.5/10)**
 ```javascript
@@ -161,16 +161,27 @@ const personaTraits = {
 - `POST /api/chat` : Conversations Claude ✅
 - `GET /api/health` : Health check ✅
 
-### **Endpoints À Créer (Sprint 1)**
-- `GET/POST /api/admin/insights` : CRUD insights
-- `GET/POST /api/admin/phases` : Gestion phases.json
-- `POST /api/admin/auth` : Authentification admin
+### **Endpoints Créés (Sprint 1)** ✅
+- `GET/POST /api/admin/insights` : CRUD insights ✅
+- `GET /api/admin/phases` : Lecture phases.json ✅
+- `POST /api/admin/auth` : Authentification admin ✅
 
-### **Sécurité Opérationnelle**
-- Rate limiting : 50/jour, 5/minute ✅
-- Device ID validation ✅
-- JWT avec device fingerprint ✅
-- Sanitisation inputs (anti-XSS) ✅
+### **Sécurité Implémentée (MVP)**
+- Rate limiting : 5 requêtes/minute ✅
+- Device ID validation obligatoire ✅
+- Helmet protection XSS basique ✅
+- JWT Admin seulement (pas device-based) ✅
+- Authentification simplifiée pour MVP ✅
+
+### **🚨 Sécurité TODO Production**
+- ❌ Rate limiting multicouche (50/jour + 5/minute)
+- ❌ JWT device-based réel avec fingerprint
+- ❌ Validation/sanitisation stricte inputs
+- ❌ HTTPS obligatoire (dev en HTTP)
+- ❌ Logs sécurité + monitoring
+- ❌ Rotation clés JWT
+- ❌ Protection DDOS avancée
+- ❌ Audit trail admin actions
 
 ## ⚙️ MoodCycleAdmin - Interface Admin (À Créer)
 
@@ -367,13 +378,20 @@ const claudeConfig = {
 - Rétention : 30 jours max conversations
 - Anonymisation : Données personnelles
 
-### **Authentification Opérationnelle**
+### **Authentification Implémentée (MVP)**
 ```javascript
-// Device-based auth (pas de comptes utilisateur)
+// Device ID validation (header requis)
 const deviceAuth = {
-  deviceId: 'fingerprint-uuid',
-  sessionToken: 'JWT-7days', 
-  autoRenew: true
+  deviceId: 'header-x-device-id',
+  validation: 'required-check-only',
+  tempToken: 'simplified-for-mvp'
+};
+
+// JWT seulement pour Admin
+const adminAuth = {
+  username: 'jeza',
+  token: 'JWT-24h',
+  scope: 'admin-routes-only'
 };
 ```
 

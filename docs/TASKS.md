@@ -9,15 +9,15 @@
 ```
 ⚙️ LOVABLE + API EXPRESS COMBO
 ├── 🚀 Interface admin Lovable (gratuit ce weekend)     [⏳ SAMEDI 4H SOIR]
-├── 🔌 Endpoints admin API Express                      [⏳ SAMEDI 2H JOUR]
-├── 🔗 Connexion Lovable → API Express                  [⏳ DIMANCHE 2H]
+├── 🔌 Endpoints admin API Express                      [✅ TERMINÉ 2H]
+├── 🔗 Connexion Lovable → API Express                  [⏳ CE SOIR 4H]
 └── ✅ Test workflow complet Jeza                       [⏳ DIMANCHE 1H]
 
 DÉTAIL ENDPOINTS:
-├── GET  /api/admin/insights     # Liste 178 insights  [⏳ SAMEDI]
-├── POST /api/admin/insights     # CRUD insights       [⏳ SAMEDI]  
-├── GET  /api/admin/phases       # phases.json         [⏳ SAMEDI]
-└── POST /api/admin/auth         # Auth simple         [⏳ SAMEDI]
+├── GET  /api/admin/insights     # Liste 178 insights  [✅ TERMINÉ 2H]
+├── POST /api/admin/insights     # CRUD insights       [✅ TERMINÉ 2H]  
+├── GET  /api/admin/phases       # phases.json         [✅ TERMINÉ 2H]
+└── POST /api/admin/auth         # Auth simple         [✅ TERMINÉ 2H]
 ```
 
 ### **🎯 SPRINT 2 : App MVP Complet (3 séquences) - EN ATTENTE**
@@ -77,6 +77,14 @@ DÉTAIL ENDPOINTS:
 - ❌ Phase 4 sophistication prompts (architecture déjà excellente)
 - ❌ Cache Redis (AsyncStorage suffit)
 - ❌ Montée Claude Sonnet (Haiku répond aux besoins)
+
+### **🔒 Sécurité Production (Post-MVP)**
+- ❌ Rate limiting multicouche (actuellement 5/min seulement)
+- ❌ JWT device-based réel (actuellement temp-token)
+- ❌ Validation inputs stricte (actuellement basique)
+- ❌ HTTPS obligatoire + certificats
+- ❌ Monitoring sécurité + alertes
+- ❌ Audit trail actions admin
 
 ## 📊 METRICS & SUCCESS CRITERIA
 

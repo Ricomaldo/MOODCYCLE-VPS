@@ -36,6 +36,18 @@ app.use(cors({
 
 app.use(express.json());
 
+// Dans server.js, après app.use(express.json())
+app.use((req, res, next) => {
+  console.log(`🔍 ${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+  if (req.body && Object.keys(req.body).length > 0) {
+    console.log('Body keys:', Object.keys(req.body));
+    if (req.body.insights) {
+      console.log('Insights count:', req.body.insights.length);
+    }
+  }
+  next();
+});
+
 // Routes chat - SANS /api prefix
 const chatRoutes = require('./routes/chat');
 app.use('/', chatRoutes);
