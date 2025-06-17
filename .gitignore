@@ -1,0 +1,77 @@
+# ===== MONOREPO MOODCYCLE =====
+
+# Dependencies (tous les node_modules)
+node_modules/
+packages/*/node_modules/
+**/node_modules/
+
+# Environment variables (sécurité critique)
+.env*
+!.env.example
+packages/*/.env*
+!packages/*/.env.example
+
+# Build outputs
+dist/
+build/
+out/
+packages/*/dist/
+packages/*/build/
+packages/*/out/
+
+# ===== PACKAGE SPECIFICS =====
+
+# App (React Native/Expo)
+packages/app/.expo/
+packages/app/expo-env.d.ts
+packages/app/web-build/
+packages/app/android/
+packages/app/ios/
+packages/app/.expo-shared/
+
+# API (Node.js/Express)
+packages/api/uploads/
+packages/api/storage/
+packages/api/logs/
+
+# Admin (React/Vite/Lovable)
+packages/admin/.vite/
+packages/admin/dist-ssr/
+
+# ===== DEVELOPMENT =====
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Testing & Coverage
+coverage/
+.nyc_output/
+*.test.js.snap
+
+# Cache
+.cache/
+.turbo/
+.tscache/
+
+# Temporary
+tmp/
+temp/
+*.tmp
+*.backup
+
+# ===== KEEP ONLY ROOT LOCKS =====
+packages/*/package-lock.json
+packages/*/yarn.lock
+packages/*/pnpm-lock.yamlpackages/api/.env

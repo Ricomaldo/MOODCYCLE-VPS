@@ -1,0 +1,28 @@
+{
+  "name": "moodcycle-vps",
+  "version": "1.0.0",
+  "description": "MoodCycle Backend Infrastructure - Admin Interface + API Express",
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "dev:admin": "npm run dev --workspace=moodcycle-admin",
+    "dev:api": "npm run dev --workspace=moodcycleapi",
+    "build:admin": "npm run build --workspace=moodcycle-admin",
+    "start:api": "npm run start --workspace=moodcycleapi",
+    "deploy:api": "git subtree push --prefix=packages/api api main",
+    "deploy:admin": "git subtree push --prefix=packages/admin admin main",
+    "install:all": "npm install && npm install --workspace=moodcycle-admin && npm install --workspace=moodcycleapi"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "private": true,
+  "author": "IrimWebForge",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ricomaldo/MOODCYCLE-VPS.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
