@@ -52,7 +52,7 @@ export function ContentManagementTabs({ onTabChange }: ContentManagementTabsProp
                 value="persona-variants"
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500/20 data-[state=active]:to-lime-400/20 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-pink-500/30 text-xs lg:text-sm px-3 lg:px-4"
               >
-                Variantes Personas
+                Variantes Persona
               </TabsTrigger>
               <TabsTrigger 
                 value="closings"
