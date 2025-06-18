@@ -58,3 +58,4 @@ app.listen(PORT, () => {
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy' });
 });// Deploy test - Architecture VPS validée Mon Jun 16 22:33:14 CEST 2025
+// Hook test Wed Jun 18 14:57:28 CEST 2025
