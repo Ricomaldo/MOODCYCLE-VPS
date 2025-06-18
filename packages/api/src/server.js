@@ -10,7 +10,7 @@ require('dotenv').config();
 const app = express();
 
 // Fix trust proxy AVANT tout middleware
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 
 // Debug startup
 console.log('🚀 MoodCycle API starting...');
@@ -30,7 +30,7 @@ app.use(express.json());
 
 // Dans server.js, après app.use(express.json())
 app.use((req, res, next) => {
-  console.log(`🔍 ${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+  console.log(`🔍 ${new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})} - ${req.method} ${req.originalUrl}`);
   if (req.body && Object.keys(req.body).length > 0) {
     console.log('Body keys:', Object.keys(req.body));
     if (req.body.insights) {

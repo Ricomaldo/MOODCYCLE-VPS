@@ -39,7 +39,7 @@ class ChatController {
           tokensUsed: response.tokensUsed,
           cost: response.cost,
           responseTime: response.responseTime,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
         });
       }
 
@@ -48,7 +48,7 @@ class ChatController {
         response: response.message,
         isFallback: true,
         persona: response.persona,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
       });
 
     } catch (error) {

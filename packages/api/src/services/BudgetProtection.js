@@ -124,7 +124,7 @@ class BudgetProtection {
   
       // Log structuré pour monitoring
       const logEntry = {
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'}),
         deviceId: deviceId ? deviceId.substring(0, 8) + '***' : 'unknown',
         tokens: {
           input: cost.breakdown.inputTokens,

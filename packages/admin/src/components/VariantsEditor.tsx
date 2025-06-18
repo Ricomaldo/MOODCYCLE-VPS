@@ -90,7 +90,7 @@ export function VariantsEditor({ insight, persona }: VariantsEditorProps) {
           ...updates,
           status: 'enriched',
           enrichedBy: 'variantsEditor-v1',
-          lastModified: new Date().toISOString()
+          lastModified: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
         });
       }
       

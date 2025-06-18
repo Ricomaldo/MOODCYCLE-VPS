@@ -80,7 +80,7 @@ class AdminController {
               existingInsights[phase][insightIndex] = {
                 ...existingInsights[phase][insightIndex],
                 ...updatedInsight,
-                lastModified: new Date().toISOString(),
+                lastModified: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'}),
                 enrichedBy: 'admin-interface'
               };
               updatedCount++;
@@ -169,7 +169,7 @@ class AdminController {
               }
               
               existingInsights[phase][insightIndex].status = 'enriched';
-              existingInsights[phase][insightIndex].lastModified = new Date().toISOString();
+              existingInsights[phase][insightIndex].lastModified = new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'});
               found = true;
               break;
             }
@@ -212,7 +212,7 @@ class AdminController {
               existingInsights[phase][insightIndex] = {
                 ...existingInsights[phase][insightIndex],
                 ...updatedInsight,
-                lastModified: new Date().toISOString()
+                lastModified: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
               };
             }
           }

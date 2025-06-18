@@ -111,13 +111,13 @@ Réponds en incarnant parfaitement Melune.`;
       return {
         claude: { status: 'operational', model: 'claude-3-haiku-20240307' },
         budget: budgetStatus,
-        lastTest: new Date().toISOString()
+        lastTest: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
       };
     } catch (error) {
       return {
         claude: { status: 'error', error: error.message },
         budget: budgetProtection.getBudgetStatus(),
-        lastTest: new Date().toISOString()
+        lastTest: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
       };
     }
   }

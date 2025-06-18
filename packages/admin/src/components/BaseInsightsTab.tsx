@@ -63,7 +63,7 @@ export function BaseInsightsTab() {
         baseContent: editContent,
         status: 'enriched',
         enrichedBy: 'baseInsightsTab-v1',
-        lastModified: new Date().toISOString()
+        lastModified: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
       });
       
       // Save to API using the saveInsightVariants method with baseContent
@@ -85,7 +85,7 @@ export function BaseInsightsTab() {
       // Update local state
       await updateInsight(currentInsight.id, {
         targetJourney: journeys,
-        lastModified: new Date().toISOString()
+        lastModified: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
       });
       
       // Save to API
@@ -108,7 +108,7 @@ export function BaseInsightsTab() {
       // Update local state
       await updateInsight(currentInsight.id, {
         jezaApproval: score,
-        lastModified: new Date().toISOString()
+        lastModified: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
       });
       
       // Save to API
