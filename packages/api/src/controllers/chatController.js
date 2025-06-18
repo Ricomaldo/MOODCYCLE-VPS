@@ -1,11 +1,41 @@
 // controllers/chatController.js (version protégée)
 const ClaudeService = require('../services/ClaudeService');
 const PromptBuilder = require('../services/PromptBuilder');
+const fs = require('fs').promises;
+const path = require('path');
 
 // Instance réutilisable du PromptBuilder
 const promptBuilder = new PromptBuilder();
 
 class ChatController {
+  constructor() {
+    // Configuration du chemin des logs conversationnels
+    this.conversationLogPath = process.env.LOGS_PATH 
+      ? path.join(process.env.LOGS_PATH, 'conversations.log')
+      : path.join(__dirname, '../../logs/conversations.log');
+    
+    // Créer le dossier logs si nécessaire
+    this.ensureLogsDirectory();
+  }
+
+  async ensureLogsDirectory() {
+    try {
+      const logsDir = path.dirname(this.conversationLogPath);
+      await fs.mkdir(logsDir, { recursive: true });
+    } catch (error) {
+      console.error('❌ Erreur création dossier logs:', error.message);
+    }
+  }
+
+  async logConversation(conversationData) {
+    try {
+      const logEntry = JSON.stringify(conversationData) + '\n';
+      await fs.appendFile(this.conversationLogPath, logEntry);
+    } catch (error) {
+      console.error('❌ Erreur écriture log conversation:', error.message);
+    }
+  }
+
   async handleChat(req, res) {
     try {
       const { message, context } = req.body;
@@ -32,6 +62,33 @@ class ChatController {
       // Appel Claude avec protection budget
       const response = await ClaudeService.sendMessage(message, systemPrompt, deviceId);
 
+      // ✅ NOUVEAU : Log conversationnel structuré
+      const conversationLog = {
+        timestamp: new Date().toISOString(),
+        session_id: this.generateSessionId(context, deviceId),
+        user_message: message,
+        persona: context?.persona || 'unknown',
+        phase: context?.currentPhase || 'non définie',
+        user_profile: {
+          prenom: context?.userProfile?.prenom || 'unknown',
+          age: context?.userProfile?.ageRange || 'unknown'
+        },
+        preferences: context?.preferences || {},
+        strong_preferences: promptBuilder.extractStrongPreferences(context?.preferences || {}),
+        llm_prompt: systemPrompt,
+        llm_response: response.message,
+        tokens_prompt: (response.totalTokens || 0) - (response.tokensUsed || 0),
+        tokens_completion: response.tokensUsed || 0,
+        tokens_total: response.totalTokens || 0,
+        cost_usd: response.cost || 0,
+        device_id: deviceId?.substring(0, 8) + '***',
+        is_fallback: !!response.isFallback,
+        response_time: response.responseTime || null
+      };
+
+      // Sauvegarder dans fichier dédié
+      await this.logConversation(conversationLog);
+
       // Réponse normale
       if (!response.isFallback) {
         return res.json({
@@ -56,10 +113,18 @@ class ChatController {
     }
   }
 
-  handleChatError(error, req, res) {
+  generateSessionId(context, deviceId) {
+    const date = new Date().toISOString().split('T')[0];
+    const persona = context?.persona || 'unknown';
+    const deviceShort = deviceId?.substring(0, 8) || 'unknown';
+    return `${persona}_${deviceShort}_${date}`;
+  }
+
+  async handleChatError(error, req, res) {
     const deviceId = req.deviceId;
     const context = req.body?.context;
     const persona = context?.persona || 'general';
+    const message = req.body?.message || '';
 
     console.error('💬 Chat error:', {
       deviceId: deviceId?.substring(0, 8) + '***',
@@ -67,20 +132,41 @@ class ChatController {
       persona: persona
     });
 
+    // ✅ NOUVEAU : Log des erreurs dans le fichier conversationnel
+    const errorLog = {
+      timestamp: new Date().toISOString(),
+      session_id: this.generateSessionId(context, deviceId),
+      user_message: message,
+      persona: persona,
+      phase: context?.currentPhase || 'non définie',
+      error_type: error.message,
+      llm_response: null, // Sera rempli par le fallback
+      is_error: true,
+      device_id: deviceId?.substring(0, 8) + '***'
+    };
+
     // Gestion erreurs spécifiques avec fallbacks personas
     switch (error.message) {
       case 'CLAUDE_RATE_LIMIT':
+        const rateLimitResponse = this.getRateLimitFallback(persona);
+        errorLog.llm_response = rateLimitResponse;
+        await this.logConversation(errorLog);
+        
         return res.status(429).json({
           error: 'RATE_LIMIT',
-          response: this.getRateLimitFallback(persona),
+          response: rateLimitResponse,
           retryAfter: 60,
           isFallback: true
         });
 
       case 'CLAUDE_QUOTA_EXCEEDED':
+        const quotaResponse = this.getQuotaFallback(persona);
+        errorLog.llm_response = quotaResponse;
+        await this.logConversation(errorLog);
+        
         return res.status(429).json({
           error: 'QUOTA_EXCEEDED',
-          response: this.getQuotaFallback(persona),
+          response: quotaResponse,
           retryAfter: 3600, // 1h
           isFallback: true
         });
@@ -88,26 +174,38 @@ class ChatController {
       case 'BUDGET_DAILY_BUDGET_EXCEEDED':
       case 'BUDGET_WEEKLY_BUDGET_EXCEEDED':
       case 'BUDGET_MONTHLY_BUDGET_EXCEEDED':
+        const budgetResponse = this.getBudgetFallback(persona);
+        errorLog.llm_response = budgetResponse;
+        await this.logConversation(errorLog);
+        
         return res.status(429).json({
           error: 'BUDGET_EXCEEDED',
-          response: this.getBudgetFallback(persona),
+          response: budgetResponse,
           retryAfter: 86400, // 24h
           isFallback: true
         });
 
       case 'CLAUDE_TIMEOUT':
+        const timeoutResponse = this.getTimeoutFallback(persona);
+        errorLog.llm_response = timeoutResponse;
+        await this.logConversation(errorLog);
+        
         return res.status(504).json({
           error: 'TIMEOUT',
-          response: this.getTimeoutFallback(persona),
+          response: timeoutResponse,
           retryAfter: 30,
           isFallback: true
         });
 
       case 'CLAUDE_UNAVAILABLE':
       default:
+        const unavailableResponse = this.getUnavailableFallback(persona);
+        errorLog.llm_response = unavailableResponse;
+        await this.logConversation(errorLog);
+        
         return res.status(503).json({
           error: 'SERVICE_UNAVAILABLE',
-          response: this.getUnavailableFallback(persona),
+          response: unavailableResponse,
           retryAfter: 300, // 5min
           isFallback: true
         });
