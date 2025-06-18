@@ -39,8 +39,8 @@ class PromptBuilder {
       };
     }
   
-        /**
-     * Construit prompt contextuel basé sur profil utilisateur
+    /**
+     * Construit prompt contextuel basé sur profil utilisateur + historique
      */
     buildContextualPrompt(contextData) {
       const {
@@ -48,7 +48,8 @@ class PromptBuilder {
         userProfile = {},
         currentPhase = 'non définie',
         preferences = {},
-        communicationTone = 'friendly'
+        communicationTone = 'friendly',
+        conversationHistory = [] // ✅ NOUVEAU - Historique conversation
       } = contextData;
 
       // Extraire préférences fortes (score >= 4)
@@ -57,15 +58,54 @@ class PromptBuilder {
       // Enrichir traits avec données JSON validées
       const enrichedTraits = this.enrichPersonaTraits(persona, currentPhase, strongPreferences);
       
-      // Construire prompt structuré
+      // ✅ NOUVEAU : Formater historique pour prompt
+      const formattedHistory = this.formatConversationHistory(conversationHistory);
+      
+      // Construire prompt structuré avec historique
       return this.assemblePrompt({
         persona,
         traits: enrichedTraits,
         userProfile,
         currentPhase,
         strongPreferences,
-        communicationTone
+        communicationTone,
+        conversationHistory: formattedHistory // ✅ NOUVEAU
       });
+    }
+
+    /**
+     * ✅ NOUVEAU : Formate l'historique pour intégration prompt
+     */
+    formatConversationHistory(history) {
+      if (!Array.isArray(history) || history.length === 0) {
+        return null;
+      }
+
+      // Limiter tokens - max 3 échanges les plus récents pour sécurité
+      const recentHistory = history.slice(0, 3);
+      
+      // Formater pour lisibilité Claude
+      const formatted = recentHistory
+        .reverse() // Plus ancien → plus récent
+        .map((exchange, index) => {
+          // Tronquer si trop long (sécurité tokens)
+          const userMsg = exchange.user?.slice(0, 100) || '';
+          const meluneMsg = exchange.melune?.slice(0, 150) || '';
+          
+          return `User: "${userMsg}" → Melune: "${meluneMsg}"`;
+        })
+        .join('\n');
+
+      console.log('📚 Historique formaté pour prompt:', formatted.length, 'caractères');
+      return formatted;
+    }
+
+    /**
+     * ✅ NOUVEAU : Calcule tokens approximatifs pour contrôle
+     */
+    estimateTokens(text) {
+      // Estimation approximative : 4 caractères = 1 token
+      return Math.ceil((text || '').length / 4);
     }
 
     /**
@@ -92,12 +132,12 @@ class PromptBuilder {
       if (!phaseData || !phaseData.melune) {
         console.log('⚠️ Pas de données melune trouvées pour phase:', mappedPhase);
         return {
-          tone: "bienveillante et adaptée",
-          tempo: "communication équilibrée",
-          vocabulary: "langage accessible et chaleureux",
-          focus: "écoute et accompagnement personnalisé",
-          avoid: "ton impersonnel ou distant",
-          encouragementStyle: "encouragement authentique et respectueux"
+          tone: "compréhensive, validante, apaisante",
+          tempo: "communication calme, phrases réconfortantes",
+          vocabulary: ["validation", "normalité", "bienveillance", "repos", "acceptation"],
+          focus: "validation des difficultés, normalisation des symptômes",
+          avoid: ["minimiser les inconforts", "suggestions activités intenses", "ton enjoué excessif"],
+          encouragementStyle: "reconnaissance de la force nécessaire pour traverser cette phase"
         };
       }
 
@@ -196,84 +236,62 @@ class PromptBuilder {
         .filter(Boolean);
     }
   
-        /**
-     * Assemble le prompt final avec données enrichies
-     */
-        assemblePrompt({ persona, traits, userProfile, currentPhase, strongPreferences, communicationTone }) {
-          const { prenom = 'ma belle', ageRange = 'non précisé' } = userProfile;
-         
-          return `Tu es Melune, IA bienveillante spécialisée dans le cycle féminin.
-         
-         PROFIL UTILISATRICE:
-         - Nom: ${prenom}
-         - Âge: ${ageRange}
-         - Persona: ${persona}
-         - Phase actuelle: ${currentPhase} ${traits.phaseSymbol}
-         - Archétype phase: ${traits.phaseArchetype}
-         - Préférences fortes: ${strongPreferences.length > 0 ? strongPreferences.join(', ') : 'découverte générale'}
-         
-         STYLE DE COMMUNICATION:
-         - Approche: ${traits.style}
-         - Ton: ${traits.tone}
-         - Vocabulaire: ${traits.vocabulary}
-         - Exemple type: "${traits.example}"
-         
-         CONTEXTE DE PHASE SPÉCIALISÉ:
-         ${traits.phaseContext ? `- Perspective: ${traits.phaseContext}` : ''}
-         ${traits.phaseCharacteristics?.emotional ? `- État émotionnel typique: ${traits.phaseCharacteristics.emotional.join(', ')}` : ''}
-         ${traits.phaseCharacteristics?.energy ? `- Niveau énergétique: ${traits.phaseCharacteristics.energy}` : ''}
-         
-         MODULATION COMPORTEMENTALE MELUNE:
-         - Ton: ${traits.behaviorModulation?.tone || 'bienveillant'}
-         - Tempo: ${traits.behaviorModulation?.tempo || 'équilibré'}
-         - Vocabulaire privilégié: ${traits.behaviorModulation?.vocabulary || 'accessible'}
-         - Focus prioritaire: ${traits.behaviorModulation?.focus || 'accompagnement'}
-         - À éviter absolument: ${traits.behaviorModulation?.avoid || 'ton impersonnel'}
-         - Style d'encouragement: ${traits.behaviorModulation?.encouragementStyle || 'authentique'}
-         
-         FORMULES DE CLÔTURE SPÉCIALISÉES:
-         - Focus corporel: "${traits.closingStyles?.body || ''}"
-         - Focus nature cyclique: "${traits.closingStyles?.nature || ''}"
-         - Focus émotionnel: "${traits.closingStyles?.emotions || ''}"
-         
-         RÈGLES:
-         - PRIVILÉGIER réponses courtes (30-80 mots) et spontanées
-         - Réponses longues SEULEMENT si explication complexe nécessaire
-         - Une idée principale par réponse maximum
-         - Toujours terminer par question courte et engageante
-         - Ton conversationnel naturel selon phase actuelle
-         - Jamais de diagnostic médical
-         - Adapter conseils selon phase actuelle
-         
-         Réponds selon ce persona enrichi et contexte de phase:`;
-         }  
     /**
-     * Version compacte pour économiser tokens
+     * Assemble le prompt final avec données enrichies + historique
+     */
+    assemblePrompt({ persona, traits, userProfile, currentPhase, strongPreferences, communicationTone, conversationHistory }) {
+      const { prenom = 'ma belle', ageRange = 'non précisé' } = userProfile;
+     
+      // ✅ NOUVEAU : Section historique conditionnelle
+      const historySection = conversationHistory ? 
+        `\nHISTORIQUE CONVERSATION RÉCENTE:\n${conversationHistory}\n` : '';
+
+      // ✅ MODIFIÉ : Prompt plus concis pour économiser tokens avec historique
+      return `Tu es Melune, IA cycle féminin.
+
+PROFIL: ${prenom} (${ageRange}) - Persona ${persona} - Phase ${currentPhase} ${traits.phaseSymbol}
+Préférences: ${strongPreferences.length > 0 ? strongPreferences.join(', ') : 'découverte'}
+
+STYLE: ${traits.tone} - ${traits.vocabulary}
+PHASE: ${traits.phaseArchetype} - ${traits.behaviorModulation?.focus || 'accompagnement'}
+Éviter: ${traits.behaviorModulation?.avoid || 'ton impersonnel'}${historySection}
+RÈGLES:
+- Réponses 30-80 mots (courtes et naturelles)  
+- Toujours terminer par question engageante
+- Continuité avec historique si présent
+- Ton selon phase actuelle: ${traits.behaviorModulation?.tone || 'bienveillant'}
+
+Réponds selon ce persona et contexte:`;
+    }  
+
+    /**
+     * Version compacte pour économiser tokens + historique
      */
     buildCompactPrompt(contextData) {
       const {
         persona = 'emma',
         userProfile = {},
         currentPhase = 'non définie',
-        preferences = {}
+        preferences = {},
+        conversationHistory = [] // ✅ NOUVEAU
       } = contextData;
 
       const strongPrefs = this.extractStrongPreferences(preferences);
       const enrichedTraits = this.enrichPersonaTraits(persona, currentPhase, strongPrefs);
+      const formattedHistory = this.formatConversationHistory(conversationHistory);
+
+      // ✅ Prompt ultra-compact avec historique
+      const historyText = formattedHistory ? `\nHistorique: ${formattedHistory}` : '';
 
       return `Melune, IA cycle féminin.
-Utilisatrice: ${userProfile.prenom || 'ma belle'}, ${userProfile.ageRange || '?'}
-Persona: ${persona} - ${enrichedTraits.style}
-Phase: ${currentPhase} ${enrichedTraits.phaseSymbol}
-Archétype: ${enrichedTraits.phaseArchetype}
-Préférences: ${strongPrefs.join(', ') || 'générale'}
-Style: ${enrichedTraits.tone}
-Formule: "${enrichedTraits.closingStyles?.emotions || enrichedTraits.example}"
-Max 200 mots, question finale.`;
+${userProfile.prenom || 'ma belle'} (${userProfile.ageRange || '?'}) - ${persona}
+Phase: ${currentPhase} ${enrichedTraits.phaseSymbol} - ${enrichedTraits.phaseArchetype}
+Style: ${enrichedTraits.tone}${historyText}
+Max 80 mots, question finale, continuité conversation.`;
     }
   
     /**
-     * Valide le contexte reçu
+     * Valide le contexte reçu + historique
      */
     validateContext(contextData) {
       const errors = [];
@@ -297,8 +315,41 @@ Max 200 mots, question finale.`;
           }
         });
       }
+
+      // ✅ NOUVEAU : Validation historique format
+      if (contextData.conversationHistory) {
+        if (!Array.isArray(contextData.conversationHistory)) {
+          errors.push('conversationHistory doit être un array');
+        } else {
+          // Vérifier structure des échanges
+          contextData.conversationHistory.forEach((exchange, index) => {
+            if (!exchange.user || !exchange.melune) {
+              errors.push(`Échange ${index} mal formaté`);
+            }
+          });
+        }
+      }
   
       return errors;
+    }
+
+    /**
+     * ✅ NOUVEAU : Debug tokens pour éviter dépassements
+     */
+    debugTokenUsage(contextData) {
+      const prompt = this.buildContextualPrompt(contextData);
+      const estimatedTokens = this.estimateTokens(prompt);
+      
+      const stats = {
+        promptLength: prompt.length,
+        estimatedTokens,
+        historyCount: contextData.conversationHistory?.length || 0,
+        isOverLimit: estimatedTokens > 1500, // Sécurité 1500 tokens
+        recommendation: estimatedTokens > 1500 ? 'Utiliser buildCompactPrompt' : 'OK'
+      };
+
+      console.log('🔍 Token usage debug:', stats);
+      return stats;
     }
   }
   
