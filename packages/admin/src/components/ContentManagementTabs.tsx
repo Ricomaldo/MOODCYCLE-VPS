@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BaseInsightsTab } from "@/components/BaseInsightsTab";
 import { PersonaVariantsTab } from "@/components/PersonaVariantsTab";
-import { PhasesTab } from "@/components/PhasesTab";
-import { ClosingsTab } from "@/components/ClosingsTab";
+// import { PhasesTab } from "@/components/PhasesTab";
+// import { ClosingsTab } from "@/components/ClosingsTab";
 import { TestFormulaTab } from "@/components/TestFormulaTab";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -58,13 +57,13 @@ export function ContentManagementTabs({ onTabChange }: ContentManagementTabsProp
                 value="closings"
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500/20 data-[state=active]:to-lime-400/20 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-pink-500/30 text-xs lg:text-sm px-3 lg:px-4"
               >
-                Conclusions
+                Conclusions TEST
               </TabsTrigger>
               <TabsTrigger 
                 value="phases"
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500/20 data-[state=active]:to-lime-400/20 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-pink-500/30 text-xs lg:text-sm px-3 lg:px-4"
               >
-                Phases Infos
+                Phases TEST
               </TabsTrigger>
               {/* <TabsTrigger 
                 value="test-formula"
@@ -76,7 +75,7 @@ export function ContentManagementTabs({ onTabChange }: ContentManagementTabsProp
           </div>
           
           <TabsContent value="phases" className="space-y-6">
-            <PhasesTab />
+            <div className="bg-green-500 p-4 text-white">PHASES TAB WORKS!</div>
           </TabsContent>
           
           <TabsContent value="base-insights" className="space-y-6">
@@ -88,7 +87,7 @@ export function ContentManagementTabs({ onTabChange }: ContentManagementTabsProp
           </TabsContent>
           
           <TabsContent value="closings" className="space-y-6">
-            <ClosingsTab />
+            <div className="bg-blue-500 p-4 text-white">CLOSINGS TAB WORKS!</div>
           </TabsContent>
           
           <TabsContent value="test-formula" className="space-y-6">
@@ -99,4 +98,4 @@ export function ContentManagementTabs({ onTabChange }: ContentManagementTabsProp
     </main>
   );
 }
-// Force deploy Wed Jun 18 19:21:51 CEST 2025
+// Force deploy Tue Jun 18 19:20:02 CEST 2025
