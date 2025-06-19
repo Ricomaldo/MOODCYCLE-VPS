@@ -1,13 +1,44 @@
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
+// Configuration des thèmes et couleurs par phase
+const phaseTheme = {
+  menstrual: {
+    bg: '#DC2626', // Rouge profond
+    textColor: '#FFFFFF',
+    captionColor: 'rgba(255, 255, 255, 0.8)',
+    gradientFrom: 'from-red-600',
+    gradientTo: 'to-red-500'
+  },
+  follicular: {
+    bg: '#059669', // Vert émeraude
+    textColor: '#FFFFFF', 
+    captionColor: 'rgba(255, 255, 255, 0.8)',
+    gradientFrom: 'from-emerald-600',
+    gradientTo: 'to-emerald-500'
+  },
+  ovulatory: {
+    bg: '#D97706', // Orange chaleureux
+    textColor: '#FFFFFF',
+    captionColor: 'rgba(255, 255, 255, 0.8)',
+    gradientFrom: 'from-amber-600',
+    gradientTo: 'to-amber-500'
+  },
+  luteal: {
+    bg: '#7C3AED', // Violet profond
+    textColor: '#FFFFFF',
+    captionColor: 'rgba(255, 255, 255, 0.8)',
+    gradientFrom: 'from-violet-600',
+    gradientTo: 'to-violet-500'
+  }
+};
+
 const personas = [
-  { id: "emma", name: "Emma", color: "from-pink-500 to-rose-400", avatar: "/images/avatars/Emma.jpg" },
-  { id: "laure", name: "Laure", color: "from-purple-500 to-indigo-400", avatar: "/images/avatars/Laure.jpg" },
-  { id: "sylvie", name: "Sylvie", color: "from-blue-500 to-cyan-400", avatar: "/images/avatars/Sylvie.jpg" },
-  { id: "christine", name: "Christine", color: "from-green-500 to-lime-400", avatar: "/images/avatars/Christine.jpg" },
-  { id: "clara", name: "Clara", color: "from-yellow-500 to-orange-400", avatar: "/images/avatars/Clara.jpg" }
+  { id: "emma", name: "Emma", avatar: "/images/avatars/Emma.jpg" },
+  { id: "laure", name: "Laure", avatar: "/images/avatars/Laure.jpg" },
+  { id: "sylvie", name: "Sylvie", avatar: "/images/avatars/Sylvie.jpg" },
+  { id: "christine", name: "Christine", avatar: "/images/avatars/Christine.jpg" },
+  { id: "clara", name: "Clara", avatar: "/images/avatars/Clara.jpg" }
 ];
 
 const journeyMapping = {
@@ -16,19 +47,12 @@ const journeyMapping = {
   emotional_control: "Apaisement"
 };
 
-const contextTexts = {
-  body_disconnect: "Profite de cette montée d'énergie pour canaliser positivement tes émotions,",
-  hiding_nature: "Cette phase d'introspection t'invite à explorer tes ressentis profonds,",
-  emotional_control: "L'harmonie de cette période te permet de cultiver ta sérénité,"
-};
-
 interface InsightData {
   id: string;
   baseContent: string;
   personaVariants?: Record<string, string>;
   phase?: string;
   jezaApproval?: number;
-  // ✅ NOUVEAU : Métadonnées pour le type de contenu
   _contentType?: 'variant' | 'base';
   _isPersonalized?: boolean;
 }
@@ -47,96 +71,122 @@ interface MobilePreviewProps {
   closings: ClosingsData;
 }
 
+// Composant InsightCard simplifié inspiré de React Native
+function InsightCard({ insight, persona, phase = 'follicular', closing }: {
+  insight: string;
+  persona: { id: string; name: string; avatar: string };
+  phase: string;
+  closing: string;
+}) {
+  const theme = phaseTheme[phase as keyof typeof phaseTheme] || phaseTheme.follicular;
+
+  return (
+    <div className="max-w-sm mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
+      {/* Header avec nom et phase */}
+      <div 
+        className="p-6 text-center"
+        style={{ backgroundColor: theme.bg }}
+      >
+        <div className="flex justify-center mb-3">
+          <Avatar className="w-16 h-16 border-4 border-white shadow-lg">
+            <AvatarImage src={persona.avatar} />
+            <AvatarFallback className="bg-gray-200 text-gray-800">
+              {persona.name[0]}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+        <h3 
+          className="text-lg font-semibold mb-1"
+          style={{ color: theme.textColor }}
+        >
+          Bonjour {persona.name} 💜
+        </h3>
+        <p 
+          className="text-sm"
+          style={{ color: theme.captionColor }}
+        >
+          Phase {phase}
+        </p>
+      </div>
+
+      {/* Insight Card */}
+      <div className="p-6">
+        <div 
+          className="rounded-2xl p-4 shadow-inner"
+          style={{ backgroundColor: theme.bg }}
+        >
+          <p 
+            className="text-sm leading-relaxed mb-3"
+            style={{ color: theme.textColor }}
+          >
+            {insight}
+          </p>
+          <p 
+            className="text-sm"
+            style={{ color: theme.textColor }}
+          >
+            {closing}
+          </p>
+          <div className="flex justify-end mt-3">
+            <span 
+              className="text-xs"
+              style={{ color: theme.captionColor }}
+            >
+              Phase {phase}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Button */}
+      <div className="px-6 pb-6">
+        <button 
+          className={`w-full bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo} text-white py-3 rounded-2xl font-medium text-sm shadow-lg hover:shadow-xl transition-shadow`}
+        >
+          Discuter avec Mélune
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function MobilePreview({ insight, selectedPersona, selectedJourney, showComparison, closings }: MobilePreviewProps) {
   const renderPersonaCard = (personaId: string) => {
     const persona = personas.find(p => p.id === personaId);
     if (!persona || !insight) return null;
 
-    const contextText = contextTexts[selectedJourney as keyof typeof contextTexts] || "";
-    // ✅ NOUVEAU : Détecter si on utilise variant ou base content
     const hasPersonaVariant = insight.personaVariants?.[personaId]?.trim();
-    const insightVariant = hasPersonaVariant || insight.baseContent;
+    const insightText = hasPersonaVariant || insight.baseContent;
     const isUsingBaseContent = !hasPersonaVariant;
-    const closing = closings?.[personaId]?.[selectedJourney] || "Je t'accompagne dans cette découverte";
-
-    const fullMessage = `${contextText} ${persona.name} 💜 ${insightVariant} ${closing}`;
+    const closing = closings?.[personaId]?.[selectedJourney] || "Je t'accompagne dans cette découverte ✨";
+    const phase = insight.phase || 'follicular';
 
     return (
-      <div key={personaId} className="bg-white rounded-3xl shadow-lg overflow-hidden max-w-sm mx-auto">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-purple-100 to-pink-50 p-4 text-center">
-          <h3 className="text-lg font-semibold text-gray-800 mb-1">Bonjour {persona.name}</h3>
-          <p className="text-sm text-gray-600">Jour 8 • Phase {insight?.phase || 'folliculaire'}</p>
-        </div>
-
-        {/* Avatar */}
-        <div className="flex justify-center -mt-8 mb-4">
-          <div className={`p-1 bg-gradient-to-r ${persona.color} rounded-full`}>
-            <Avatar className="w-16 h-16 border-4 border-white">
-              <AvatarImage src={persona.avatar} />
-              <AvatarFallback className="bg-gray-200 text-gray-800">
-                {persona.name[0]}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        </div>
-
-        {/* Message Bubble */}
-        <div className="px-4 pb-6">
-          <div className={`bg-gradient-to-r ${persona.color} bg-opacity-10 border-l-4 border-gradient-to-b ${persona.color.replace('from-', 'border-').replace(' to-rose-400', '').replace(' to-indigo-400', '').replace(' to-cyan-400', '').replace(' to-lime-400', '').replace(' to-orange-400', '')} rounded-2xl p-4`}>
-            <p className="text-gray-800 leading-relaxed text-sm">
-              {fullMessage}
-            </p>
-            <div className="mt-2 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500 capitalize">Phase {insight?.phase}</span>
-                {/* ✅ NOUVEAU : Badge pour indiquer le type de contenu */}
-                {isUsingBaseContent && (
-                  <Badge 
-                    variant="outline" 
-                    className="text-xs px-2 py-0 text-amber-600 border-amber-400 bg-amber-50"
-                  >
-                    ⚠️ Base
-                  </Badge>
-                )}
-                {!isUsingBaseContent && (
-                  <Badge 
-                    variant="outline" 
-                    className="text-xs px-2 py-0 text-green-600 border-green-400 bg-green-50"
-                  >
-                    ✅ Varianté
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Button */}
-        <div className="px-4 pb-4">
-          <button className={`w-full bg-gradient-to-r ${persona.color} text-white py-3 rounded-2xl font-medium text-sm shadow-lg hover:shadow-xl transition-shadow`}>
-            Discuter avec Mélune
-          </button>
-        </div>
-
-        {/* Bottom Navigation */}
-        <div className="bg-gray-50 p-4 flex justify-around text-center">
-          <div className="text-pink-500">
-            <div className="text-lg">🏠</div>
-            <div className="text-xs text-gray-600">Accueil</div>
-          </div>
-          <div className="text-gray-400">
-            <div className="text-lg">⚪</div>
-            <div className="text-xs text-gray-600">Cycle</div>
-          </div>
-          <div className="text-gray-400">
-            <div className="text-lg">💬</div>
-            <div className="text-xs text-gray-600">Mélune</div>
-          </div>
-          <div className="text-gray-400">
-            <div className="text-lg">📖</div>
-            <div className="text-xs text-gray-600">Carnet</div>
-          </div>
+      <div key={personaId} className="relative">
+        <InsightCard
+          insight={insightText}
+          persona={persona}
+          phase={phase}
+          closing={closing}
+        />
+        
+        {/* Badge de statut */}
+        <div className="absolute top-2 right-2">
+          {isUsingBaseContent ? (
+            <Badge 
+              variant="outline" 
+              className="text-xs px-2 py-1 text-amber-600 border-amber-400 bg-white/90 shadow-sm"
+            >
+              ⚠️ Base
+            </Badge>
+          ) : (
+            <Badge 
+              variant="outline" 
+              className="text-xs px-2 py-1 text-green-600 border-green-400 bg-white/90 shadow-sm"
+            >
+              ✅ Personnalisé
+            </Badge>
+          )}
         </div>
       </div>
     );
@@ -163,14 +213,17 @@ export function MobilePreview({ insight, selectedPersona, selectedJourney, showC
             {journeyMapping[selectedJourney as keyof typeof journeyMapping]}
           </Badge>
           <Badge variant="outline" className="text-gray-300 border-gray-600">
-            Jeza Score: {insight.jezaApproval || 'N/A'}
+            Phase: {insight.phase || 'follicular'}
+          </Badge>
+          <Badge variant="outline" className="text-gray-300 border-gray-600">
+            Jeza: {insight.jezaApproval || 'N/A'}
           </Badge>
         </div>
       </div>
 
       <div className="space-y-6">
         {showComparison ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-h-96 overflow-y-auto">
             {personas.map(persona => renderPersonaCard(persona.id))}
           </div>
         ) : (
@@ -180,41 +233,32 @@ export function MobilePreview({ insight, selectedPersona, selectedJourney, showC
         )}
       </div>
 
-      {/* Formula Breakdown */}
+      {/* Résumé simplifié */}
       <div className="mt-6 pt-6 border-t border-gray-700">
         <div className="flex items-center justify-between mb-3">
-          <h4 className="text-sm font-medium text-gray-300">Composition de la formule :</h4>
-          {/* ✅ NOUVEAU : Badge global pour le type de contenu */}
-          {insight._contentType === 'base' ? (
-            <Badge 
-              variant="outline" 
-              className="text-xs px-3 py-1 text-amber-400 border-amber-500 bg-amber-900/20"
-            >
-              ⚠️ Contenu de base utilisé
-            </Badge>
-          ) : (
-            <Badge 
-              variant="outline" 
-              className="text-xs px-3 py-1 text-green-400 border-green-500 bg-green-900/20"
-            >
-              ✅ Contenu personnalisé
-            </Badge>
-          )}
-        </div>
-        <div className="space-y-2 text-xs text-gray-400">
-          <div><strong>Contexte :</strong> {contextTexts[selectedJourney as keyof typeof contextTexts]}</div>
-          <div><strong>Prénom :</strong> {personas.find(p => p.id === selectedPersona)?.name} 💜</div>
-          <div>
-            <strong>Insight :</strong> {insight.personaVariants?.[selectedPersona] || insight.baseContent}
-            {/* ✅ NOUVEAU : Indication du type de contenu utilisé */}
-            {insight._contentType === 'base' && (
-              <span className="ml-2 text-amber-400 text-xs">(⚠️ baseContent utilisé)</span>
-            )}
-            {insight._contentType === 'variant' && (
-              <span className="ml-2 text-green-400 text-xs">(✅ variant {selectedPersona})</span>
+          <h4 className="text-sm font-medium text-gray-300">Résumé :</h4>
+          <div className="flex gap-2">
+            {insight._contentType === 'base' ? (
+              <Badge 
+                variant="outline" 
+                className="text-xs px-3 py-1 text-amber-400 border-amber-500 bg-amber-900/20"
+              >
+                ⚠️ Contenu de base
+              </Badge>
+            ) : (
+              <Badge 
+                variant="outline" 
+                className="text-xs px-3 py-1 text-green-400 border-green-500 bg-green-900/20"
+              >
+                ✅ Contenu personnalisé
+              </Badge>
             )}
           </div>
-          <div><strong>Closing :</strong> {closings?.[selectedPersona]?.[selectedJourney] || "Je t'accompagne dans cette découverte"}</div>
+        </div>
+        <div className="text-xs text-gray-400">
+          <strong>Phase :</strong> {insight.phase || 'follicular'} • 
+          <strong> Journey :</strong> {journeyMapping[selectedJourney as keyof typeof journeyMapping]} • 
+          <strong> Score Jeza :</strong> {insight.jezaApproval || 'N/A'}
         </div>
       </div>
     </div>
