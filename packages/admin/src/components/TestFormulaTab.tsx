@@ -37,6 +37,9 @@ interface InsightData {
   personaVariants?: Record<string, string>;
   targetJourney?: string[];
   phase: string;
+  // ✅ NOUVEAU : Métadonnées pour le type de contenu
+  _contentType?: 'variant' | 'base';
+  _isPersonalized?: boolean;
 }
 
 interface TestSession {
@@ -81,30 +84,55 @@ export function TestFormulaTab() {
   const pickRandomInsight = () => {
     if (!insights.length) return;
 
+    // ✅ NOUVEAU : Priorité aux insights avec variantes, fallback sur baseContent
     // Filter insights that match the journey and have variants for the persona
-    const eligibleInsights = insights.filter(insight => {
+    const eligibleInsightsWithVariants = insights.filter(insight => {
       const hasJourney = insight.targetJourney?.includes(selectedJourney);
-      const hasVariant = insight.personaVariants?.[selectedPersona];
+      const hasVariant = insight.personaVariants?.[selectedPersona]?.trim();
       const matchesPhase = insight.phase === selectedPhase;
       return hasJourney && hasVariant && matchesPhase;
     });
 
-    if (eligibleInsights.length === 0) {
-      // Fallback to any insight with variants for the persona
+    // ✅ NOUVEAU : Si pas de variantes, chercher insights avec baseContent
+    const eligibleInsightsWithBase = insights.filter(insight => {
+      const hasJourney = insight.targetJourney?.includes(selectedJourney);
+      const hasBaseContent = insight.baseContent?.trim();
+      const matchesPhase = insight.phase === selectedPhase;
+      return hasJourney && hasBaseContent && matchesPhase;
+    });
+
+    let selectedInsight = null;
+    let contentType = 'variant'; // 'variant' ou 'base'
+
+    // Priorité : variantes d'abord, puis base content
+    if (eligibleInsightsWithVariants.length > 0) {
+      selectedInsight = eligibleInsightsWithVariants[Math.floor(Math.random() * eligibleInsightsWithVariants.length)];
+      contentType = 'variant';
+    } else if (eligibleInsightsWithBase.length > 0) {
+      selectedInsight = eligibleInsightsWithBase[Math.floor(Math.random() * eligibleInsightsWithBase.length)];
+      contentType = 'base';
+    } else {
+      // ✅ NOUVEAU : Fallback final - any insight with base content for the phase
       const fallbackInsights = insights.filter(insight => 
-        insight.personaVariants?.[selectedPersona] && insight.phase === selectedPhase
+        insight.baseContent?.trim() && insight.phase === selectedPhase
       );
       if (fallbackInsights.length > 0) {
-        const randomInsight = fallbackInsights[Math.floor(Math.random() * fallbackInsights.length)];
-        setCurrentInsight(randomInsight);
+        selectedInsight = fallbackInsights[Math.floor(Math.random() * fallbackInsights.length)];
+        contentType = 'base';
       }
-    } else {
-      const randomInsight = eligibleInsights[Math.floor(Math.random() * eligibleInsights.length)];
-      setCurrentInsight(randomInsight);
     }
 
-    // Save session
-    if (currentInsight) {
+    if (selectedInsight) {
+      // ✅ NOUVEAU : Ajouter métadonnées sur le type de contenu
+      const enrichedInsight = {
+        ...selectedInsight,
+        _contentType: contentType,
+        _isPersonalized: contentType === 'variant'
+      };
+      
+      setCurrentInsight(enrichedInsight);
+
+      // Save session with content type info
       const session: TestSession = {
         id: Date.now().toString(),
         timestamp: Date.now(),
@@ -112,7 +140,7 @@ export function TestFormulaTab() {
         testName: testName || `Test ${Date.now()}`,
         journey: selectedJourney,
         phase: selectedPhase,
-        insight: currentInsight
+        insight: enrichedInsight
       };
       saveSession(session);
     }
@@ -220,15 +248,16 @@ export function TestFormulaTab() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3">
-          <Button
-            onClick={pickRandomInsight}
-            disabled={loading}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-          >
-            <Dice1 className="w-4 h-4 mr-2" />
-            🎲 Piocher conseil aléatoire
-          </Button>
+        <div className="space-y-3">
+          <div className="flex gap-3">
+            <Button
+              onClick={pickRandomInsight}
+              disabled={loading}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+            >
+              <Dice1 className="w-4 h-4 mr-2" />
+              🎲 Piocher conseil aléatoire
+            </Button>
 
           <Button
             onClick={comparePersonas}
@@ -253,6 +282,21 @@ export function TestFormulaTab() {
               🔄 Actualiser
             </Button>
           )}
+          </div>
+          
+          {/* ✅ NOUVEAU : Message informatif sur le contenu de base */}
+          <div className={`${isDarkMode ? 'bg-amber-900/20 border-amber-500/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800'} border rounded-lg p-3 text-sm`}>
+            <div className="flex items-center gap-2">
+              <span className="text-lg">ℹ️</span>
+              <div>
+                <p className="font-medium">Mode fallback activé</p>
+                <p className="text-xs opacity-80">
+                  Tant que les variantes personas ne sont pas créées, l'aperçu utilise le contenu de base (baseContent) des insights.
+                  Créez des variantes dans l'onglet "Variantes Personas" pour tester le contenu personnalisé.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

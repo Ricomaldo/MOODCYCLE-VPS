@@ -28,6 +28,9 @@ interface InsightData {
   personaVariants?: Record<string, string>;
   phase?: string;
   jezaApproval?: number;
+  // ✅ NOUVEAU : Métadonnées pour le type de contenu
+  _contentType?: 'variant' | 'base';
+  _isPersonalized?: boolean;
 }
 
 interface ClosingsData {
@@ -50,7 +53,10 @@ export function MobilePreview({ insight, selectedPersona, selectedJourney, showC
     if (!persona || !insight) return null;
 
     const contextText = contextTexts[selectedJourney as keyof typeof contextTexts] || "";
-    const insightVariant = insight.personaVariants?.[personaId] || insight.baseContent;
+    // ✅ NOUVEAU : Détecter si on utilise variant ou base content
+    const hasPersonaVariant = insight.personaVariants?.[personaId]?.trim();
+    const insightVariant = hasPersonaVariant || insight.baseContent;
+    const isUsingBaseContent = !hasPersonaVariant;
     const closing = closings?.[personaId]?.[selectedJourney] || "Je t'accompagne dans cette découverte";
 
     const fullMessage = `${contextText} ${persona.name} 💜 ${insightVariant} ${closing}`;
@@ -81,8 +87,27 @@ export function MobilePreview({ insight, selectedPersona, selectedJourney, showC
             <p className="text-gray-800 leading-relaxed text-sm">
               {fullMessage}
             </p>
-            <div className="mt-2 text-right">
-              <span className="text-xs text-gray-500 capitalize">Phase {insight?.phase}</span>
+            <div className="mt-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500 capitalize">Phase {insight?.phase}</span>
+                {/* ✅ NOUVEAU : Badge pour indiquer le type de contenu */}
+                {isUsingBaseContent && (
+                  <Badge 
+                    variant="outline" 
+                    className="text-xs px-2 py-0 text-amber-600 border-amber-400 bg-amber-50"
+                  >
+                    ⚠️ Base
+                  </Badge>
+                )}
+                {!isUsingBaseContent && (
+                  <Badge 
+                    variant="outline" 
+                    className="text-xs px-2 py-0 text-green-600 border-green-400 bg-green-50"
+                  >
+                    ✅ Varianté
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -157,11 +182,38 @@ export function MobilePreview({ insight, selectedPersona, selectedJourney, showC
 
       {/* Formula Breakdown */}
       <div className="mt-6 pt-6 border-t border-gray-700">
-        <h4 className="text-sm font-medium text-gray-300 mb-3">Composition de la formule :</h4>
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-medium text-gray-300">Composition de la formule :</h4>
+          {/* ✅ NOUVEAU : Badge global pour le type de contenu */}
+          {insight._contentType === 'base' ? (
+            <Badge 
+              variant="outline" 
+              className="text-xs px-3 py-1 text-amber-400 border-amber-500 bg-amber-900/20"
+            >
+              ⚠️ Contenu de base utilisé
+            </Badge>
+          ) : (
+            <Badge 
+              variant="outline" 
+              className="text-xs px-3 py-1 text-green-400 border-green-500 bg-green-900/20"
+            >
+              ✅ Contenu personnalisé
+            </Badge>
+          )}
+        </div>
         <div className="space-y-2 text-xs text-gray-400">
           <div><strong>Contexte :</strong> {contextTexts[selectedJourney as keyof typeof contextTexts]}</div>
           <div><strong>Prénom :</strong> {personas.find(p => p.id === selectedPersona)?.name} 💜</div>
-          <div><strong>Insight :</strong> {insight.personaVariants?.[selectedPersona] || insight.baseContent}</div>
+          <div>
+            <strong>Insight :</strong> {insight.personaVariants?.[selectedPersona] || insight.baseContent}
+            {/* ✅ NOUVEAU : Indication du type de contenu utilisé */}
+            {insight._contentType === 'base' && (
+              <span className="ml-2 text-amber-400 text-xs">(⚠️ baseContent utilisé)</span>
+            )}
+            {insight._contentType === 'variant' && (
+              <span className="ml-2 text-green-400 text-xs">(✅ variant {selectedPersona})</span>
+            )}
+          </div>
           <div><strong>Closing :</strong> {closings?.[selectedPersona]?.[selectedJourney] || "Je t'accompagne dans cette découverte"}</div>
         </div>
       </div>

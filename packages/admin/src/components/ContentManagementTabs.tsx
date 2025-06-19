@@ -41,7 +41,18 @@ export function ContentManagementTabs({ onTabChange }: ContentManagementTabsProp
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
           <div className="overflow-x-auto">
             <TabsList className={`${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} border p-1 w-full min-w-max`}>
-
+            <TabsTrigger 
+                value="vignettes"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500/20 data-[state=active]:to-lime-400/20 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-pink-500/30 text-xs lg:text-sm px-3 lg:px-4"
+              >
+                Vignettes
+              </TabsTrigger>
+              <TabsTrigger 
+                value="phases"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500/20 data-[state=active]:to-lime-400/20 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-pink-500/30 text-xs lg:text-sm px-3 lg:px-4"
+              >
+                Phases Infos
+              </TabsTrigger>
               <TabsTrigger 
                 value="base-insights" 
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500/20 data-[state=active]:to-lime-400/20 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-pink-500/30 text-xs lg:text-sm px-3 lg:px-4"
@@ -61,23 +72,11 @@ export function ContentManagementTabs({ onTabChange }: ContentManagementTabsProp
                 Conclusions
               </TabsTrigger>
               <TabsTrigger 
-                value="phases"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500/20 data-[state=active]:to-lime-400/20 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-pink-500/30 text-xs lg:text-sm px-3 lg:px-4"
-              >
-                Phases Infos
-              </TabsTrigger>
-              <TabsTrigger 
-                value="vignettes"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500/20 data-[state=active]:to-lime-400/20 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-pink-500/30 text-xs lg:text-sm px-3 lg:px-4"
-              >
-                Vignettes
-              </TabsTrigger>
-              {/* <TabsTrigger 
                 value="test-formula"
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500/20 data-[state=active]:to-lime-400/20 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-pink-500/30 text-xs lg:text-sm px-3 lg:px-4"
               >
                 Simulation
-              </TabsTrigger> */}
+              </TabsTrigger>
             </TabsList>
           </div>
           

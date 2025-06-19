@@ -28,7 +28,7 @@
     "affirmation": "Je m'accorde le droit de ralentir et d'écouter mon corps.",
     "symbol": "🌙",
     "element": "Eau",
-    "archetype": "La Sage",
+    "archetype": "La Sorcière",
     "melune": {
       "tone": "douce, apaisante, réconfortante, calme",
       "tempo": "communication lente, phrases courtes, ton posé",
@@ -110,7 +110,7 @@
     "affirmation": "Je grandis et j'explore avec confiance mes nouveaux possibles.",
     "symbol": "🌱",
     "element": "Air", 
-    "archetype": "L'Exploratrice",
+    "archetype": "La jeune fille",
     "melune": {
       "tone": "enthousiaste, inspirante, encourageante, optimiste",
       "tempo": "communication dynamique, phrases variées, ton enjoué",
@@ -192,7 +192,7 @@
     "affirmation": "Je rayonne ma lumière intérieure et j'ose briller pleinement.",
     "symbol": "☀️",
     "element": "Feu",
-    "archetype": "La Déesse",
+    "archetype": "La Mère",
     "melune": {
       "tone": "confiante, rayonnante, affirmée, communicative",
       "tempo": "communication fluide, phrases éloquentes, ton assuré",
@@ -274,7 +274,7 @@
     "affirmation": "Je fais confiance à mon intuition et j'honore mes limites.",
     "symbol": "🔮",
     "element": "Terre",
-    "archetype": "La Prêtresse",
+    "archetype": "L'Enchanteresse'",
     "melune": {
       "tone": "organisée, intuitive, réfléchie, préparatoire",
       "tempo": "communication structurée, phrases précises, ton équilibré",
