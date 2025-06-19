@@ -438,6 +438,100 @@ class AdminController {
       });
     }
   }
+
+  // GET /api/admin/vignettes - Lire les vignettes par phase et persona
+  async getVignettes(req, res) {
+    try {
+      const { phase, persona } = req.query;
+      
+      if (!phase || !persona) {
+        return res.status(400).json({
+          success: false,
+          error: 'Phase et persona requis'
+        });
+      }
+
+      const vignettesPath = path.join(__dirname, '../data/vignettes.json');
+      const data = await fs.readFile(vignettesPath, 'utf8');
+      const vignettesData = JSON.parse(data);
+      
+      const vignettes = vignettesData[phase]?.[persona] || [];
+      
+      res.json({
+        success: true,
+        vignettes
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Erreur lecture vignettes'
+      });
+    }
+  }
+
+  // POST /api/admin/vignettes - Sauvegarder les vignettes
+  async saveVignettes(req, res) {
+    console.log('🔥 saveVignettes called');
+    console.log('Body:', req.body);
+    
+    try {
+      const { vignettes } = req.body;
+      
+      if (!vignettes || typeof vignettes !== 'object') {
+        return res.status(400).json({
+          success: false,
+          error: 'Format vignettes invalide - objet attendu'
+        });
+      }
+
+      const vignettesPath = path.join(__dirname, '../data/vignettes.json');
+      
+      // ✅ LIRE LES DONNÉES EXISTANTES PUIS MERGER
+      let existingVignettes = {};
+      try {
+        const existingData = await fs.readFile(vignettesPath, 'utf8');
+        existingVignettes = JSON.parse(existingData);
+      } catch (error) {
+        console.log('📝 No existing vignettes file, creating new one');
+      }
+      
+      // ✅ MERGER PROFONDÉMENT les nouvelles données avec les existantes
+      const mergedVignettes = { ...existingVignettes };
+      
+      // Pour chaque phase dans les nouvelles données
+      Object.keys(vignettes).forEach(phaseId => {
+        if (mergedVignettes[phaseId]) {
+          // Merge profond : garder les propriétés existantes et ajouter/modifier les nouvelles
+          mergedVignettes[phaseId] = { ...mergedVignettes[phaseId], ...vignettes[phaseId] };
+        } else {
+          // Nouvelle phase : ajouter complètement
+          mergedVignettes[phaseId] = vignettes[phaseId];
+        }
+      });
+      
+      // ✅ SAUVEGARDER LA STRUCTURE COMPLÈTE
+      await fs.writeFile(vignettesPath, JSON.stringify(mergedVignettes, null, 2));
+      
+      console.log('✅ Vignettes saved successfully');
+      console.log('📊 Total phases:', Object.keys(mergedVignettes).length);
+      
+      res.json({
+        success: true,
+        data: { 
+          message: 'Vignettes sauvegardées avec succès',
+          phasesCount: Object.keys(vignettes).length,
+          totalPhases: Object.keys(mergedVignettes).length
+        }
+      });
+      
+    } catch (error) {
+      console.error('❌ Error in saveVignettes:', error);
+      res.status(500).json({
+        success: false,
+        error: `Erreur sauvegarde vignettes: ${error.message}`
+      });
+    }
+  }
 }
 
 const adminController = new AdminController();
@@ -450,5 +544,7 @@ module.exports = {
   getClosings: adminController.getClosings.bind(adminController),
   adminLogin: adminController.adminLogin.bind(adminController),
   savePhases: adminController.savePhases.bind(adminController),
-  saveClosings: adminController.saveClosings.bind(adminController)
+  saveClosings: adminController.saveClosings.bind(adminController),
+  getVignettes: adminController.getVignettes.bind(adminController),
+  saveVignettes: adminController.saveVignettes.bind(adminController)
 };

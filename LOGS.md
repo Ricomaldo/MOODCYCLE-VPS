@@ -18,7 +18,7 @@ Le système de logs est maintenant **double** :
 pm2 logs moodcycle-api
 
 # Logs conversationnels dédiés
-/srv/www/internal/moodcycle/shared/logs/conversations.log
+/srv/www/internal/moodcycle.irimwebforge.com/current/logs/conversations.log
 ```
 
 ### **Développement Local**
@@ -54,25 +54,25 @@ pm2 logs moodcycle-api --lines 100 | grep "$(date +%H:%M)"
 
 ```bash
 # Voir toutes les conversations (production)
-tail -f /srv/www/internal/moodcycle/shared/logs/conversations.log
+tail -f /srv/www/internal/moodcycle.irimwebforge.com/current/logs/conversations.log
 
 # Dernières 20 conversations formatées
-tail -20 /srv/www/internal/moodcycle/shared/logs/conversations.log | jq .
+tail -20 /srv/www/internal/moodcycle.irimwebforge.com/current/logs/conversations.log | jq .
 
 # Filtrer par persona
-cat /srv/www/internal/moodcycle/shared/logs/conversations.log | jq 'select(.persona == "emma")'
+cat /srv/www/internal/moodcycle.irimwebforge.com/current/logs/conversations.log | jq 'select(.persona == "emma")'
 
 # Filtrer par phase
-cat /srv/www/internal/moodcycle/shared/logs/conversations.log | jq 'select(.phase == "folliculaire")'
+cat /srv/www/internal/moodcycle.irimwebforge.com/current/logs/conversations.log | jq 'select(.phase == "folliculaire")'
 
 # Conversations d'aujourd'hui
-cat /srv/www/internal/moodcycle/shared/logs/conversations.log | jq 'select(.timestamp | startswith("2025-06-18"))'
+cat /srv/www/internal/moodcycle.irimwebforge.com/current/logs/conversations.log | jq 'select(.timestamp | startswith("2025-06-18"))'
 
 # Conversations avec erreurs
-cat /srv/www/internal/moodcycle/shared/logs/conversations.log | jq 'select(.is_error == true)'
+cat /srv/www/internal/moodcycle.irimwebforge.com/current/logs/conversations.log | jq 'select(.is_error == true)'
 
 # Session spécifique
-cat /srv/www/internal/moodcycle/shared/logs/conversations.log | jq 'select(.session_id | contains("emma_moodcycl"))'
+cat /srv/www/internal/moodcycle.irimwebforge.com/current/logs/conversations.log | jq 'select(.session_id | contains("emma_moodcycl"))'
 ```
 
 ---
@@ -171,13 +171,13 @@ cat /srv/www/internal/moodcycle/shared/logs/conversations.log | jq 'select(.toke
 # 🔥 LES 3 COMMANDES ESSENTIELLES
 
 # 1. Voir conversations temps réel
-tail -f /srv/www/internal/moodcycle/shared/logs/conversations.log | jq .
+tail -f /srv/www/internal/moodcycle.irimwebforge.com/current/logs/conversations.log | jq .
 
 # 2. Debug technique temps réel  
 pm2 logs moodcycle-api --lines 30
 
 # 3. Dernières conversations formatées
-tail -10 /srv/www/internal/moodcycle/shared/logs/conversations.log | jq -r '"[\(.timestamp | split("T")[1] | split(".")[0])] \(.persona) (\(.phase)): \(.user_message) → \(.llm_response)"'
+tail -10 /srv/www/internal/moodcycle.irimwebforge.com/current/logs/conversations.log | jq -r '"[\(.timestamp | split("T")[1] | split(".")[0])] \(.persona) (\(.phase)): \(.user_message) → \(.llm_response)"'
 ```
 
 ---

@@ -6,6 +6,7 @@ import { PersonaVariantsTab } from "@/components/PersonaVariantsTab";
 import { PhasesTab } from "@/components/PhasesTab";
 import { ClosingsTab } from "@/components/ClosingsTab";
 import { TestFormulaTab } from "@/components/TestFormulaTab";
+import { VignettesTab } from "@/components/VignettesTab";
 import { useTheme } from "@/contexts/ThemeContext";
 
 interface ContentManagementTabsProps {
@@ -65,6 +66,12 @@ export function ContentManagementTabs({ onTabChange }: ContentManagementTabsProp
               >
                 Phases Infos
               </TabsTrigger>
+              <TabsTrigger 
+                value="vignettes"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500/20 data-[state=active]:to-lime-400/20 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-pink-500/30 text-xs lg:text-sm px-3 lg:px-4"
+              >
+                Vignettes
+              </TabsTrigger>
               {/* <TabsTrigger 
                 value="test-formula"
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500/20 data-[state=active]:to-lime-400/20 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-pink-500/30 text-xs lg:text-sm px-3 lg:px-4"
@@ -88,6 +95,10 @@ export function ContentManagementTabs({ onTabChange }: ContentManagementTabsProp
           
           <TabsContent value="closings" className="space-y-6">
             <ClosingsTab />
+          </TabsContent>
+          
+          <TabsContent value="vignettes" className="space-y-6">
+            <VignettesTab />
           </TabsContent>
           
           <TabsContent value="test-formula" className="space-y-6">

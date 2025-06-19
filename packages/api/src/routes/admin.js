@@ -8,7 +8,9 @@ const {
   getClosings, 
   adminLogin,
   savePhases,
-  saveClosings
+  saveClosings,
+  getVignettes,
+  saveVignettes
 } = require('../controllers/adminController');
 const adminAuth = require('../middleware/adminAuth');
 
@@ -32,5 +34,7 @@ router.get('/phases', adminAuth, getPhases);
 router.post('/phases', adminAuth, savePhases);
 router.get('/closings', adminAuth, getClosings);
 router.post('/closings', adminAuth, saveClosings);
+router.get('/vignettes', getVignettes); // Lecture publique
+router.post('/vignettes', adminAuth, saveVignettes);
 
 module.exports = router;

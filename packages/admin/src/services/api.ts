@@ -27,6 +27,23 @@ interface ClosingsData {
   [key: string]: Record<string, string>;
 }
 
+// Interface pour une seule vignette
+export interface Vignette {
+  id: string;
+  icon: string;
+  title: string;
+  action: string;
+  prompt: string | null;
+  category: string;
+}
+
+// Interface pour les vignettes
+export interface VignettesData {
+  [phase: string]: {
+    [persona: string]: Vignette[];
+  };
+}
+
 // Interface pour les données d'insights par phase
 interface InsightsByPhase {
   menstrual: InsightData[];
@@ -148,6 +165,17 @@ class ApiClient {
     return this.request('/admin/closings', {
       method: 'POST', 
       body: JSON.stringify({ closings })
+    });
+  }
+
+  async getVignettes(phase: string, persona: string): Promise<{ success: boolean; vignettes: Vignette[] }> {
+    return this.request(`/admin/vignettes?phase=${phase}&persona=${persona}`);
+  }
+
+  async saveVignettes(vignettes: VignettesData): Promise<VignettesData> {
+    return this.request('/admin/vignettes', {
+      method: 'POST',
+      body: JSON.stringify({ vignettes })
     });
   }
 }
