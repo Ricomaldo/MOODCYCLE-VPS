@@ -281,8 +281,24 @@ class AdminController {
 
   // POST /api/admin/auth - Login Jeza
   async adminLogin(req, res) {
+    console.log('🔥 adminLogin called');
+    console.log('Request body:', req.body);
+    console.log('Content-Type:', req.headers['content-type']);
+    console.log('JEZA_PASSWORD exists:', !!process.env.JEZA_PASSWORD);
+    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+    
     try {
       const { username, password } = req.body;
+      
+      if (!req.body || !username || !password) {
+        console.log('❌ Missing body data:', { username, password, hasBody: !!req.body });
+        return res.status(400).json({
+          success: false,
+          error: 'Username et password requis'
+        });
+      }
+      
+      console.log('Attempting login for:', username);
       
       // Auth simple codée en dur (MVP)
       if (username === 'jeza' && password === process.env.JEZA_PASSWORD) {
@@ -292,18 +308,21 @@ class AdminController {
           { expiresIn: '24h' }
         );
         
+        console.log('✅ Login successful');
         res.json({
           success: true,
           token,
           user: { username, role: 'admin' }
         });
       } else {
+        console.log('❌ Invalid credentials - Expected:', { username: 'jeza', hasPassword: !!process.env.JEZA_PASSWORD });
         res.status(401).json({
           success: false,
           error: 'Identifiants invalides'
         });
       }
     } catch (error) {
+      console.error('❌ Login error:', error);
       res.status(500).json({
         success: false,
         error: 'Erreur authentification'
