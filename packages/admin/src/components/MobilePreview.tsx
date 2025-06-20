@@ -71,7 +71,7 @@ interface MobilePreviewProps {
   closings: ClosingsData;
 }
 
-// Composant InsightCard simplifié inspiré de React Native
+// Composant InsightCard simplifié - juste la carte avec le conseil
 function InsightCard({ insight, persona, phase = 'follicular', closing }: {
   insight: string;
   persona: { id: string; name: string; avatar: string };
@@ -82,92 +82,62 @@ function InsightCard({ insight, persona, phase = 'follicular', closing }: {
 
   return (
     <div className="max-w-sm mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
-      {/* Header avec nom et phase */}
-      <div 
-        className="p-6 text-center"
-        style={{ backgroundColor: theme.bg }}
-      >
-        <div className="flex justify-center mb-3">
-          <Avatar className="w-16 h-16 border-4 border-white shadow-lg">
-            <AvatarImage src={persona.avatar} />
-            <AvatarFallback className="bg-gray-200 text-gray-800">
-              {persona.name[0]}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-        <h3 
-          className="text-lg font-semibold mb-1"
-          style={{ color: theme.textColor }}
-        >
-          Bonjour {persona.name} 💜
-        </h3>
-        <p 
-          className="text-sm"
-          style={{ color: theme.captionColor }}
-        >
-          Phase {phase}
-        </p>
-      </div>
-
-      {/* Insight Card */}
+      {/* Juste le message - formule InsightsEngine */}
       <div className="p-6">
         <div 
-          className="rounded-2xl p-4 shadow-inner"
+          className="rounded-2xl p-6 shadow-inner"
           style={{ backgroundColor: theme.bg }}
         >
           <p 
-            className="text-sm leading-relaxed mb-3"
+            className="text-base leading-relaxed text-center"
             style={{ color: theme.textColor }}
           >
             {insight}
           </p>
-          <p 
-            className="text-sm"
-            style={{ color: theme.textColor }}
-          >
-            {closing}
-          </p>
-          <div className="flex justify-end mt-3">
-            <span 
-              className="text-xs"
-              style={{ color: theme.captionColor }}
-            >
-              Phase {phase}
-            </span>
-          </div>
         </div>
-      </div>
-
-      {/* Action Button */}
-      <div className="px-6 pb-6">
-        <button 
-          className={`w-full bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo} text-white py-3 rounded-2xl font-medium text-sm shadow-lg hover:shadow-xl transition-shadow`}
-        >
-          Discuter avec Mélune
-        </button>
       </div>
     </div>
   );
 }
 
 export function MobilePreview({ insight, selectedPersona, selectedJourney, showComparison, closings }: MobilePreviewProps) {
+  // Intros de phases enrichies
+  const phaseIntros = {
+    menstrual: "Tu es dans ta phase menstruelle, temps sacré de régénération et d'introspection.",
+    follicular: "Tu entres dans ta phase folliculaire, période de renouveau et de créativité.",
+    ovulatory: "Tu rayonnes dans ta phase d'ovulation, moment de pleine puissance féminine.",
+    luteal: "Tu traverses ta phase lutéale, temps de maturation et de sagesse intérieure."
+  };
+
   const renderPersonaCard = (personaId: string) => {
     const persona = personas.find(p => p.id === personaId);
     if (!persona || !insight) return null;
 
+    // 🎯 VRAIE FORMULE d'après InsightsEngine.js
     const hasPersonaVariant = insight.personaVariants?.[personaId]?.trim();
-    const insightText = hasPersonaVariant || insight.baseContent;
+    const baseVariant = hasPersonaVariant || insight.baseContent;
     const isUsingBaseContent = !hasPersonaVariant;
-    const closing = closings?.[personaId]?.[selectedJourney] || "Je t'accompagne dans cette découverte ✨";
+    
     const phase = insight.phase || 'follicular';
+    const phaseIntro = phaseIntros[phase as keyof typeof phaseIntros] || "";
+    
+    // Formule complète : phase + prenom + baseVariant + closing
+    const prenom = persona.name;
+    const personalizedClosing = closings?.[personaId]?.[selectedJourney] || "Je t'accompagne dans cette découverte ✨";
+    
+    // Reproduction de la logique enrichInsightWithContext complète
+    let finalMessage = `${phaseIntro} ${prenom}, ${baseVariant}`;
+    if (personalizedClosing) {
+      finalMessage += ` ${personalizedClosing}`;
+    }
 
     return (
       <div key={personaId} className="relative">
         <InsightCard
-          insight={insightText}
+          insight={finalMessage}
           persona={persona}
           phase={phase}
-          closing={closing}
+          closing="" // Le closing est déjà inclus dans finalMessage
         />
         
         {/* Badge de statut */}
@@ -236,29 +206,33 @@ export function MobilePreview({ insight, selectedPersona, selectedJourney, showC
       {/* Résumé simplifié */}
       <div className="mt-6 pt-6 border-t border-gray-700">
         <div className="flex items-center justify-between mb-3">
-          <h4 className="text-sm font-medium text-gray-300">Résumé :</h4>
+          <h4 className="text-sm font-medium text-gray-300">Formule InsightsEngine :</h4>
           <div className="flex gap-2">
             {insight._contentType === 'base' ? (
               <Badge 
                 variant="outline" 
                 className="text-xs px-3 py-1 text-amber-400 border-amber-500 bg-amber-900/20"
               >
-                ⚠️ Contenu de base
+                ⚠️ baseContent
               </Badge>
             ) : (
               <Badge 
                 variant="outline" 
                 className="text-xs px-3 py-1 text-green-400 border-green-500 bg-green-900/20"
               >
-                ✅ Contenu personnalisé
+                ✅ personaVariants[{selectedPersona}]
               </Badge>
             )}
           </div>
         </div>
-        <div className="text-xs text-gray-400">
-          <strong>Phase :</strong> {insight.phase || 'follicular'} • 
-          <strong> Journey :</strong> {journeyMapping[selectedJourney as keyof typeof journeyMapping]} • 
-          <strong> Score Jeza :</strong> {insight.jezaApproval || 'N/A'}
+        <div className="text-xs text-gray-400 space-y-1">
+          <div><strong>Phase Intro :</strong> {phaseIntros[(insight.phase || 'follicular') as keyof typeof phaseIntros]}</div>
+          <div><strong>Prénom :</strong> {personas.find(p => p.id === selectedPersona)?.name}</div>
+          <div><strong>Base Variant :</strong> {insight.personaVariants?.[selectedPersona] || insight.baseContent}</div>
+          <div><strong>Closing :</strong> {closings?.[selectedPersona]?.[selectedJourney] || "Je t'accompagne dans cette découverte ✨"}</div>
+          <div className="pt-2 border-t border-gray-600">
+            <strong>Résultat :</strong> "{phaseIntros[(insight.phase || 'follicular') as keyof typeof phaseIntros]} {personas.find(p => p.id === selectedPersona)?.name}, {insight.personaVariants?.[selectedPersona] || insight.baseContent} {closings?.[selectedPersona]?.[selectedJourney] || "Je t'accompagne dans cette découverte ✨"}"
+          </div>
         </div>
       </div>
     </div>
