@@ -56,8 +56,11 @@ class ChatController {
         });
       }
 
-      // Extraction du système prompt du context si présent
-      const systemPrompt = promptBuilder.buildContextualPrompt(context || {});
+      // Extraction du système prompt adaptatif avec message pour analyse
+      const systemPrompt = promptBuilder.buildContextualPrompt({
+        ...(context || {}),
+        message: message // ✅ NOUVEAU : Passer le message pour analyse adaptative
+      });
       
       // Appel Claude avec protection budget
       const response = await ClaudeService.sendMessage(message, systemPrompt, deviceId);
