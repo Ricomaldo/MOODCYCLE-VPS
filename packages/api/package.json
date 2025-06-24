@@ -5,7 +5,13 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node src/tests/run-all-tests.js",
+    "test:unit": "node src/tests/run-all-tests.js --unit",
+    "test:integration": "node src/tests/run-all-tests.js --integration",
+    "test:promptbuilder": "node src/tests/test-promptbuilder-v2.js",
+    "test:chat": "node src/tests/test-chat-integration.js",
+    "test:adaptive": "node src/tests/test-adaptive-system.js",
+    "test:mirroring": "node src/tests/test-enhanced-mirroring.js"
   },
   "keywords": [],
   "author": "",

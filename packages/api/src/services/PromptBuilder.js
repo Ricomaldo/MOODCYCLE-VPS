@@ -449,6 +449,178 @@ Réponds en incarnant parfaitement ce rôle personnalisé.`;
       recommendation: estimatedTokens > 1500 ? 'Réduire insights ou historique' : 'OK'
     };
   }
+
+  // === MÉTHODES COMPATIBILITÉ ANCIENS TESTS ===
+
+  /**
+   * Debug système adaptatif - Compatible avec test-adaptive-system.js
+   */
+  debugAdaptiveSystem(contextData) {
+    const messageAnalysis = this.analyzeMessage(contextData.message || '', contextData.conversationHistory || []);
+    const mirroringRules = this.calculateMirroring(contextData.message || '', contextData.conversationHistory || []);
+    
+    return {
+      analysis: {
+        messageStyle: mirroringRules.style,
+        conversationStage: contextData.conversationHistory?.length > 2 ? 'established' : 'early',
+        urgencyLevel: messageAnalysis.emotion.intensity > 0.7 ? 'high' : 'low'
+      },
+      adaptiveRules: {
+        wordCount: `${mirroringRules.minWords}-${mirroringRules.maxWords} mots`,
+        focus: mirroringRules.style,
+        priority: mirroringRules.priority || 'standard'
+      }
+    };
+  }
+
+  /**
+   * Validation contexte - Compatible avec test-adaptive-system.js
+   */
+  validateContext(contextData) {
+    const errors = [];
+    
+    if (!contextData) {
+      errors.push('Contexte manquant');
+      return errors;
+    }
+    
+    // Validation persona
+    const validPersonas = ['emma', 'laure', 'clara', 'sylvie', 'christine'];
+    if (contextData.persona && !validPersonas.includes(contextData.persona)) {
+      errors.push('Persona invalide');
+    }
+    
+    // Validation message
+    if (contextData.message !== undefined && typeof contextData.message !== 'string') {
+      errors.push('Message doit être une string');
+    }
+    
+    // Validation historique
+    if (contextData.conversationHistory && !Array.isArray(contextData.conversationHistory)) {
+      errors.push('Historique doit être un array');
+    }
+    
+    // Validation phase
+    const validPhases = ['menstrual', 'follicular', 'ovulatory', 'luteal'];
+    if (contextData.currentPhase && !validPhases.includes(contextData.currentPhase)) {
+      errors.push('Phase invalide');
+    }
+    
+    return errors;
+  }
+
+  /**
+   * Analyse style message utilisateur - Compatible avec test-enhanced-mirroring.js
+   */
+  analyzeUserMessageStyle(message, conversationHistory = []) {
+    const messageLength = message.split(' ').length;
+    const avgLength = this.getAverageUserMessageLength(conversationHistory);
+    
+    // Classification style
+    let style;
+    if (avgLength < 10) style = 'ultra_concise';
+    else if (avgLength < 20) style = 'concise';
+    else if (avgLength < 40) style = 'balanced';
+    else style = 'detailed';
+    
+    // Pour les messages très longs, style spécial
+    if (messageLength > 50) style = 'very_detailed';
+    
+    // Retourner directement le style pour compatibilité test
+    return style;
+  }
+
+  /**
+   * Version compacte du prompt - Compatible avec test-enhanced-mirroring.js
+   */
+  buildCompactPrompt(contextData) {
+    const persona = contextData.persona || 'emma';
+    const phase = contextData.currentPhase || 'menstrual';
+    const message = contextData.message || '';
+    
+    const personaTrait = this.personaTraits[persona];
+    const phaseBehavior = this.phases[phase]?.melune || this.getDefaultPhaseBehavior();
+    
+    return `Tu es Melune (${personaTrait?.style}). Phase ${phase}: ${phaseBehavior.tone}. 
+Message: "${message}". Réponds naturellement selon ta persona.`;
+  }
+
+  /**
+   * Méthodes supplémentaires pour test-enhanced-mirroring.js
+   */
+  getConversationStage(conversationHistory) {
+    if (!conversationHistory || conversationHistory.length === 0) return 'first_contact';
+    if (conversationHistory.length === 1) return 'early';
+    if (conversationHistory.length <= 3) return 'developing';
+    return 'established';
+  }
+
+  detectUrgency(message) {
+    const urgentKeywords = ['urgent', 'aide', 'douleur', 'insupportable', 'panique', 'mal !!!'];
+    const messageLower = message.toLowerCase();
+    
+    if (urgentKeywords.some(keyword => messageLower.includes(keyword))) return 'high';
+    if (message.includes('!') || message.includes('😭')) return 'medium';
+    return 'low';
+  }
+
+  shouldOverrideLength(message, conversationHistory, urgencyLevel, messageStyle) {
+    // Première interaction - toujours override pour accueil
+    if (conversationHistory.length === 0) {
+      return { override: true, reason: 'première interaction - accueil chaleureux' };
+    }
+
+    // Urgence élevée
+    if (urgencyLevel === 'high') {
+      return { override: true, reason: 'urgence émotionnelle détectée' };
+    }
+
+    // Demande d'explication
+    if (message.toLowerCase().includes('explique') || message.toLowerCase().includes('comment')) {
+      return { override: true, reason: 'demande d\'explication nécessite développement' };
+    }
+
+    // Questions santé
+    if (message.toLowerCase().includes('douleur') || message.toLowerCase().includes('symptôme')) {
+      return { override: true, reason: 'question santé nécessite réponse complète' };
+    }
+
+    return { override: false, reason: 'mirroring standard' };
+  }
+
+  getAdaptiveResponseRules(persona, messageStyle, conversationStage, urgencyLevel, message, conversationHistory) {
+    const baseRules = this.calculateMirroring(message, conversationHistory);
+    const override = this.shouldOverrideLength(message, conversationHistory, urgencyLevel, messageStyle);
+    
+    let wordCount = `${baseRules.minWords}-${baseRules.maxWords}`;
+    let mirrorRatio = 1.0;
+
+    // Calcul ratio mirroring
+    const messageLength = message.split(' ').length;
+    if (messageLength > 0) {
+      mirrorRatio = Math.min(2.0, Math.max(0.5, messageLength / 20));
+    }
+
+    // Override si nécessaire
+    if (override.override) {
+      if (urgencyLevel === 'high') {
+        wordCount = '40-80';
+      } else if (message.toLowerCase().includes('explique')) {
+        wordCount = '60-120';
+      } else if (conversationStage === 'first_contact') {
+        wordCount = '30-60';
+      }
+    }
+
+    return {
+      wordCount,
+      style: baseRules.style,
+      mirrorRatio,
+      override: override.override,
+      reason: override.reason,
+      urgencyPriority: urgencyLevel === 'high' ? 'validation émotionnelle' : null
+    };
+  }
 }
 
 module.exports = PromptBuilder;
