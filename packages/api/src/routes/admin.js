@@ -13,6 +13,8 @@ const {
   saveVignettes
 } = require('../controllers/adminController');
 const adminAuth = require('../middleware/adminAuth');
+const ConversationCache = require('../services/ConversationCache');
+const budgetProtection = require('../services/BudgetProtection');
 
 const router = express.Router();
 
@@ -37,4 +39,54 @@ router.post('/closings', adminAuth, saveClosings);
 router.get('/vignettes', getVignettes); // Lecture publique
 router.post('/vignettes', adminAuth, saveVignettes);
 
+// ✅ NOUVEAU: Endpoint stats cache
+router.get('/cache-stats', adminAuth, (req, res) => {
+  try {
+    const stats = ConversationCache.getStats();
+    res.json({
+      ...stats,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Erreur récupération stats cache:', error);
+    res.status(500).json({
+      error: 'CACHE_STATS_ERROR',
+      message: 'Impossible de récupérer les statistiques du cache'
+    });
+  }
+});
+
+// ✅ NOUVEAU: Endpoint pour vider le cache (admin)
+router.delete('/cache', adminAuth, (req, res) => {
+  try {
+    const clearedDevices = ConversationCache.clear();
+    res.json({
+      message: 'Cache vidé avec succès',
+      devices_cleared: clearedDevices,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Erreur vidage cache:', error);
+    res.status(500).json({
+      error: 'CACHE_CLEAR_ERROR',
+      message: 'Impossible de vider le cache'
+    });
+  }
+});
+router.get('/budget-status', adminAuth, (req, res) => {
+  try {
+    const status = budgetProtection.getBudgetStatus();
+    res.json({
+      budgets: status,
+      timestamp: new Date().toISOString(),
+      alerts: budgetProtection.checkAlerts ? budgetProtection.checkAlerts() : []
+    });
+  } catch (error) {
+    console.error('❌ Erreur récupération budget:', error);
+    res.status(500).json({
+      error: 'BUDGET_STATUS_ERROR',
+      message: 'Impossible de récupérer le statut budget'
+    });
+  }
+});
 module.exports = router;

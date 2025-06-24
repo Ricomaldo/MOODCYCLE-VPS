@@ -279,11 +279,12 @@ class AdminController {
     }
   }
 
-  // POST /api/admin/auth - Login Jeza
+  // POST /api/admin/auth - Login Multi-utilisateurs
   async adminLogin(req, res) {
     console.log('🔥 adminLogin called');
     console.log('Request body:', req.body);
     console.log('Content-Type:', req.headers['content-type']);
+    console.log('ADMIN_PASSWORD exists:', !!process.env.ADMIN_PASSWORD);
     console.log('JEZA_PASSWORD exists:', !!process.env.JEZA_PASSWORD);
     console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
     
@@ -300,22 +301,42 @@ class AdminController {
       
       console.log('Attempting login for:', username);
       
-      // Auth simple codée en dur (MVP)
-      if (username === 'jeza' && password === process.env.JEZA_PASSWORD) {
+      // ✅ NOUVEAU: Système multi-utilisateurs avec rôles
+      let user = null;
+      
+      if (username === 'admin' && password === process.env.ADMIN_PASSWORD) {
+        user = {
+          username: 'admin',
+          role: 'super_admin',
+          permissions: ['all'] // Accès total
+        };
+      } else if (username === 'jeza' && password === process.env.JEZA_PASSWORD) {
+        user = {
+          username: 'jeza',
+          role: 'content_editor', 
+          permissions: ['content_management', 'insights', 'phases', 'closings', 'vignettes'] // Accès limité pour l'instant
+        };
+      }
+      
+      if (user) {
         const token = jwt.sign(
-          { username, role: 'admin' },
+          { username: user.username, role: user.role, permissions: user.permissions },
           process.env.JWT_SECRET,
           { expiresIn: '24h' }
         );
         
-        console.log('✅ Login successful');
+        console.log(`✅ Login successful for ${user.username} (${user.role})`);
         res.json({
           success: true,
           token,
-          user: { username, role: 'admin' }
+          user: {
+            username: user.username,
+            role: user.role,
+            permissions: user.permissions
+          }
         });
       } else {
-        console.log('❌ Invalid credentials - Expected:', { username: 'jeza', hasPassword: !!process.env.JEZA_PASSWORD });
+        console.log('❌ Invalid credentials for:', username);
         res.status(401).json({
           success: false,
           error: 'Identifiants invalides'

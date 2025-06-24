@@ -1,6 +1,7 @@
 // controllers/chatController.js (version protégée)
 const ClaudeService = require('../services/ClaudeService');
 const PromptBuilder = require('../services/PromptBuilder');
+const ConversationCache = require('../services/ConversationCache');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -29,6 +30,9 @@ class ChatController {
 
   async logConversation(conversationData) {
     try {
+      // ✅ P1-4: Rotation automatique des logs si > 50MB
+      await this.rotateLogsIfNeeded();
+      
       const logEntry = JSON.stringify(conversationData) + '\n';
       await fs.appendFile(this.conversationLogPath, logEntry);
     } catch (error) {
@@ -36,10 +40,41 @@ class ChatController {
     }
   }
 
+  // ✅ P1-4: Rotation logs pour prévenir OOM
+  async rotateLogsIfNeeded() {
+    try {
+      const stats = await fs.stat(this.conversationLogPath);
+      const fileSizeInMB = stats.size / (1024 * 1024);
+      
+      if (fileSizeInMB > 50) {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const rotatedLogPath = this.conversationLogPath.replace('.log', `_${timestamp}.log`);
+        
+        // Déplacer le fichier actuel
+        await fs.rename(this.conversationLogPath, rotatedLogPath);
+        console.log(`📁 Log rotation: ${rotatedLogPath}`);
+        
+        // Créer un nouveau fichier log
+        await fs.writeFile(this.conversationLogPath, '');
+      }
+    } catch (error) {
+      // Si le fichier n'existe pas encore, c'est normal
+      if (error.code !== 'ENOENT') {
+        console.error('❌ Erreur rotation logs:', error.message);
+      }
+    }
+  }
+
   async handleChat(req, res) {
     try {
       const { message, context } = req.body;
       const deviceId = req.deviceId;
+
+      // ✅ P1-3: Validation des phases
+      const VALID_PHASES = ['menstrual', 'follicular', 'ovulatory', 'luteal'];
+      if (context?.currentPhase && !VALID_PHASES.includes(context.currentPhase)) {
+        context.currentPhase = 'follicular';
+      }
 
       // Validation input
       if (!message || message.trim().length === 0) {
@@ -56,14 +91,33 @@ class ChatController {
         });
       }
 
-      // Extraction du système prompt adaptatif avec message pour analyse
+      // ✅ NOUVEAU: Récupérer et fusionner historique
+      const mergedConversation = ConversationCache.mergeWithClientContext(deviceId, context);
+      
+      // Enrichir contexte avec cache
+      const enrichedContext = {
+        ...context,
+        conversation: {
+          ...context?.conversation,
+          recent: mergedConversation.messages,
+          continuity: mergedConversation.continuity,
+          hasCache: mergedConversation.hasCache
+        }
+      };
+
+      // Utiliser contexte enrichi pour prompt
+      const conversationHistory = enrichedContext.conversation.recent;
       const systemPrompt = promptBuilder.buildContextualPrompt({
-        ...(context || {}),
-        message: message // ✅ NOUVEAU : Passer le message pour analyse adaptative
+        ...enrichedContext,
+        message,
+        conversationHistory
       });
       
       // Appel Claude avec protection budget
       const response = await ClaudeService.sendMessage(message, systemPrompt, deviceId);
+
+      // ✅ NOUVEAU: Sauvegarder dans cache après succès
+      ConversationCache.add(deviceId, message, response.message, context);
 
       // ✅ NOUVEAU : Log conversationnel structuré
       const conversationLog = {
@@ -86,7 +140,13 @@ class ChatController {
         cost_usd: response.cost || 0,
         device_id: deviceId?.substring(0, 8) + '***',
         is_fallback: !!response.isFallback,
-        response_time: response.responseTime || null
+        response_time: response.responseTime || null,
+        // ✅ NOUVEAU: Log enrichi avec info cache
+        cache_status: {
+          used: mergedConversation.hasCache,
+          continuity: mergedConversation.continuity,
+          messages_cached: ConversationCache.get(deviceId).messages.length
+        }
       };
 
       // Sauvegarder dans fichier dédié
@@ -98,6 +158,7 @@ class ChatController {
           response: response.message,
           tokensUsed: response.tokensUsed,
           cost: response.cost,
+          phase: context?.currentPhase, // ✅ P1-1: Ajouter phase dans réponse
           responseTime: response.responseTime,
           timestamp: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
         });
@@ -108,6 +169,7 @@ class ChatController {
         response: response.message,
         isFallback: true,
         persona: response.persona,
+        phase: context?.currentPhase, // ✅ P1-1: Ajouter phase dans réponse fallback aussi
         timestamp: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
       });
 

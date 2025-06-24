@@ -10,6 +10,8 @@ class ClaudeService {
   }
 
   async sendMessage(userMessage, customSystemPrompt = null, deviceId = null) {
+    const startTime = Date.now(); // ✅ AJOUT: Démarrer chrono
+    
     try {
       // ✅ NOUVEAU : Vérification budget AVANT appel API
       const budgetCheck = budgetProtection.canMakeRequest(0.001);
@@ -44,6 +46,7 @@ class ClaudeService {
         tokensUsed: response.usage.output_tokens,
         totalTokens: response.usage.input_tokens + response.usage.output_tokens, // ✅ AJOUT pour monitoring
         cost: cost.dollarCost, // ✅ AJOUT pour transparence
+        responseTime: Date.now() - startTime, // ✅ AJOUT: Temps de réponse en ms
         requestId: response.id || 'unknown' // ✅ AJOUT pour debugging
       };
 
@@ -53,7 +56,8 @@ class ClaudeService {
         deviceId: deviceId?.substring(0, 8) + '***',
         error: error.message,
         status: error.status,
-        type: error.type
+        type: error.type,
+        responseTime: Date.now() - startTime // ✅ AJOUT: Temps même en cas d'erreur
       });
 
       // Rate limit Claude API
