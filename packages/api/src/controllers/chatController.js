@@ -92,7 +92,11 @@ class ChatController {
       }
 
       // ✅ NOUVEAU: Récupérer et fusionner historique
-      const mergedConversation = ConversationCache.mergeWithClientContext(deviceId, context);
+      const mergedConversation = ConversationCache.mergeWithClientContext(deviceId, context) || {
+        messages: [],
+        continuity: { isNew: true, gap: 0 },
+        hasCache: false
+      };
       
       // Enrichir contexte avec cache
       const enrichedContext = {
@@ -145,7 +149,7 @@ class ChatController {
         cache_status: {
           used: mergedConversation.hasCache,
           continuity: mergedConversation.continuity,
-          messages_cached: ConversationCache.get(deviceId).messages.length
+          messages_cached: ConversationCache.get(deviceId)?.messages?.length || 0
         }
       };
 
