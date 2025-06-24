@@ -185,7 +185,9 @@ class ChatController {
   generateSessionId(context, deviceId) {
     const date = new Date().toISOString().split('T')[0];
     const persona = context?.persona || 'unknown';
-    const deviceShort = deviceId?.substring(0, 8) || 'unknown';
+    const deviceShort = (deviceId && typeof deviceId === 'string') 
+      ? deviceId.substring(0, 8) 
+      : 'unknown';
     return `${persona}_${deviceShort}_${date}`;
   }
 
@@ -196,7 +198,9 @@ class ChatController {
     const message = req.body?.message || '';
 
     console.error('💬 Chat error:', {
-      deviceId: deviceId?.substring(0, 8) + '***',
+      deviceId: (deviceId && typeof deviceId === 'string') 
+        ? deviceId.substring(0, 8) + '***' 
+        : 'unknown***',
       error: error.message,
       persona: persona
     });
@@ -211,7 +215,9 @@ class ChatController {
       error_type: error.message,
       llm_response: null, // Sera rempli par le fallback
       is_error: true,
-      device_id: deviceId?.substring(0, 8) + '***'
+      device_id: (deviceId && typeof deviceId === 'string') 
+        ? deviceId.substring(0, 8) + '***' 
+        : 'unknown***'
     };
 
     // Gestion erreurs spécifiques avec fallbacks personas

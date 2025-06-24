@@ -51,14 +51,14 @@ class ConversationCache {
         { role: 'assistant', content: aiResponse, timestamp: Date.now() }
       );
       
-      // Limiter à MAX_MESSAGES
-      if (existing.messages.length > this.MAX_MESSAGES) {
+      // ✅ FIX: Validation défensive avant slice()
+      if (Array.isArray(existing.messages) && existing.messages.length > this.MAX_MESSAGES) {
         existing.messages = existing.messages.slice(-this.MAX_MESSAGES);
       }
       
       // Mettre à jour cache
       this.cache.set(deviceId, {
-        messages: existing.messages,
+        messages: existing.messages || [],
         lastActive: Date.now(),
         persona: context?.persona,
         phase: context?.currentPhase
@@ -100,6 +100,12 @@ class ConversationCache {
     deduplicateMessages(messages) {
       const seen = new Map();
       return messages.filter(msg => {
+        // ✅ FIX: Validation défensive avant slice()
+        if (!msg || !msg.content || typeof msg.content !== 'string') {
+          console.warn('⚠️ Message invalide dans deduplicateMessages:', msg);
+          return false;
+        }
+
         const key = `${msg.role}:${msg.content.slice(0, 50)}`;
         const lastSeen = seen.get(key);
         

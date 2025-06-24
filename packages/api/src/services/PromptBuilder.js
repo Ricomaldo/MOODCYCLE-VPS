@@ -158,16 +158,28 @@ class PromptBuilder {
       const formatted = recentHistory
         .reverse() // Plus ancien → plus récent
         .map((exchange, index) => {
-          // Tronquer si trop long (sécurité tokens)
-          const userMsg = exchange.user?.slice(0, 100) || '';
-          const meluneMsg = exchange.melune?.slice(0, 150) || '';
+          // ✅ FIX: Validation défensive avant slice()
+          if (!exchange || typeof exchange !== 'object') {
+            console.warn('⚠️ Exchange invalide dans formatConversationHistory:', exchange);
+            return null;
+          }
+
+          // ✅ FIX: Vérifier type avant slice()
+          const userMsg = (exchange.user && typeof exchange.user === 'string') 
+            ? exchange.user.slice(0, 100) 
+            : (exchange.content || ''); // Fallback pour format différent
+            
+          const meluneMsg = (exchange.melune && typeof exchange.melune === 'string') 
+            ? exchange.melune.slice(0, 150) 
+            : '';
           
-          return `User: "${userMsg}" → Melune: "${meluneMsg}"`;
+          return userMsg || meluneMsg ? `User: "${userMsg}" → Melune: "${meluneMsg}"` : null;
         })
+        .filter(Boolean) // Supprimer les entrées null
         .join('\n');
 
       console.log('📚 Historique formaté pour prompt:', formatted.length, 'caractères');
-      return formatted;
+      return formatted || null;
     }
 
     /**
