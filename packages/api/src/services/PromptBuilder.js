@@ -102,7 +102,24 @@ class PromptBuilder {
    * Sélection intelligente des insights Jeza
    */
   selectInsights(persona, phase, preferences, messageAnalysis) {
-    const cacheKey = `${persona}-${phase}-${messageAnalysis.topic}`;
+    // 🔥 DEBUG TEMPORAIRE
+    console.log('🔍 selectInsights called with:', {
+      persona,
+      phase,
+      messageAnalysis,
+      messageAnalysisType: typeof messageAnalysis
+    });
+    
+    if (!messageAnalysis) {
+      console.error('❌ messageAnalysis is undefined!');
+      messageAnalysis = { topic: 'general' };
+    }
+    
+    // ✅ FIX: Protection défensive contre messageAnalysis undefined
+    const safeAnalysis = messageAnalysis || { topic: 'general' };
+    const topic = safeAnalysis.topic || 'general';
+    
+    const cacheKey = `${persona}-${phase}-${topic}`;
     
     // Check cache first
     if (this.insightsCache.has(cacheKey)) {
@@ -128,8 +145,8 @@ class PromptBuilder {
       })
       .sort((a, b) => {
         // Prioriser par pertinence thématique
-        const aRelevance = this.calculateRelevance(a, messageAnalysis);
-        const bRelevance = this.calculateRelevance(b, messageAnalysis);
+        const aRelevance = this.calculateRelevance(a, safeAnalysis);
+        const bRelevance = this.calculateRelevance(b, safeAnalysis);
         return bRelevance - aRelevance;
       })
       .slice(0, 3); // Top 3 insights
@@ -144,9 +161,13 @@ class PromptBuilder {
    * Analyse du message pour extraction thématique
    */
   analyzeMessage(message, conversationHistory) {
+    // ✅ FIX: Protection défensive arguments
+    const safeMessage = message || '';
+    const safeHistory = conversationHistory || [];
+    
     const topics = [];
     const questions = [];
-    const messageLower = message.toLowerCase();
+    const messageLower = safeMessage.toLowerCase();
     
     // Détection topics
     if (messageLower.includes('fatigue') || messageLower.includes('énergie')) topics.push('energy');
@@ -169,15 +190,15 @@ class PromptBuilder {
     if (messageLower.includes('inquiète') || messageLower.includes('stressée')) emotion.intensity = 0.6;
     
     // Détection insight utilisateur
-    const hasInsight = conversationHistory.length > 2 && 
-      messageLower.includes('réalisé') || messageLower.includes('compris');
+    const hasInsight = safeHistory.length > 2 && 
+      (messageLower.includes('réalisé') || messageLower.includes('compris'));
     
     return {
       topics,
       questions,
       emotion,
       hasInsight,
-      topic: topics[0] || 'general'
+      topic: topics[0] || 'general' // ✅ FIX: Toujours retourner un topic valide
     };
   }
 
@@ -219,12 +240,15 @@ class PromptBuilder {
    * Détection opportunités navigation
    */
   detectNavigationNeeds(messageAnalysis, currentPhase) {
+    // ✅ FIX: Protection défensive
+    const safeAnalysis = messageAnalysis || { topic: 'general', topics: [], questions: [], emotion: { intensity: 0 } };
+    
     const opportunities = [];
     
     // Vers CYCLE
-    if ((messageAnalysis?.topic || 'general').includes('comprendre') ||
-        (messageAnalysis?.topics || []).includes('phase') ||
-        (messageAnalysis?.questions || []).includes('pourquoi')) {
+    if ((safeAnalysis.topic || 'general').includes('comprendre') ||
+        (safeAnalysis.topics || []).includes('phase') ||
+        (safeAnalysis.questions || []).includes('pourquoi')) {
       opportunities.push({
         target: 'cycle',
         reason: 'approfondir compréhension',
@@ -233,9 +257,9 @@ class PromptBuilder {
     }
     
     // Vers NOTEBOOK
-    if ((messageAnalysis?.emotion?.intensity || 0) > 0.7 ||
-        (messageAnalysis?.topics || []).includes('noter') ||
-        messageAnalysis?.hasInsight) {
+    if ((safeAnalysis.emotion?.intensity || 0) > 0.7 ||
+        (safeAnalysis.topics || []).includes('noter') ||
+        safeAnalysis.hasInsight) {
       opportunities.push({
         target: 'notebook',
         reason: 'capturer ressenti',
@@ -329,18 +353,21 @@ Réponds en incarnant parfaitement ce rôle personnalisé.`;
   }
 
   calculateRelevance(insight, messageAnalysis) {
+    // ✅ FIX: Protection défensive
+    const safeAnalysis = messageAnalysis || { topics: [], questions: [] };
+    
     let relevance = 0;
     
     // Match topics
     if (insight.targetPreferences) {
-      messageAnalysis.topics.forEach(topic => {
+      (safeAnalysis.topics || []).forEach(topic => {
         if (insight.targetPreferences.includes(topic)) relevance += 2;
       });
     }
     
     // Match tone avec question type
-    if (insight.tone === 'friendly' && messageAnalysis.questions.includes('comment')) relevance += 1;
-    if (insight.tone === 'professional' && messageAnalysis.questions.includes('pourquoi')) relevance += 1;
+    if (insight.tone === 'friendly' && (safeAnalysis.questions || []).includes('comment')) relevance += 1;
+    if (insight.tone === 'professional' && (safeAnalysis.questions || []).includes('pourquoi')) relevance += 1;
     
     return relevance;
   }
