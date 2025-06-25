@@ -107,7 +107,7 @@ class ChatController {
       };
 
       // === NOUVEAU : Debug token usage si nécessaire ===
-      if (__DEV__) {
+      if (process.env.NODE_ENV !== 'production') {
         const tokenDebug = promptBuilder.debugTokenUsage(enrichedContext);
         console.log('🎯 Token usage:', tokenDebug);
       }
@@ -116,7 +116,7 @@ class ChatController {
       const systemPrompt = promptBuilder.buildContextualPrompt(enrichedContext);
       
       // === NOUVEAU : Log insights sélectionnés pour debug ===
-      if (__DEV__) {
+      if (process.env.NODE_ENV !== 'production') {
         const selectedInsights = promptBuilder.selectInsights(
           context.persona || 'emma',
           context.currentPhase || 'menstrual',
