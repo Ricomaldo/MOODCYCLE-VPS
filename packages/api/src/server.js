@@ -40,25 +40,18 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes chat - SANS /api prefix
 const chatRoutes = require('./routes/chat');
 
-// Rate limiting appliqué à toutes les routes (filtré par skip dans claudeRateLimit)
 app.use(claudeRateLimit);
-app.use('/', chatRoutes);
+app.use('/api', chatRoutes);
 
-// Routes admin - SANS /api prefix  
 const adminRoutes = require('./routes/admin');
-app.use('/admin', adminRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.listen(PORT, () => {
   console.log(`🌟 MoodCycle API running on port ${PORT}`);
 });
 
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy' });
-});// Deploy test - Architecture VPS validée Mon Jun 16 22:33:14 CEST 2025
-// Hook test Wed Jun 18 14:57:28 CEST 2025
-// Hook fix Wed Jun 18 15:10:55 CEST 2025
-// Hook test final Wed Jun 18 15:16:06 CEST 2025
-// Force redeploy Thu Jun 19 23:38:09 CEST 2025
+});
