@@ -222,9 +222,9 @@ class PromptBuilder {
     const opportunities = [];
     
     // Vers CYCLE
-    if (messageAnalysis.topics.includes('comprendre') || 
-        messageAnalysis.topics.includes('phase') ||
-        messageAnalysis.questions.includes('pourquoi')) {
+    if ((messageAnalysis?.topic || 'general').includes('comprendre') ||
+        (messageAnalysis?.topics || []).includes('phase') ||
+        (messageAnalysis?.questions || []).includes('pourquoi')) {
       opportunities.push({
         target: 'cycle',
         reason: 'approfondir compréhension',
@@ -233,9 +233,9 @@ class PromptBuilder {
     }
     
     // Vers NOTEBOOK
-    if (messageAnalysis.emotion.intensity > 0.7 ||
-        messageAnalysis.topics.includes('noter') ||
-        messageAnalysis.hasInsight) {
+    if ((messageAnalysis?.emotion?.intensity || 0) > 0.7 ||
+        (messageAnalysis?.topics || []).includes('noter') ||
+        messageAnalysis?.hasInsight) {
       opportunities.push({
         target: 'notebook',
         reason: 'capturer ressenti',
