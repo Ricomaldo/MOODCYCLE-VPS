@@ -176,7 +176,7 @@ Avant chaque déploiement, vérifier **impérativement** :
 ## 🐛 Debugging
 
 ### Pas d'insights trouvés
-- Vérifier `insights_validate.json` présent
+- Vérifier `insights_validated.json` présent
 - Vérifier `jezaApproval >= 4` dans les données
 - Vérifier `preferences` match `targetPreferences`
 - **Nouveau :** Vérifier que `messageAnalysis` est passé à `selectInsights()`
