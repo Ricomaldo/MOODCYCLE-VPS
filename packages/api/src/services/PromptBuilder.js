@@ -1,5 +1,5 @@
 // services/PromptBuilder.js v2.0 - Melune Premium
-const personaClosings = require('../data/persona-closings.json');
+const personaClosings = require('../data/closings.json');
 const phases = require('../data/phases.json');
 const vignettes = require('../data/vignettes.json');
 
