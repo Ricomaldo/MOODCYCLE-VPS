@@ -261,10 +261,10 @@ class AdminController {
     }
   }
 
-  // GET /api/admin/closings - Lire persona-closings.json
+  // GET /api/admin/closings - Lire closings.json
   async getClosings(req, res) {
     try {
-      const closingsPath = path.join(__dirname, '../data/persona-closings.json');
+      const closingsPath = path.join(__dirname, '../data/closings.json');
       const data = await fs.readFile(closingsPath, 'utf8');
       
       res.json({
@@ -430,7 +430,7 @@ class AdminController {
         });
       }
 
-      const closingsPath = path.join(__dirname, '../data/persona-closings.json');
+      const closingsPath = path.join(__dirname, '../data/closings.json');
       
       // ✅ LIRE LES DONNÉES EXISTANTES PUIS MERGER
       let existingClosings = {};
