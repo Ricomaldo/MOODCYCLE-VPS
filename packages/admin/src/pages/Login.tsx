@@ -16,7 +16,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await login(username, password);
-      window.location.href = '/admin';
+      window.location.href = '/admin/';
     } catch (err) {
       // Error is handled by the auth context
     }
