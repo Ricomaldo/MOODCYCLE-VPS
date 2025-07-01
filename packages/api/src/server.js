@@ -5,7 +5,6 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const claudeRateLimit = require('./middleware/claudeRateLimit');
-const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 // Test nouveau système de déploiement
