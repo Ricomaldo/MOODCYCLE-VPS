@@ -122,58 +122,58 @@ class ApiClient {
   }
 
   async login(username: string, password: string): Promise<{ token: string }> {
-    return this.request('/admin/auth', {
+    return this.request('/api/admin/auth', {
       method: 'POST',
       body: JSON.stringify({ username, password }),
     });
   }
 
   async getInsights(): Promise<InsightsApiResponse> {
-    return this.request('/admin/insights');
+    return this.request('/api/admin/insights');
   }
 
   async saveInsights(insights: InsightData[]): Promise<void> {
-    return this.request('/admin/insights/bulk', {
+    return this.request('/api/admin/insights/bulk', {
       method: 'POST',
       body: JSON.stringify({ insights }),
     });
   }
 
   async saveInsightVariants(insightId: string, variants: Record<string, string>): Promise<void> {
-    return this.request('/admin/insights', {
+    return this.request('/api/admin/insights', {
       method: 'POST',
       body: JSON.stringify({ insightId, variants }),
     });
   }
 
   async getPhases(): Promise<PhaseData> {
-    return this.request('/admin/phases');
+    return this.request('/api/admin/phases');
   }
 
   async getClosings(): Promise<ClosingsData> {
-    return this.request('/admin/closings');
+    return this.request('/api/admin/closings');
   }
 
   async savePhases(phases: PhaseData): Promise<PhaseData> {
-    return this.request('/admin/phases', {
+    return this.request('/api/admin/phases', {
       method: 'POST',
       body: JSON.stringify({ phases })
     });
   }
 
   async saveClosings(closings: ClosingsData): Promise<ClosingsData> {
-    return this.request('/admin/closings', {
+    return this.request('/api/admin/closings', {
       method: 'POST', 
       body: JSON.stringify({ closings })
     });
   }
 
   async getVignettes(phase: string, persona: string): Promise<{ success: boolean; vignettes: Vignette[] }> {
-    return this.request(`/admin/vignettes?phase=${phase}&persona=${persona}`);
+    return this.request(`/api/admin/vignettes?phase=${phase}&persona=${persona}`);
   }
 
   async saveVignettes(vignettes: VignettesData): Promise<VignettesData> {
-    return this.request('/admin/vignettes', {
+    return this.request('/api/admin/vignettes', {
       method: 'POST',
       body: JSON.stringify({ vignettes })
     });

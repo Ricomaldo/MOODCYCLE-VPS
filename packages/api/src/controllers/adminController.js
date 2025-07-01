@@ -7,10 +7,10 @@ const jwt = require('jsonwebtoken');
 
 class AdminController {
   
-  // GET /api/admin/insights - Lire les 178 insights de base
+  // GET /api/admin/insights - Lire les insights de base
   async getInsights(req, res) {
     try {
-      const insightsPath = path.join(__dirname, '../data/insights_validated.json');
+      const insightsPath = path.join(__dirname, '../data/insights.json');
       const data = await fs.readFile(insightsPath, 'utf8');
       const insights = JSON.parse(data);
       
@@ -22,6 +22,7 @@ class AdminController {
         }
       });
     } catch (error) {
+      console.error('❌ Error in getInsights:', error);
       res.status(500).json({
         success: false,
         error: 'Erreur lecture insights'
