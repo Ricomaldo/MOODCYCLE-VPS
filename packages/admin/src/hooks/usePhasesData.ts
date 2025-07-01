@@ -1,52 +1,9 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/services/api';
-
-interface PhaseData {
-  id: string;
-  name: string;
-  slug: string;
-  color: string;
-  duration: string;
-  energy: string;
-  mood: string;
-  description: string;
-  characteristics: {
-    physical: string[];
-    emotional: string[];
-    energy: string;
-  };
-  advice: {
-    nutrition: string[];
-    activities: string[];
-    selfcare: string[];
-    avoid: string[];
-  };
-  rituals: string[];
-  affirmation: string;
-  symbol: string;
-  element: string;
-  archetype: string;
-  melune: {
-    tone: string;
-    tempo: string;
-    vocabulary: string[];
-    communicationStyle: string;
-    focus: string;
-    avoid: string[];
-    encouragementStyle: string;
-  };
-  contextualEnrichments: {
-    id: string;
-    targetPersona: string;
-    targetPreferences: string[];
-    targetJourney: string;
-    tone: string;
-    contextualText: string;
-  }[];
-}
+import { Phase, PhasesData } from '@/types/phases';
 
 export function usePhasesData() {
-  const [phases, setPhases] = useState<Record<string, PhaseData>>({});
+  const [phases, setPhases] = useState<PhasesData>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -67,7 +24,7 @@ export function usePhasesData() {
       // API returns phase data directly from phases.json français
       if (response && (response.data || response)) {
         const phasesData = response.data || response;
-        setPhases(phasesData as Record<string, PhaseData>);
+        setPhases(phasesData as PhasesData);
       } else {
         setError('Aucune donnée de phase reçue de l\'API');
       }
@@ -79,7 +36,7 @@ export function usePhasesData() {
     }
   };
 
-  const savePhases = async (phasesData: Record<string, PhaseData>) => {
+  const savePhases = async (phasesData: PhasesData) => {
     try {
       console.log('Saving phases to API...');
       await apiClient.savePhases(phasesData);

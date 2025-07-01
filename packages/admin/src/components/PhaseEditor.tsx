@@ -5,54 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { usePhasesData } from "@/hooks/usePhasesData";
 import { RefreshCw, Save, Loader2, Edit, ChevronDown, ChevronRight, AlertCircle } from "lucide-react";
+import { Phase, EditableContent, PhasesData } from "@/types/phases";
 
 interface PhaseEditorProps {
   phaseId: string;
 }
 
-interface PhaseData {
-  id: string;
-  name: string;
-  slug: string;
-  color: string;
-  duration: string;
-  energy: string;
-  mood: string;
-  description: string;
-  characteristics: {
-    physical: string[];
-    emotional: string[];
-    energy: string;
-  };
-  advice: {
-    nutrition: string[];
-    activities: string[];
-    selfcare: string[];
-    avoid: string[];
-  };
-  rituals: string[];
-  affirmation: string;
-  symbol: string;
-  element: string;
-  archetype: string;
-  melune: {
-    tone: string;
-    tempo: string;
-    vocabulary: string[];
-    communicationStyle: string;
-    focus: string;
-    avoid: string[];
-    encouragementStyle: string;
-  };
-  contextualEnrichments: {
-    id: string;
-    targetPersona: string;
-    targetPreferences: string[];
-    targetJourney: string;
-    tone: string;
-    contextualText: string;
-  }[];
-}
+// Utilisation des types importés
+type PhaseData = Phase;
 
 export function PhaseEditor({ phaseId }: PhaseEditorProps) {
   const { phases: phasesData, loading, savePhases } = usePhasesData();
@@ -74,9 +34,15 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
       const phase = phasesData[phaseId];
       if (phase) {
         // Ensure the phase has all required fields with defaults
-        const completePhase = {
+        const completePhase: Phase = {
           ...phase,
           slug: phase.slug || phaseId,
+          editableContent: phase.editableContent || {
+            description: '',
+            advice: { nutrition: [], activities: [], selfcare: [], avoid: [] },
+            rituals: [],
+            affirmation: ''
+          },
           characteristics: {
             ...phase.characteristics,
             energy: phase.characteristics?.energy || ''
@@ -96,7 +62,7 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
         setOriginalPhaseData(completePhase);
       } else {
         // Si aucune donnée trouvée dans l'API, créer une structure vide
-        const defaultData = {
+        const defaultData: Phase = {
           id: phaseId,
           name: `Phase ${phaseId}`,
           slug: phaseId,
@@ -104,11 +70,13 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
           duration: '',
           energy: '',
           mood: '',
-          description: '',
+          editableContent: {
+            description: '',
+            advice: { nutrition: [], activities: [], selfcare: [], avoid: [] },
+            rituals: [],
+            affirmation: ''
+          },
           characteristics: { physical: [], emotional: [], energy: '' },
-          advice: { nutrition: [], activities: [], selfcare: [], avoid: [] },
-          rituals: [],
-          affirmation: '',
           symbol: '',
           element: '',
           archetype: '',
@@ -157,7 +125,7 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
       console.log('Saving phase data:', phaseData);
       
       // Update the phases data with the current phase
-      const updatedPhases = {
+      const updatedPhases: PhasesData = {
         ...phasesData,
         [phaseId]: phaseData
       };
@@ -302,13 +270,19 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
             <CardContent>
               {isEditing ? (
                 <Textarea
-                  value={phaseData.description}
-                  onChange={(e) => setPhaseData({...phaseData, description: e.target.value})}
+                  value={phaseData.editableContent.description}
+                  onChange={(e) => setPhaseData({
+                    ...phaseData, 
+                    editableContent: {
+                      ...phaseData.editableContent,
+                      description: e.target.value
+                    }
+                  })}
                   className="bg-gray-900 border-gray-600 text-white min-h-[100px]"
                   placeholder="Décrivez cette phase..."
                 />
               ) : (
-                <p className="text-gray-300">{phaseData.description || 'Aucune description définie'}</p>
+                <p className="text-gray-300">{phaseData.editableContent.description || 'Aucune description définie'}</p>
               )}
             </CardContent>
           </Card>
@@ -841,12 +815,15 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
             <CardContent>
               {isEditing ? (
                 <Textarea
-                  value={phaseData.advice[key as keyof typeof phaseData.advice].join('\n')}
+                  value={phaseData.editableContent.advice[key as keyof typeof phaseData.editableContent.advice].join('\n')}
                   onChange={(e) => setPhaseData({
                     ...phaseData,
-                    advice: {
-                      ...phaseData.advice,
-                      [key]: e.target.value.split('\n').filter(item => item.trim())
+                    editableContent: {
+                      ...phaseData.editableContent,
+                      advice: {
+                        ...phaseData.editableContent.advice,
+                        [key]: e.target.value.split('\n').filter(item => item.trim())
+                      }
                     }
                   })}
                   className="bg-gray-900 border-gray-600 text-white min-h-[120px] text-sm"
@@ -854,8 +831,8 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
                 />
               ) : (
                 <ul className="text-gray-300 space-y-1 text-sm">
-                  {phaseData.advice[key as keyof typeof phaseData.advice].length > 0 ? 
-                    phaseData.advice[key as keyof typeof phaseData.advice].map((item, index) => (
+                  {phaseData.editableContent.advice[key as keyof typeof phaseData.editableContent.advice].length > 0 ? 
+                    phaseData.editableContent.advice[key as keyof typeof phaseData.editableContent.advice].map((item, index) => (
                       <li key={index}>• {item}</li>
                     )) : 
                     <li className="text-gray-500">Aucun conseil défini</li>
@@ -876,18 +853,21 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
           <CardContent>
             {isEditing ? (
               <Textarea
-                value={phaseData.rituals.join('\n')}
+                value={phaseData.editableContent.rituals.join('\n')}
                 onChange={(e) => setPhaseData({
                   ...phaseData, 
-                  rituals: e.target.value.split('\n').filter(item => item.trim())
+                  editableContent: {
+                    ...phaseData.editableContent,
+                    rituals: e.target.value.split('\n').filter(item => item.trim())
+                  }
                 })}
                 className="bg-gray-900 border-gray-600 text-white min-h-[120px]"
                 placeholder="Un rituel par ligne..."
               />
             ) : (
               <ul className="text-gray-300 space-y-1">
-                {phaseData.rituals.length > 0 ? 
-                  phaseData.rituals.map((ritual, index) => (
+                {phaseData.editableContent.rituals.length > 0 ? 
+                  phaseData.editableContent.rituals.map((ritual, index) => (
                     <li key={index}>• {ritual}</li>
                   )) : 
                   <li className="text-gray-500">Aucun rituel défini</li>
@@ -904,14 +884,20 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
           <CardContent>
             {isEditing ? (
               <Textarea
-                value={phaseData.affirmation}
-                onChange={(e) => setPhaseData({...phaseData, affirmation: e.target.value})}
+                value={phaseData.editableContent.affirmation}
+                onChange={(e) => setPhaseData({
+                  ...phaseData, 
+                  editableContent: {
+                    ...phaseData.editableContent,
+                    affirmation: e.target.value
+                  }
+                })}
                 className="bg-gray-900 border-gray-600 text-white min-h-[100px]"
                 placeholder="Écrivez une affirmation positive pour cette phase..."
               />
             ) : (
               <p className="text-gray-300 italic">
-                {phaseData.affirmation || 'Aucune affirmation définie'}
+                {phaseData.editableContent.affirmation || 'Aucune affirmation définie'}
               </p>
             )}
           </CardContent>
@@ -1029,9 +1015,9 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
                     phaseData.duration,
                     phaseData.energy,
                     phaseData.mood,
-                    phaseData.description,
+                    phaseData.editableContent.description,
                     phaseData.characteristics.energy,
-                    phaseData.affirmation,
+                    phaseData.editableContent.affirmation,
                     phaseData.symbol,
                     phaseData.element,
                     phaseData.archetype
@@ -1045,11 +1031,11 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
                   {[
                     phaseData.characteristics.physical,
                     phaseData.characteristics.emotional,
-                    phaseData.advice.nutrition,
-                    phaseData.advice.activities,
-                    phaseData.advice.selfcare,
-                    phaseData.advice.avoid,
-                    phaseData.rituals
+                    phaseData.editableContent.advice.nutrition,
+                    phaseData.editableContent.advice.activities,
+                    phaseData.editableContent.advice.selfcare,
+                    phaseData.editableContent.advice.avoid,
+                    phaseData.editableContent.rituals
                   ].reduce((total, list) => total + (list.length > 0 ? 1 : 0), 0)} / 7
                 </div>
               </div>
@@ -1064,11 +1050,11 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
               <div className="bg-gray-900 p-3 rounded">
                 <div className="text-gray-400">Statut</div>
                 <div className={`font-bold text-lg ${
-                  phaseData.slug && phaseData.description && phaseData.affirmation 
+                  phaseData.slug && phaseData.editableContent.description && phaseData.editableContent.affirmation 
                     ? 'text-green-400' 
                     : 'text-orange-400'
                 }`}>
-                  {phaseData.slug && phaseData.description && phaseData.affirmation 
+                  {phaseData.slug && phaseData.editableContent.description && phaseData.editableContent.affirmation 
                     ? '✅ Complet' 
                     : '⏳ En cours'
                   }
