@@ -1,8 +1,4 @@
 {
-  "exportDate": "2025-06-09T10:46:50.334Z",
-  "totalInsights": 178,
-  "validatedCount": 176,
-  "insights": {
     "menstrual": [
       {
         "id": "M_symptoms_friendly_01",
@@ -2329,4 +2325,3 @@
       }
     ]
   }
-}
