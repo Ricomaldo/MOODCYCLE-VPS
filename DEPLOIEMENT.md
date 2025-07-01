@@ -181,7 +181,7 @@ sudo systemctl reload nginx
 ### **Fichiers Essentiels**
 - `insights_validated.json` (2332 lignes) - Contenus IA
 - `phases.json` (330 lignes) - Métadonnées cycle
-- `persona-closings.json` (31 lignes) - Messages personnalisés
+- `closings.json` (31 lignes) - Messages personnalisés
 - `vignettes.json` (571 lignes) - Actions contextuelles
 
 ### **⚠️ Problème Résolu : insights_validated.json**
