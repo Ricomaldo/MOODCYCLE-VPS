@@ -120,8 +120,8 @@ NODE_ENV=production
 PORT=4000
 CLAUDE_API_KEY=sk-ant-api03-xxx...
 JWT_SECRET=moodcycle_super_secret_key_production_2025
-ADMIN_PASSWORD=admin_secure_password_2025
-JEZA_PASSWORD=jeza_secure_password_2025
+ADMIN_PASSWORD=onveutdupognon67!
+JEZA_PASSWORD=onvaetreriche67!
 ```
 
 ### **Variables Optionnelles**
@@ -149,10 +149,7 @@ location /api/ {
     proxy_pass http://localhost:4000/api/;
 }
 
-# Admin API Routes (FIX appliqué)
-location ~ ^/admin/(auth|insights|phases|closings|vignettes) {
-    proxy_pass http://localhost:4000/api$request_uri;  # /api ajouté
-}
+
 
 # Interface Admin
 location /admin {
@@ -175,16 +172,16 @@ sudo systemctl reload nginx
 
 ### **Localisation**
 ```bash
-/srv/www/internal/moodcycle.irimwebforge.com/current/src/data/
+/srv/www/internal/moodcycle-api/current/packages/api/src/data/
 ```
 
 ### **Fichiers Essentiels**
-- `insights_validated.json` (2332 lignes) - Contenus IA
+- `insights.json` (2332 lignes) - Contenus IA
 - `phases.json` (330 lignes) - Métadonnées cycle
 - `closings.json` (31 lignes) - Messages personnalisés
 - `vignettes.json` (571 lignes) - Actions contextuelles
 
-### **⚠️ Problème Résolu : insights_validated.json**
+### **⚠️ Problème Résolu : insights.json**
 Le fichier était manquant sur le VPS → **Déployer via `deploy:api`**
 
 ---
@@ -231,7 +228,7 @@ pm2 logs moodcycle-api --lines 20
 # Tester endpoint direct
 curl -X POST https://moodcycle.irimwebforge.com/api/admin/auth \
   -H "Content-Type: application/json" \
-  -d '{"username":"jeza","password":"jeza_secure_password_2025"}'
+  -d '{"username":"jeza","password":"onvaetreriche67!"}'
 ```
 
 ### **3. Erreur 500 Internal Server Error**
@@ -240,7 +237,7 @@ curl -X POST https://moodcycle.irimwebforge.com/api/admin/auth \
 pm2 logs moodcycle-api --lines 50 --err
 
 # Vérifier fichiers données existent
-ls -la /srv/www/internal/moodcycle.irimwebforge.com/current/src/data/
+ls -la /srv/www/internal/moodcycle-api/current/packages/api/src/data/
 ```
 
 ### **4. Erreur 404 sur routes admin**
@@ -325,12 +322,12 @@ curl https://moodcycle.irimwebforge.com/api/health
 ```bash
 curl -X POST https://moodcycle.irimwebforge.com/api/admin/auth \
   -H "Content-Type: application/json" \
-  -d '{"username":"jeza","password":"jeza_secure_password_2025"}'
+  -d '{"username":"jeza","password":"onvaetreriche67!"}'
 ```
 
 ### **Vérifier Fichiers Données**
 ```bash
-ls -la /srv/www/internal/moodcycle.irimwebforge.com/current/src/data/ | grep insights
+ls -la /srv/www/internal/moodcycle-api/current/packages/api/src/data/ | grep insights
 ```
 
 ---

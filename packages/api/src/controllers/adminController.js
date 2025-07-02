@@ -47,7 +47,7 @@ class AdminController {
         });
       }
 
-      const insightsPath = path.join(__dirname, '../data/insights_validated.json');
+      const insightsPath = path.join(__dirname, '../data/insights.json');
       
       // Lire le fichier existant structuré par phases
       const data = await fs.readFile(insightsPath, 'utf8');
@@ -133,49 +133,43 @@ class AdminController {
       if (insightId && variants) {
         console.log('📝 Saving variants for:', insightId);
         
-        // 🌟 VRAIE LOGIQUE DE SAUVEGARDE VARIANTS
-        const insightsPath = path.join(__dirname, '../data/insights_validated.json');
+        const insightsPath = path.join(__dirname, '../data/insights.json');
         const data = await fs.readFile(insightsPath, 'utf8');
         const fileData = JSON.parse(data);
         
-        // Le fichier a une structure wrapper avec les vraies phases dans fileData.insights
-        const existingInsights = fileData.insights || fileData;
-        
-        // Trouver et modifier l'insight
+        // Parcourir toutes les phases pour trouver l'insight
         let found = false;
-        for (const phase in existingInsights) {
-          if (Array.isArray(existingInsights[phase])) {
-            const insightIndex = existingInsights[phase].findIndex(insight => insight.id === insightId);
-            if (insightIndex !== -1) {
-              console.log(`✅ Found ${insightId} in phase ${phase}, updating variants`);
-              
-              // Check if baseContent is being updated
-              if (variants.baseContent) {
-                console.log(`📝 Updating baseContent for ${insightId}`);
-                existingInsights[phase][insightIndex].baseContent = variants.baseContent;
-                // Remove baseContent from variants to avoid storing it twice
-                const { baseContent, ...personaVariants } = variants;
-                if (Object.keys(personaVariants).length > 0) {
-                  existingInsights[phase][insightIndex].personaVariants = {
-                    ...existingInsights[phase][insightIndex].personaVariants,
-                    ...personaVariants
-                  };
-                }
-              } else {
-                // Regular persona variants update
-                existingInsights[phase][insightIndex].personaVariants = {
-                  ...existingInsights[phase][insightIndex].personaVariants,
-                  ...variants
-                };
+        Object.keys(fileData).forEach(phase => {
+          const insightIndex = fileData[phase].findIndex(i => i.id === insightId);
+          if (insightIndex !== -1) {
+            console.log(`✅ Found ${insightId} in phase ${phase}, updating`);
+            
+            // Mettre à jour l'insight
+            fileData[phase][insightIndex] = {
+              ...fileData[phase][insightIndex],
+              ...variants,
+              lastModified: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
+            };
+            
+            // Synchroniser targetJourney et targetPreferences si nécessaire
+            if (variants.targetJourney) {
+              try {
+                const journeyArray = JSON.parse(variants.targetJourney);
+                fileData[phase][insightIndex].targetJourney = journeyArray;
+                fileData[phase][insightIndex].targetPreferences = journeyArray;
+              } catch (e) {
+                console.log('Failed to parse targetJourney:', e);
               }
-              
-              existingInsights[phase][insightIndex].status = 'enriched';
-              existingInsights[phase][insightIndex].lastModified = new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'});
-              found = true;
-              break;
             }
+            
+            // Gérer baseContent séparément
+            if (variants.baseContent) {
+              fileData[phase][insightIndex].baseContent = variants.baseContent;
+            }
+            
+            found = true;
           }
-        }
+        });
         
         if (!found) {
           console.log(`❌ Insight ${insightId} not found in any phase`);
@@ -185,42 +179,45 @@ class AdminController {
           });
         }
         
-        // Remettre les insights modifiés dans la structure wrapper
-        fileData.insights = existingInsights;
-        
-        // Sauvegarder le fichier avec la structure wrapper préservée
         await fs.writeFile(insightsPath, JSON.stringify(fileData, null, 2));
         
-        const variantCount = Object.keys(variants).length;
         res.json({
           success: true,
-          data: { insightId, variantsCreated: variantCount }
+          data: { message: 'Insight mis à jour avec succès' }
         });
         
       } else if (insights) {
         console.log('📦 Bulk saving:', insights.length, 'insights');
         
-        // 🌟 LOGIQUE BULK SAVE
-        const insightsPath = path.join(__dirname, '../data/insights_validated.json');
+        // 🌟 LOGIQUE BULK SAVE - Cohérente avec saveAllInsights
+        const insightsPath = path.join(__dirname, '../data/insights.json');
         const data = await fs.readFile(insightsPath, 'utf8');
-        const existingInsights = JSON.parse(data);
+        const fileData = JSON.parse(data);
+        
+        // Le fichier a une structure wrapper avec les vraies phases dans fileData.insights
+        const existingInsights = fileData.insights || fileData;
         
         // Mettre à jour chaque insight
         insights.forEach(updatedInsight => {
           for (const phase in existingInsights) {
-            const insightIndex = existingInsights[phase].findIndex(insight => insight.id === updatedInsight.id);
-            if (insightIndex !== -1) {
-              existingInsights[phase][insightIndex] = {
-                ...existingInsights[phase][insightIndex],
-                ...updatedInsight,
-                lastModified: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
-              };
+            if (Array.isArray(existingInsights[phase])) {
+              const insightIndex = existingInsights[phase].findIndex(insight => insight.id === updatedInsight.id);
+              if (insightIndex !== -1) {
+                existingInsights[phase][insightIndex] = {
+                  ...existingInsights[phase][insightIndex],
+                  ...updatedInsight,
+                  lastModified: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
+                };
+              }
             }
           }
         });
         
-        // Sauvegarder le fichier
-        await fs.writeFile(insightsPath, JSON.stringify(existingInsights, null, 2));
+        // Remettre les insights modifiés dans la structure wrapper
+        fileData.insights = existingInsights;
+        
+        // Sauvegarder le fichier avec la structure wrapper préservée
+        await fs.writeFile(insightsPath, JSON.stringify(fileData, null, 2));
         
         res.json({
           success: true,
