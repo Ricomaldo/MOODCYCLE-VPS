@@ -46,7 +46,7 @@ app.use((req, res, next) => {
 app.use('/admin', express.static(path.join(__dirname, '../../admin/dist')));
 
 // Handle admin routes for client-side routing
-app.get('/admin/*', (req, res) => {
+app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../../admin/dist/index.html'));
 });
 
