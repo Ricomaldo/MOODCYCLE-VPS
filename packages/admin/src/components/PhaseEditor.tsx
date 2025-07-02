@@ -71,9 +71,9 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
           energy: '',
           mood: '',
           editableContent: {
-            description: '',
-            advice: { nutrition: [], activities: [], selfcare: [], avoid: [] },
-            rituals: [],
+          description: '',
+          advice: { nutrition: [], activities: [], selfcare: [], avoid: [] },
+          rituals: [],
             affirmation: ''
           },
           characteristics: { physical: [], emotional: [], energy: '' },
@@ -820,9 +820,9 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
                     ...phaseData,
                     editableContent: {
                       ...phaseData.editableContent,
-                      advice: {
+                    advice: {
                         ...phaseData.editableContent.advice,
-                        [key]: e.target.value.split('\n').filter(item => item.trim())
+                      [key]: e.target.value.split('\n').filter(item => item.trim())
                       }
                     }
                   })}
@@ -858,7 +858,7 @@ export function PhaseEditor({ phaseId }: PhaseEditorProps) {
                   ...phaseData, 
                   editableContent: {
                     ...phaseData.editableContent,
-                    rituals: e.target.value.split('\n').filter(item => item.trim())
+                  rituals: e.target.value.split('\n').filter(item => item.trim())
                   }
                 })}
                 className="bg-gray-900 border-gray-600 text-white min-h-[120px]"

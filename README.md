@@ -56,7 +56,7 @@ GET  /health               # Status système
   - Gestion utilisateurs admin/jeza
 
 ### Données Structurées
-- **insights_validated.json** : 178 insights × 4 phases × 4 personas (2332 lignes)
+- **insights.json** : 178 insights × 4 phases × 4 personas (2332 lignes)
 - **phases.json** : Métadonnées cycle menstruel (330 lignes)
 - **vignettes.json** : Actions contextuelles (571 lignes)
 - **closings.json** : Messages personnalisés (31 lignes)

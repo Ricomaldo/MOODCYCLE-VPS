@@ -176,7 +176,7 @@ Avant chaque déploiement, vérifier **impérativement** :
 ## 🐛 Debugging
 
 ### Pas d'insights trouvés
-- Vérifier `insights_validated.json` présent
+- Vérifier `insights.json` présent
 - Vérifier `jezaApproval >= 4` dans les données
 - Vérifier `preferences` match `targetPreferences`
 - **Nouveau :** Vérifier que `messageAnalysis` est passé à `selectInsights()`
@@ -224,3 +224,84 @@ Avant chaque déploiement, vérifier **impérativement** :
 **🎉 Tests validés = PromptBuilder v2 prêt pour production !** 
 
 *Mise à jour : Compatibilité 100% avec tests existants + nouveaux tests v2* 
+
+# Architecture de Tests - MoodCycle API
+
+## Vue d'ensemble
+
+Cette architecture de test minimale permet de valider le bon fonctionnement des composants critiques de l'API MoodCycle.
+
+## Structure des Tests
+
+```
+tests/
+├── README.md                    # Ce fichier
+├── run-all-tests.js            # Script principal d'exécution
+├── test-admin-controller.js    # Tests du contrôleur admin
+└── test-base-insights-tab.js   # Tests du composant frontend
+```
+
+## Tests Disponibles
+
+### 1. Tests du Contrôleur Admin (`test-admin-controller.js`)
+
+- **testGetInsights()** : Vérifie la récupération des insights
+- **testSaveInsights()** : Valide la sauvegarde des insights avec synchronisation des champs
+- **testDataValidation()** : Contrôle la présence des champs requis
+
+### 2. Tests de Validation des Données
+
+- Vérification de l'intégrité du fichier `insights.json`
+- Validation des champs requis pour chaque insight
+- Contrôle de la structure des données
+
+## Exécution des Tests
+
+### Tous les tests
+```bash
+npm test
+```
+
+### Tests unitaires uniquement
+```bash
+npm run test:unit
+```
+
+### Tests d'intégration
+```bash
+npm run test:integration
+```
+
+## Résultats Attendus
+
+Les tests valident :
+
+1. ✅ **Synchronisation des champs** : `targetJourney` ↔ `targetPreferences`
+2. ✅ **Gestion du baseContent** : Sauvegarde correcte du contenu de base
+3. ✅ **Structure des données** : Cohérence du format JSON
+4. ✅ **Logique métier** : Filtrage et calcul de progression
+
+## Extensions Futures
+
+Pour une architecture de test plus robuste, considérer :
+
+1. **Jest** : Framework de test complet
+2. **Supertest** : Tests d'API HTTP
+3. **Coverage** : Mesure de couverture de code
+4. **CI/CD** : Intégration continue
+
+## Dépannage
+
+### Erreurs courantes
+
+1. **"Missing required field"** : Vérifier la structure des insights
+2. **"Insight not found"** : Contrôler les IDs dans les données
+3. **"Failed to parse targetJourney"** : Valider le format JSON
+
+### Logs de debug
+
+Les tests affichent des logs détaillés pour faciliter le débogage :
+- 🧪 Début de test
+- ✅ Succès
+- ❌ Échec avec détails
+- �� Résultats finaux 

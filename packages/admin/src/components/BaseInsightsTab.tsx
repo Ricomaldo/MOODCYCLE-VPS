@@ -58,16 +58,20 @@ export function BaseInsightsTab() {
     try {
       console.log('Saving baseContent for insight:', currentInsight.id);
       
-      // Update local state first
-      await updateInsight(currentInsight.id, {
+      const updatedData = {
         baseContent: editContent,
         status: 'enriched',
         enrichedBy: 'baseInsightsTab-v1',
         lastModified: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
-      });
+      };
+
+      // Update local state first
+      await updateInsight(currentInsight.id, updatedData);
       
-      // Save to API using the saveInsightVariants method with baseContent
-      await saveInsightVariants(currentInsight.id, { baseContent: editContent });
+      // Save to API using the saveInsightVariants method
+      await saveInsightVariants(currentInsight.id, {
+        baseContent: editContent
+      });
       
       console.log('BaseContent saved successfully');
       setIsEditing(false);
@@ -82,15 +86,19 @@ export function BaseInsightsTab() {
     try {
       console.log('Saving journeys for insight:', currentInsight.id, journeys);
       
-      // Update local state
-      await updateInsight(currentInsight.id, {
+      const updatedData = {
         targetJourney: journeys,
+        targetPreferences: journeys, // Synchroniser avec l'ancien champ
         lastModified: new Date().toLocaleString('fr-FR', {timeZone: 'Europe/Paris'})
-      });
+      };
+
+      // Update local state
+      await updateInsight(currentInsight.id, updatedData);
       
-      // Save to API
-      await saveInsightVariants(currentInsight.id, { 
-        targetJourney: JSON.stringify(journeys)
+      // Save to API - only send string values
+      await saveInsightVariants(currentInsight.id, {
+        targetJourney: JSON.stringify(journeys),
+        targetPreferences: JSON.stringify(journeys)
       });
       
       console.log('Journeys saved successfully');

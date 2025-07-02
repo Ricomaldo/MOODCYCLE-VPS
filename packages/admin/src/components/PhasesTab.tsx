@@ -62,17 +62,17 @@ export function PhasesTab() {
     <div className="space-y-6">
       {/* Phase Selection Buttons */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        {phases.map((phase) => (
-          <Button
-            key={phase.id}
-            onClick={() => handlePhaseChange(phase.id)}
-            variant={selectedPhase === phase.id ? "default" : "outline"}
-            className={`${
-              selectedPhase === phase.id
+          {phases.map((phase) => (
+            <Button
+              key={phase.id}
+              onClick={() => handlePhaseChange(phase.id)}
+              variant={selectedPhase === phase.id ? "default" : "outline"}
+              className={`${
+                selectedPhase === phase.id
                 ? 'bg-gradient-to-r from-pink-500 to-lime-400 text-white shadow-lg scale-105'
-                : `${isDarkMode ? 'border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`
+                  : `${isDarkMode ? 'border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`
             } flex flex-col items-center gap-2 p-4 h-auto transition-all duration-200 hover:scale-102`}
-          >
+            >
             <div className="flex items-center gap-2 mb-1">
               <div 
                 className="w-4 h-4 rounded-full" 
@@ -85,9 +85,9 @@ export function PhasesTab() {
               <div className="text-xs opacity-75 mt-1">{phase.duration}</div>
               <div className="text-xs opacity-60">{phase.element} • {phase.energy}</div>
             </div>
-          </Button>
-        ))}
-      </div>
+            </Button>
+          ))}
+        </div>
 
       {/* Phase Info Card */}
       {selectedPhaseData && (

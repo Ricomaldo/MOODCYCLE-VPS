@@ -7,9 +7,9 @@ class PromptBuilder {
   constructor() {
     // Chargement unique au démarrage
     try {
-      this.insights = require('../data/insights_validated.json');
+      this.insights = require('../data/insights.json');
     } catch (error) {
-      console.warn('⚠️ insights_validated.json non trouvé, utilisation structure vide');
+      console.warn('⚠️ insights.json non trouvé, utilisation structure vide');
       this.insights = { insights: {} };
     }
     

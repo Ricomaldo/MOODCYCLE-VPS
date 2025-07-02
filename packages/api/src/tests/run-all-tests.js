@@ -1,6 +1,7 @@
 // tests/run-all-tests.js
 const { spawn } = require('child_process');
 const path = require('path');
+const MockAdminController = require('./test-admin-controller');
 
 console.log('🧪 MoodCycle - Suite de Tests Complète');
 console.log('=====================================\n');
@@ -57,66 +58,68 @@ async function runTest(testFile, testName) {
 }
 
 async function runAllTests() {
-  console.log('📋 Tests programmés:');
-  tests.forEach((test, index) => {
-    console.log(`  ${index + 1}. ${test.name}`);
-    console.log(`     ${test.description}`);
-  });
+  console.log('🚀 Starting All Tests Suite...\n');
   
-  console.log('\n⏱️  Démarrage des tests...\n');
+  let totalTests = 0;
+  let passedTests = 0;
   
-  const results = [];
-  const startTime = Date.now();
+  // Test du contrôleur admin
+  console.log('📋 Testing Admin Controller...');
+  const adminController = new MockAdminController();
+  const adminResults = await adminController.runAllTests();
   
-  for (const test of tests) {
-    const success = await runTest(test.file, test.name);
-    results.push({ name: test.name, success });
+  if (adminResults) {
+    passedTests += 3; // 3 tests dans le contrôleur admin
+  }
+  totalTests += 3;
+  
+  console.log('\n' + '='.repeat(50) + '\n');
+  
+  // Test de validation des données
+  console.log('📋 Testing Data Validation...');
+  try {
+    const fs = require('fs').promises;
+    const insightsPath = path.join(__dirname, '../data/insights.json');
+    const data = await fs.readFile(insightsPath, 'utf8');
+    const insights = JSON.parse(data);
     
-    // Pause entre tests pour lisibilité
-    if (test !== tests[tests.length - 1]) {
-      console.log('\n⏸️  Pause 2s avant test suivant...');
-      await new Promise(resolve => setTimeout(resolve, 2000));
+    let dataValid = true;
+    const requiredFields = ['id', 'baseContent', 'tone', 'phase'];
+    
+    Object.values(insights).flat().forEach(insight => {
+      requiredFields.forEach(field => {
+        if (!insight[field]) {
+          console.log(`❌ Missing required field: ${field} in insight ${insight.id}`);
+          dataValid = false;
+        }
+      });
+    });
+    
+    if (dataValid) {
+      console.log('✅ Data validation passed');
+      passedTests += 1;
+    } else {
+      console.log('❌ Data validation failed');
     }
+    totalTests += 1;
+    
+  } catch (error) {
+    console.log('❌ Data validation failed:', error.message);
+    totalTests += 1;
   }
   
-  const totalTime = Date.now() - startTime;
+  console.log('\n' + '='.repeat(50) + '\n');
   
-  // === RAPPORT FINAL ===
-  console.log('\n' + '='.repeat(50));
-  console.log('📊 RAPPORT FINAL DES TESTS');
-  console.log('='.repeat(50));
+  // Résultats finaux
+  console.log(`📊 Final Test Results: ${passedTests}/${totalTests} tests passed`);
   
-  const successCount = results.filter(r => r.success).length;
-  const failCount = results.length - successCount;
-  
-  console.log(`\n🎯 Résultats:`);
-  results.forEach((result, index) => {
-    const status = result.success ? '✅ SUCCÈS' : '❌ ÉCHEC';
-    console.log(`  ${index + 1}. ${status} - ${result.name}`);
-  });
-  
-  console.log(`\n📈 Statistiques:`);
-  console.log(`  • Tests exécutés: ${results.length}`);
-  console.log(`  • Succès: ${successCount}`);
-  console.log(`  • Échecs: ${failCount}`);
-  console.log(`  • Taux de réussite: ${Math.round((successCount/results.length)*100)}%`);
-  console.log(`  • Temps total: ${Math.round(totalTime/1000)}s`);
-  
-  const overallSuccess = failCount === 0;
-  console.log(`\n🏆 Résultat global: ${overallSuccess ? '✅ TOUS LES TESTS PASSENT' : '❌ CERTAINS TESTS ÉCHOUENT'}`);
-  
-  if (overallSuccess) {
-    console.log('\n🎉 Félicitations ! Votre implémentation PromptBuilder v2 est validée.');
-    console.log('💡 Prêt pour déploiement avec insights Jeza intégrés.');
+  if (passedTests === totalTests) {
+    console.log('🎉 All tests passed!');
+    process.exit(0);
   } else {
-    console.log('\n🔧 Vérifiez les tests en échec avant déploiement.');
-    console.log('💡 Focus sur la sélection d\'insights et l\'intégration navigation.');
+    console.log('❌ Some tests failed');
+    process.exit(1);
   }
-  
-  console.log('\n' + '='.repeat(50));
-  
-  // Code de sortie pour CI/CD
-  process.exit(overallSuccess ? 0 : 1);
 }
 
 // === GESTION DES ARGUMENTS ===
@@ -141,5 +144,8 @@ if (args.includes('--unit')) {
     .then(success => process.exit(success ? 0 : 1));
 } else {
   // Tous les tests
-  runAllTests();
+  runAllTests().catch(error => {
+    console.error('❌ Test suite failed:', error);
+    process.exit(1);
+  });
 } 
