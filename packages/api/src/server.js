@@ -6,6 +6,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
 const claudeRateLimit = require('./middleware/claudeRateLimit');
+const deviceAuth = require('./middleware/deviceAuth');
+const fs = require('fs').promises;
 require('dotenv').config();
 
 // Test nouveau système de déploiement
@@ -52,6 +54,89 @@ app.get('/admin', (req, res) => {
 
 const chatRoutes = require('./routes/chat');
 const adminRoutes = require('./routes/admin');
+
+// ✅ ENDPOINTS SÉCURISÉS POUR APP MOBILE (avec deviceAuth)
+// Ces endpoints sont protégés par X-Device-ID, pas accessibles depuis web
+
+app.get('/api/insights', deviceAuth, async (req, res) => {
+  try {
+    const insightsPath = path.join(__dirname, 'data/insights.json');
+    const data = await fs.readFile(insightsPath, 'utf8');
+    const insights = JSON.parse(data);
+    
+    res.json({ 
+      success: true,
+      data: insights,
+      deviceId: req.deviceId // Pour debug
+    });
+  } catch (error) {
+    console.error('❌ Error reading insights:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Erreur lecture insights' 
+    });
+  }
+});
+
+app.get('/api/phases', deviceAuth, async (req, res) => {
+  try {
+    const phasesPath = path.join(__dirname, 'data/phases.json');
+    const data = await fs.readFile(phasesPath, 'utf8');
+    const phases = JSON.parse(data);
+    
+    res.json({ 
+      success: true,
+      data: phases,
+      deviceId: req.deviceId
+    });
+  } catch (error) {
+    console.error('❌ Error reading phases:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Erreur lecture phases' 
+    });
+  }
+});
+
+app.get('/api/closings', deviceAuth, async (req, res) => {
+  try {
+    const closingsPath = path.join(__dirname, 'data/closings.json');
+    const data = await fs.readFile(closingsPath, 'utf8');
+    const closings = JSON.parse(data);
+    
+    res.json({ 
+      success: true,
+      data: closings,
+      deviceId: req.deviceId
+    });
+  } catch (error) {
+    console.error('❌ Error reading closings:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Erreur lecture closings' 
+    });
+  }
+});
+
+app.get('/api/vignettes', deviceAuth, async (req, res) => {
+  try {
+    const vignettesPath = path.join(__dirname, 'data/vignettes.json');
+    const data = await fs.readFile(vignettesPath, 'utf8');
+    const vignettes = JSON.parse(data);
+    
+    res.json({ 
+      success: true,
+      data: vignettes,
+      deviceId: req.deviceId
+    });
+  } catch (error) {
+    console.error('❌ Error reading vignettes:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Erreur lecture vignettes' 
+    });
+  }
+});
 
 app.use(claudeRateLimit);
 app.use('/api', chatRoutes);
