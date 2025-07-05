@@ -8,6 +8,9 @@
     "test": "node src/tests/run-all-tests.js",
     "test:unit": "node src/tests/run-all-tests.js --unit",
     "test:integration": "node src/tests/run-all-tests.js --integration",
+    "test:endpoints": "jest src/tests/endpoints-security.test.js --verbose",
+    "test:performance": "jest src/tests/endpoints-performance.test.js --verbose",
+    "test:endpoints-all": "jest src/tests/endpoints-*.test.js --verbose",
     "test:promptbuilder": "node src/tests/test-promptbuilder-v2.js",
     "test:chat": "node src/tests/test-chat-integration.js",
     "test:adaptive": "node src/tests/test-adaptive-system.js",
@@ -28,6 +31,8 @@
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.10",
+    "supertest": "^6.3.4"
   }
 }

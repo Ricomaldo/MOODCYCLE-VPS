@@ -1,307 +1,238 @@
-# 🧪 Tests MoodCycle - PromptBuilder v2
+# 🧪 Tests MoodCycle API
 
-Suite de tests complète pour valider l'implémentation du **PromptBuilder v2** avec intégration des insights Jeza et système de navigation intelligent.
+## 📋 **Vue d'ensemble**
 
-## 🚀 Lancement Rapide
+Ce dossier contient tous les tests pour l'API MoodCycle, incluant les tests d'endpoints sécurisés, de performance et de fonctionnalité.
 
-```bash
-# Tous les tests
-npm test
-
-# Tests unitaires uniquement
-npm run test:unit
-
-# Tests d'intégration uniquement  
-npm run test:integration
-
-# Test spécifique PromptBuilder
-npm run test:promptbuilder
-```
-
-## 📋 Tests Disponibles
-
-### 1. **test-promptbuilder-v2.js** - Tests Unitaires ✅
-- ✅ Sélection insights avec fallback `baseContent`
-- ✅ Mirroring adapte longueur selon style utilisateur
-- ✅ Analyse message détecte urgence et topics
-- ✅ Cache insights pour performance
-- ✅ Validation contexte et gestion erreurs
-
-**Commande :** `npm run test:promptbuilder`
-
-### 2. **test-chat-integration.js** - Tests Intégration ✅
-- ✅ Flow complet ChatController + PromptBuilder v2
-- ✅ Enrichissement contexte avec insights Jeza
-- ✅ Détection navigation intelligente
-- ✅ Métadonnées pour client (navigationHint, hasInsights)
-- ✅ Performance intégration complète
-
-**Commande :** `npm run test:chat`
-
-### 3. **test-adaptive-system.js** - Tests Système Adaptatif ✅
-- ✅ Debug système adaptatif par persona/phase
-- ✅ Validation contexte et gestion erreurs
-- ✅ Génération prompts compacts vs enrichis
-
-**Commande :** `npm run test:adaptive`
-
-### 4. **test-enhanced-mirroring.js** - Tests Mirroring Avancé ✅
-- ✅ Détection style utilisateur (concis/équilibré/détaillé)
-- ✅ Adaptation longueur réponse avec exceptions
-- ✅ Gestion urgence et cas spéciaux
-
-**Commande :** `npm run test:mirroring`
-
-### 5. **run-all-tests.js** - Orchestrateur de Tests ✅
-- ✅ Exécution séquentielle de tous les tests
-- ✅ Rapport final avec statistiques détaillées
-- ✅ Support arguments (`--unit`, `--integration`)
-
-**Commande :** `npm test`
-
-## 🎯 Objectifs de Validation
-
-### Priorité 1 - Insights Jeza ✅
-- [x] Sélection intelligente par persona/phase/préférences
-- [x] Fallback `personaVariants[persona]` → `baseContent`
-- [x] Filtrage par `jezaApproval >= 4`
-- [x] Cache pour performance
-
-### Priorité 2 - Navigation Intelligente ✅
-- [x] Détection opportunités vers CYCLE/NOTEBOOK
-- [x] Métadonnées `navigationHint` pour client
-- [x] Intégration vignettes contextuelles
-
-### Priorité 3 - Mirroring Adaptatif ✅
-- [x] Analyse style utilisateur (longueur messages)
-- [x] Adaptation longueur réponse Melune
-- [x] Exceptions urgence/explication/première interaction
-
-### Priorité 4 - Compatibilité Tests Existants ✅
-- [x] Méthodes `debugAdaptiveSystem()` et `validateContext()`
-- [x] Méthodes `analyzeUserMessageStyle()` et `buildCompactPrompt()`
-- [x] Méthodes `getConversationStage()` et `detectUrgency()`
-- [x] Méthodes `shouldOverrideLength()` et `getAdaptiveResponseRules()`
-
-## 📊 Métriques de Succès - **VALIDÉES** ✅
-
-### Performance
-- ⚡ Génération prompt : **< 1ms** (Excellent)
-- 💾 Cache insights : **100% fonctionnel**
-- 🔄 Flow intégration : **< 1ms** (Excellent)
-
-### Qualité
-- 🎯 Insights pertinents : **100% trouvés avec contenu valide**
-- 📱 Navigation détectée : **Questions "pourquoi" → cycle**
-- 🔄 Mirroring adapté : **Style concis/équilibré détecté**
-
-### Robustesse
-- ✅ Gestion erreurs : **100% cas couverts**
-- 🛡️ Validation entrées : **0 crash**
-- 📈 Fallbacks : **100% fonctionnels**
-
-## 🔧 Utilisation en Développement
-
-### Debug Insights
-```javascript
-// Voir insights sélectionnés
-const messageAnalysis = promptBuilder.analyzeMessage("Je me sens fatiguée", []);
-const insights = promptBuilder.selectInsights('emma', 'menstrual', { symptoms: 5 }, messageAnalysis);
-console.log('🎯 Insights:', insights.map(i => i.id));
-```
-
-### Debug Navigation
-```javascript
-// Tester détection navigation
-const analysis = promptBuilder.analyzeMessage("Pourquoi j'ai mal ?", []);
-const nav = promptBuilder.detectNavigationNeeds(analysis, 'menstrual');
-console.log('📱 Navigation:', nav);
-```
-
-### Debug Prompt Complet
-```javascript
-// Générer prompt avec debug
-const prompt = promptBuilder.buildContextualPrompt({
-  persona: 'emma',
-  message: 'Je me sens fatiguée',
-  currentPhase: 'luteal',
-  preferences: { symptoms: 4 }
-});
-console.log('📝 Prompt:', prompt.substring(0, 200) + '...');
-```
-
-### Debug Compatibilité Anciens Tests
-```javascript
-// Test système adaptatif
-const debugInfo = promptBuilder.debugAdaptiveSystem({
-  persona: 'emma',
-  message: 'Test',
-  conversationHistory: []
-});
-console.log('🔧 Debug:', debugInfo);
-
-// Test style utilisateur
-const style = promptBuilder.analyzeUserMessageStyle('Message court', []);
-console.log('🎨 Style:', style); // → 'ultra_concise', 'concise', etc.
-```
-
-## 🚨 Tests Critiques
-
-Avant chaque déploiement, vérifier **impérativement** :
-
-1. **Test insights Jeza intégrés**
-   ```bash
-   npm run test:promptbuilder
-   # ✅ Vérifier: "Insights trouvés: 3" et "Tous ont contenu valide: ✅"
-   ```
-
-2. **Test navigation fonctionne**
-   ```bash
-   npm run test:chat
-   # ✅ Vérifier: "navigationHint: cycle|notebook"
-   ```
-
-3. **Test performance acceptable**
-   ```bash
-   npm test
-   # ✅ Vérifier: "🏆 Résultat global: ✅ TOUS LES TESTS PASSENT"
-   ```
-
-4. **Test compatibilité complète**
-   ```bash
-   npm test
-   # ✅ Vérifier: "Taux de réussite: 100%"
-   ```
-
-## 🐛 Debugging
-
-### Pas d'insights trouvés
-- Vérifier `insights.json` présent
-- Vérifier `jezaApproval >= 4` dans les données
-- Vérifier `preferences` match `targetPreferences`
-- **Nouveau :** Vérifier que `messageAnalysis` est passé à `selectInsights()`
-
-### Navigation non détectée
-- Vérifier mots-clés dans `analyzeMessage()`
-- Vérifier `detectNavigationNeeds()` logic
-- Tester avec messages explicites ("pourquoi", "comprendre")
-
-### Performance lente
-- Vérifier cache insights activé
-- Réduire taille `conversationHistory`
-- Optimiser sélection insights (max 3)
-
-### Tests anciens échouent
-- Vérifier méthodes de compatibilité ajoutées
-- Tester `debugAdaptiveSystem()`, `validateContext()`, etc.
-- Vérifier signatures des méthodes (ex: `selectInsights` nécessite `messageAnalysis`)
-
-## 📈 Résultats Actuels
-
-**Dernière exécution :** ✅ **100% de réussite**
-
-```
-📊 RAPPORT FINAL DES TESTS
-==================================================
-
-🎯 Résultats:
-  1. ✅ SUCCÈS - Tests Unitaires PromptBuilder v2
-  2. ✅ SUCCÈS - Tests Intégration ChatController
-  3. ✅ SUCCÈS - Tests Système Adaptatif (existant)
-  4. ✅ SUCCÈS - Tests Mirroring Avancé (existant)
-
-📈 Statistiques:
-  • Tests exécutés: 4
-  • Succès: 4
-  • Échecs: 0
-  • Taux de réussite: 100%
-
-🏆 Résultat global: ✅ TOUS LES TESTS PASSENT
-```
-
----
-
-**🎉 Tests validés = PromptBuilder v2 prêt pour production !** 
-
-*Mise à jour : Compatibilité 100% avec tests existants + nouveaux tests v2* 
-
-# Architecture de Tests - MoodCycle API
-
-## Vue d'ensemble
-
-Cette architecture de test minimale permet de valider le bon fonctionnement des composants critiques de l'API MoodCycle.
-
-## Structure des Tests
+## 🗂️ **Structure des Tests**
 
 ```
 tests/
-├── README.md                    # Ce fichier
-├── run-all-tests.js            # Script principal d'exécution
-├── test-admin-controller.js    # Tests du contrôleur admin
-└── test-base-insights-tab.js   # Tests du composant frontend
+├── README.md                           # Cette documentation
+├── endpoints-security.test.js          # Tests de sécurité des endpoints
+├── endpoints-performance.test.js       # Tests de performance
+├── run-all-tests.js                   # Runner de tests existant
+└── [autres tests existants...]
 ```
 
-## Tests Disponibles
+## 🔧 **Configuration**
 
-### 1. Tests du Contrôleur Admin (`test-admin-controller.js`)
+### **Prérequis**
+- Node.js 18+
+- Jest installé (`npm install`)
+- Accès réseau à l'API en production
 
-- **testGetInsights()** : Vérifie la récupération des insights
-- **testSaveInsights()** : Valide la sauvegarde des insights avec synchronisation des champs
-- **testDataValidation()** : Contrôle la présence des champs requis
-
-### 2. Tests de Validation des Données
-
-- Vérification de l'intégrité du fichier `insights.json`
-- Validation des champs requis pour chaque insight
-- Contrôle de la structure des données
-
-## Exécution des Tests
-
-### Tous les tests
+### **Variables d'environnement**
 ```bash
+# URL de l'API à tester (par défaut: production)
+API_BASE_URL=https://moodcycle.irimwebforge.com
+
+# Environnement de test
+NODE_ENV=test
+```
+
+## 🚀 **Lancement des Tests**
+
+### **Tests d'Endpoints (Jest)**
+
+```bash
+# Tous les tests d'endpoints
+npm run test:endpoints-all
+
+# Tests de sécurité uniquement
+npm run test:endpoints
+
+# Tests de performance uniquement
+npm run test:performance
+```
+
+### **Tests Existants**
+
+```bash
+# Tous les tests existants
 npm test
-```
 
-### Tests unitaires uniquement
-```bash
+# Tests unitaires
 npm run test:unit
-```
 
-### Tests d'intégration
-```bash
+# Tests d'intégration
 npm run test:integration
+
+# Tests spécifiques
+npm run test:chat
+npm run test:adaptive
 ```
 
-## Résultats Attendus
+### **Scripts Shell**
 
-Les tests valident :
+```bash
+# Tests complets avec scripts shell
+../../scripts/test-endpoints.sh
 
-1. ✅ **Synchronisation des champs** : `targetJourney` ↔ `targetPreferences`
-2. ✅ **Gestion du baseContent** : Sauvegarde correcte du contenu de base
-3. ✅ **Structure des données** : Cohérence du format JSON
-4. ✅ **Logique métier** : Filtrage et calcul de progression
+# Diagnostic PM2
+../../scripts/diagnose-pm2.sh
+```
 
-## Extensions Futures
+## 📊 **Types de Tests**
 
-Pour une architecture de test plus robuste, considérer :
+### **1. Tests de Sécurité (`endpoints-security.test.js`)**
 
-1. **Jest** : Framework de test complet
-2. **Supertest** : Tests d'API HTTP
-3. **Coverage** : Mesure de couverture de code
-4. **CI/CD** : Intégration continue
+**Objectif :** Valider la sécurité des endpoints avec `deviceAuth`.
 
-## Dépannage
+**Tests inclus :**
+- ✅ Refus d'accès sans `X-Device-ID`
+- ✅ Autorisation avec `X-Device-ID` valide
+- ✅ Structure des données retournées
+- ✅ Cohérence entre endpoints
+- ✅ Validation des IDs uniques
+- ✅ Headers appropriés
 
-### Erreurs courantes
+**Exemple d'exécution :**
+```bash
+npm run test:endpoints
+```
 
-1. **"Missing required field"** : Vérifier la structure des insights
-2. **"Insight not found"** : Contrôler les IDs dans les données
-3. **"Failed to parse targetJourney"** : Valider le format JSON
+### **2. Tests de Performance (`endpoints-performance.test.js`)**
 
-### Logs de debug
+**Objectif :** Valider les performances et la stabilité.
 
-Les tests affichent des logs détaillés pour faciliter le débogage :
-- 🧪 Début de test
-- ✅ Succès
-- ❌ Échec avec détails
-- �� Résultats finaux 
+**Métriques testées :**
+- ⚡ Temps de réponse individuels
+- 🔄 Gestion de la charge concurrente
+- 📊 Stabilité des performances
+- 🚫 Rapidité des erreurs
+
+**Seuils de performance :**
+- Health: < 200ms
+- Insights: < 1000ms
+- Phases: < 500ms
+- Closings: < 300ms
+- Vignettes: < 800ms
+
+**Exemple d'exécution :**
+```bash
+npm run test:performance
+```
+
+### **3. Tests Shell (`test-endpoints.sh`)**
+
+**Objectif :** Tests complets avec curl et validation bash.
+
+**Avantages :**
+- Tests sans dépendances Node.js
+- Validation en conditions réelles
+- Intégration facile en CI/CD
+
+## 📈 **Interprétation des Résultats**
+
+### **Tests de Sécurité**
+
+```
+✅ PASS - GET /api/insights - REFUSE sans X-Device-ID
+✅ PASS - GET /api/insights - AUTORISE avec X-Device-ID
+```
+
+- **PASS** : Test réussi
+- **FAIL** : Test échoué (vérifier logs)
+
+### **Tests de Performance**
+
+```
+🏥 Health check: 45ms (seuil: 200ms)
+💡 Insights: 234ms (seuil: 1000ms)
+🔄 3 requêtes insights concurrentes: 156.33ms/req
+```
+
+- **Temps < Seuil** : Performance excellente
+- **Temps > Seuil** : Performance dégradée
+
+### **Codes de Sortie**
+
+- `0` : Tous les tests passent
+- `1` : Au moins un test échoue
+
+## 🔍 **Débogage**
+
+### **Test qui échoue**
+
+1. **Vérifier l'API :**
+   ```bash
+   curl -s "https://moodcycle.irimwebforge.com/api/health"
+   ```
+
+2. **Diagnostic PM2 :**
+   ```bash
+   ../../scripts/diagnose-pm2.sh
+   ```
+
+3. **Logs détaillés :**
+   ```bash
+   npm run test:endpoints -- --verbose
+   ```
+
+### **Performance dégradée**
+
+1. **Vérifier la charge serveur :**
+   ```bash
+   ssh root@69.62.107.136 'top -n 1'
+   ```
+
+2. **Logs PM2 :**
+   ```bash
+   ssh root@69.62.107.136 'pm2 logs moodcycle-api --lines 50'
+   ```
+
+3. **Redémarrer si nécessaire :**
+   ```bash
+   ssh root@69.62.107.136 'pm2 restart moodcycle-api'
+   ```
+
+## 🤖 **Intégration CI/CD**
+
+### **GitHub Actions (exemple)**
+
+```yaml
+name: API Tests
+on: [push, pull_request]
+
+jobs:
+  test-endpoints:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm install
+      - run: npm run test:endpoints-all
+        env:
+          API_BASE_URL: https://moodcycle.irimwebforge.com
+```
+
+### **Tests en local avant déploiement**
+
+```bash
+# 1. Tests avant déploiement
+npm run test:endpoints-all
+
+# 2. Déploiement
+../../scripts/deploy-with-pm2-fix.sh
+
+# 3. Tests après déploiement
+npm run test:endpoints-all
+```
+
+## 📚 **Ressources**
+
+- [Documentation Jest](https://jestjs.io/docs/getting-started)
+- [Supertest Guide](https://github.com/visionmedia/supertest)
+- [Scripts de déploiement](../../scripts/README.md)
+- [Guide PM2](../../../DEPLOIEMENT.md)
+
+## 🆘 **Support**
+
+En cas de problème :
+1. Vérifier cette documentation
+2. Lancer `../../scripts/diagnose-pm2.sh`
+3. Consulter les logs PM2
+4. Contacter l'équipe de développement

@@ -4,6 +4,8 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Index from "./pages/Index";
 import ContentManagement from "./pages/ContentManagement";
 import Analytics from "./pages/Analytics";
+import UserData from "./pages/UserData";
+import Infrastructure from "./pages/Infrastructure";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -40,6 +42,12 @@ const App = () => (
           } />
           <Route path="/analytics" element={
             <ProtectedRoute children={<Analytics />} />
+          } />
+          <Route path="/users" element={
+            <ProtectedRoute children={<UserData />} />
+          } />
+          <Route path="/infrastructure" element={
+            <ProtectedRoute children={<Infrastructure />} />
           } />
           <Route path="/settings" element={
             <ProtectedRoute children={<Settings />} />

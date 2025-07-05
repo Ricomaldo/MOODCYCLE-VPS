@@ -60,7 +60,9 @@ export function AppHeader({ currentPage = "Tableau de bord", currentTab }: AppHe
       breadcrumbs.push({ 
         label: currentPage, 
         href: currentPage === "Gestion de contenu" ? "/content" : 
-              currentPage === "Analytiques" ? "/analytics" : "/settings"
+              currentPage === "Analytiques" ? "/analytics" : 
+              currentPage === "Données Utilisateurs" ? "/users" :
+              currentPage === "Infrastructure" ? "/infrastructure" : "/settings"
       });
     }
 

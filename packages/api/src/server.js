@@ -54,6 +54,8 @@ app.get('/admin', (req, res) => {
 
 const chatRoutes = require('./routes/chat');
 const adminRoutes = require('./routes/admin');
+const userDataRoutes = require('./routes/userdata');
+const infrastructureRoutes = require('./routes/infrastructure');
 
 // ✅ ENDPOINTS SÉCURISÉS POUR APP MOBILE (avec deviceAuth)
 // Ces endpoints sont protégés par X-Device-ID, pas accessibles depuis web
@@ -141,6 +143,8 @@ app.get('/api/vignettes', deviceAuth, async (req, res) => {
 app.use(claudeRateLimit);
 app.use('/api', chatRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/userdata', userDataRoutes);
+app.use('/api/infrastructure', infrastructureRoutes);
 
 // Root route handler
 app.get('/', (req, res) => {

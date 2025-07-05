@@ -1,5 +1,5 @@
 
-import { LayoutDashboard, FileText, BarChart3, Settings } from "lucide-react";
+import { LayoutDashboard, FileText, BarChart3, Users, Server, Settings } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { useTheme } from "@/contexts/ThemeContext";
 import {
@@ -28,6 +28,16 @@ const menuItems = [
     title: "Analytiques",
     icon: BarChart3,
     url: "/analytics",
+  },
+  {
+    title: "Données Utilisateurs",
+    icon: Users,
+    url: "/users",
+  },
+  {
+    title: "Infrastructure",
+    icon: Server,
+    url: "/infrastructure",
   },
   {
     title: "Paramètres",
