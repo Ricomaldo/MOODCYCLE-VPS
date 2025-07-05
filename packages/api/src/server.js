@@ -61,6 +61,7 @@ const adminRoutes = require('./routes/admin');
 const userDataRoutes = require('./routes/userdata');
 const infrastructureRoutes = require('./routes/infrastructure');
 const storesRoutes = require('./routes/stores');
+const analyticsRoutes = require('./routes/analytics');
 
 // ✅ ENDPOINTS SÉCURISÉS POUR APP MOBILE (avec deviceAuth)
 // Ces endpoints sont protégés par X-Device-ID, pas accessibles depuis web
@@ -151,6 +152,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/userdata', userDataRoutes);
 app.use('/api/infrastructure', infrastructureRoutes);
 app.use('/api/stores', storesRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Root route handler
 app.get('/', (req, res) => {

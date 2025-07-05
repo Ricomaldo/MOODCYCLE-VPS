@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Index from "./pages/Index";
 import ContentManagement from "./pages/ContentManagement";
 import Analytics from "./pages/Analytics";
+import AdvancedAnalytics from "./pages/AdvancedAnalytics";
 import UserData from "./pages/UserData";
 import Infrastructure from "./pages/Infrastructure";
 import Settings from "./pages/Settings";
@@ -42,6 +43,9 @@ const App = () => (
           } />
           <Route path="/analytics" element={
             <ProtectedRoute children={<Analytics />} />
+          } />
+          <Route path="/advanced-analytics" element={
+            <ProtectedRoute children={<AdvancedAnalytics />} />
           } />
           <Route path="/users" element={
             <ProtectedRoute children={<UserData />} />

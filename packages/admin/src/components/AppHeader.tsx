@@ -1,4 +1,3 @@
-
 import { Bell, User, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -61,6 +60,7 @@ export function AppHeader({ currentPage = "Tableau de bord", currentTab }: AppHe
         label: currentPage, 
         href: currentPage === "Gestion de contenu" ? "/content" : 
               currentPage === "Analytiques" ? "/analytics" : 
+              currentPage === "Analytics Avancés" ? "/advanced-analytics" :
               currentPage === "Données Utilisateurs" ? "/users" :
               currentPage === "Infrastructure" ? "/infrastructure" : "/settings"
       });

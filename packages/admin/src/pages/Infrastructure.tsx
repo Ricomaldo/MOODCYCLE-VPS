@@ -106,6 +106,7 @@ const Infrastructure = () => {
   const serverMetrics = metrics?.server;
   const apiMetrics = metrics?.api;
   const securityMetrics = metrics?.security;
+  const domainMetrics = metrics?.domain;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -678,8 +679,8 @@ const Infrastructure = () => {
                                   <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                     Statut SSL
                                   </span>
-                                  <Badge className={`${serverMetrics?.ssl.valid ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                                    {serverMetrics?.ssl.valid ? 'Valide' : 'Invalide'}
+                                  <Badge className={`${domainMetrics?.ssl?.valid ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                                    {domainMetrics?.ssl?.valid ? 'Valide' : 'Invalide'}
                                   </Badge>
                                 </div>
                                 
@@ -688,7 +689,7 @@ const Infrastructure = () => {
                                     Expire le
                                   </span>
                                   <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                    {new Date(serverMetrics?.ssl.expiresAt || '').toLocaleDateString('fr-FR')}
+                                    {new Date(domainMetrics?.ssl?.expiresAt || '').toLocaleDateString('fr-FR')}
                                   </span>
                                 </div>
                                 
@@ -696,8 +697,8 @@ const Infrastructure = () => {
                                   <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                     Jours restants
                                   </span>
-                                  <span className={`font-semibold ${serverMetrics?.ssl.daysUntilExpiry && serverMetrics.ssl.daysUntilExpiry < 30 ? 'text-orange-400' : 'text-green-400'}`}>
-                                    {serverMetrics?.ssl.daysUntilExpiry || 0} jours
+                                  <span className={`font-semibold ${domainMetrics?.ssl?.daysUntilExpiry && domainMetrics.ssl.daysUntilExpiry < 30 ? 'text-orange-400' : 'text-green-400'}`}>
+                                    {domainMetrics?.ssl?.daysUntilExpiry || 0} jours
                                   </span>
                                 </div>
                               </div>

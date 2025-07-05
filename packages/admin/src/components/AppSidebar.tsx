@@ -1,5 +1,4 @@
-
-import { LayoutDashboard, FileText, BarChart3, Users, Server, Settings } from "lucide-react";
+import { LayoutDashboard, FileText, BarChart3, Users, Server, Settings, Activity } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { useTheme } from "@/contexts/ThemeContext";
 import {
@@ -28,6 +27,11 @@ const menuItems = [
     title: "Analytiques",
     icon: BarChart3,
     url: "/analytics",
+  },
+  {
+    title: "Analytics Avancés",
+    icon: Activity,
+    url: "/advanced-analytics",
   },
   {
     title: "Données Utilisateurs",
