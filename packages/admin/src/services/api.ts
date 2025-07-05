@@ -150,18 +150,271 @@ export interface UserDataMetrics {
   notebookUsageRate: number;
 }
 
+// ✅ NOUVEAUX TYPES POUR STORES
+export interface UserStoreType {
+  profile: {
+    prenom: string | null;
+    ageRange: string | null;
+    journeyChoice: string | null;
+    completed: boolean;
+  };
+  preferences: {
+    symptoms: number;
+    moods: number;
+    phyto: number;
+    phases: number;
+    lithotherapy: number;
+    rituals: number;
+    terminology: string;
+  };
+  persona: {
+    assigned: string;
+    confidence: number;
+    lastCalculated: number | null;
+    scores: Record<string, number>;
+  };
+  melune: {
+    avatarStyle: string;
+    tone: string;
+    personalityMatch: string | null;
+    position: string;
+    animated: boolean;
+  };
+  syncMetadata: {
+    lastSyncAt: string | null;
+    pendingSync: boolean;
+  };
+}
+
+export interface CycleStoreType {
+  lastPeriodDate: string | null;
+  length: number;
+  periodDuration: number;
+  isRegular: boolean | null;
+  trackingExperience: string | null;
+  observations: Array<{
+    id: string;
+    type: string;
+    value: string;
+    timestamp: number;
+    phase: string;
+  }>;
+  detectedPatterns: Record<string, unknown> | null;
+}
+
+export interface ChatMessage {
+  id: string;
+  type: 'user' | 'melune';
+  content: string;
+  timestamp: number;
+  mood?: string;
+  persona?: string | null;
+  isOffline?: boolean;
+}
+
+export interface ChatStoreType {
+  messages: ChatMessage[];
+  isTyping: boolean;
+  isWaitingResponse: boolean;
+  pendingMessages: ChatMessage[];
+  suggestions: string[];
+}
+
+export interface NotebookEntry {
+  id: string;
+  content: string;
+  type: 'personal' | 'saved' | 'tracking';
+  tags: string[];
+  timestamp: number;
+  phase: string;
+}
+
+export interface NotebookStoreType {
+  entries: NotebookEntry[];
+  availableTags: string[];
+}
+
+export interface EngagementMetrics {
+  daysUsed: number;
+  sessionsCount: number;
+  totalTimeSpent: number;
+  lastActiveDate: string | null;
+  conversationsStarted: number;
+  conversationsCompleted: number;
+  notebookEntriesCreated: number;
+  cycleTrackedDays: number;
+  insightsSaved: number;
+  vignettesEngaged: number;
+  phasesExplored: string[];
+  cyclesCompleted: number;
+  autonomySignals: number;
+}
+
+export interface EngagementStoreType {
+  metrics: EngagementMetrics;
+  maturity: {
+    current: string;
+    confidence: number;
+    lastCalculated: number | null;
+    thresholds: Record<string, Record<string, number>>;
+  };
+}
+
+export interface UserIntelligenceType {
+  learning: {
+    confidence: number;
+    timePatterns: {
+      favoriteHours: number[];
+      activeDays: string[];
+      sessionDuration: number;
+    };
+    conversationPrefs: {
+      responseLength: string;
+      questionTypes: string[];
+      successfulPrompts: string[];
+      avoidedTopics: string[];
+    };
+    phasePatterns: Record<string, {
+      mood: string | null;
+      energy: string | null;
+      topics: string[];
+    }>;
+    suggestionEffectiveness: Record<string, {
+      shown: number;
+      clicked: number;
+      rate: number;
+    }>;
+  };
+}
+
+export interface NavigationStoreType {
+  notebookFilters: {
+    type: string;
+    phase: string | null;
+    tags: string[];
+    searchQuery: string;
+    sortBy: string;
+  };
+  modalState: {
+    entryDetail: {
+      visible: boolean;
+      entries: NotebookEntry[];
+      currentIndex: number;
+    };
+  };
+  navigationHistory: {
+    lastTab: string;
+    lastVignetteId: string | null;
+    vignetteInteractions: Record<string, number>;
+  };
+}
+
+// ✅ NOUVEAUX TYPES POUR RÉPONSES API
+export interface ServerMetricsResponse {
+  status: string;
+  uptime: number;
+  version: string;
+  environment: string;
+  timestamp: string;
+  performance: {
+    cpuUsage: number;
+    memoryUsage: number;
+    responseTime: number;
+  };
+}
+
+export interface DomainInfoResponse {
+  domain: string;
+  ssl: {
+    valid: boolean;
+    expiresAt: string;
+    issuer: string;
+  };
+  dns: {
+    status: string;
+    records: Record<string, string>;
+  };
+  certificates: Array<{
+    domain: string;
+    valid: boolean;
+    expiresAt: string;
+  }>;
+}
+
+export interface SecurityMetricsResponse {
+  firewall: {
+    status: string;
+    rules: number;
+    blockedRequests: number;
+  };
+  ssl: {
+    grade: string;
+    vulnerabilities: string[];
+  };
+  backups: {
+    lastBackup: string;
+    status: string;
+    size: string;
+  };
+  monitoring: {
+    uptime: number;
+    alerts: number;
+  };
+}
+
+export interface StoresAnalyticsResponse {
+  totalStores: number;
+  activeStores: number;
+  storeTypes: Record<string, number>;
+  averageDataSize: number;
+  lastUpdated: string;
+  patterns: {
+    mostActiveHours: number[];
+    averageSessionTime: number;
+    retentionRate: number;
+  };
+}
+
+export interface IntelligencePatternsResponse {
+  patterns: {
+    conversational: {
+      popularTopics: Array<{
+        topic: string;
+        frequency: number;
+      }>;
+      responsePreferences: Record<string, number>;
+    };
+    behavioral: {
+      sessionPatterns: Record<string, number>;
+      engagementTrends: Array<{
+        date: string;
+        value: number;
+      }>;
+    };
+    cyclical: {
+      phasePreferences: Record<string, Record<string, number>>;
+      seasonalTrends: Record<string, number>;
+    };
+  };
+  metadata: {
+    analysisDate: string;
+    sampleSize: number;
+    confidence: number;
+  };
+}
+
 export interface UserStoreData {
   userId: string;
   deviceId: string;
   lastSync: string;
   stores: {
-    userStore: any;
-    cycleStore: any;
-    chatStore: any;
-    notebookStore: any;
-    engagementStore: any;
-    userIntelligence: any;
-    navigationStore: any;
+    userStore: UserStoreType;
+    cycleStore: CycleStoreType;
+    chatStore: ChatStoreType;
+    notebookStore: NotebookStoreType;
+    engagementStore: EngagementStoreType;
+    userIntelligence: UserIntelligenceType;
+    navigationStore: NavigationStoreType;
   };
   metadata: {
     appVersion: string;
@@ -326,15 +579,15 @@ class ApiClient {
     return this.deviceRequest('/api/infrastructure/metrics');
   }
 
-  async getServerMetrics(): Promise<{ success: boolean; data: any; timestamp: string }> {
+  async getServerMetrics(): Promise<{ success: boolean; data: ServerMetricsResponse; timestamp: string }> {
     return this.deviceRequest('/api/infrastructure/server');
   }
 
-  async getDomainInfo(): Promise<{ success: boolean; data: any; timestamp: string }> {
+  async getDomainInfo(): Promise<{ success: boolean; data: DomainInfoResponse; timestamp: string }> {
     return this.deviceRequest('/api/infrastructure/domain');
   }
 
-  async getSecurityMetrics(): Promise<{ success: boolean; data: any; timestamp: string }> {
+  async getSecurityMetrics(): Promise<{ success: boolean; data: SecurityMetricsResponse; timestamp: string }> {
     return this.deviceRequest('/api/infrastructure/security');
   }
 
@@ -360,15 +613,15 @@ class ApiClient {
   }
 
   // ✅ NOUVELLES MÉTHODES POUR STORES
-  async getStoresAnalytics(): Promise<{ success: boolean; data: any; timestamp: string }> {
+  async getStoresAnalytics(): Promise<{ success: boolean; data: StoresAnalyticsResponse; timestamp: string }> {
     return this.deviceRequest('/api/stores/analytics');
   }
 
-  async getAllStores(): Promise<{ success: boolean; data: any[]; count: number; timestamp: string }> {
+  async getAllStores(): Promise<{ success: boolean; data: UserStoreData[]; count: number; timestamp: string }> {
     return this.deviceRequest('/api/stores/all');
   }
 
-  async getStoresByDevice(deviceId: string): Promise<{ success: boolean; data: any; timestamp: string }> {
+  async getStoresByDevice(deviceId: string): Promise<{ success: boolean; data: UserStoreData; timestamp: string }> {
     return this.deviceRequest(`/api/stores/${deviceId}`);
   }
 
@@ -378,7 +631,7 @@ class ApiClient {
     });
   }
 
-  async getIntelligencePatterns(): Promise<{ success: boolean; data: any; timestamp: string }> {
+  async getIntelligencePatterns(): Promise<{ success: boolean; data: IntelligencePatternsResponse; timestamp: string }> {
     return this.deviceRequest('/api/stores/intelligence/patterns');
   }
 }
