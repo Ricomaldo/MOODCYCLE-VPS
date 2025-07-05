@@ -5,7 +5,8 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useInsightsData } from "@/hooks/useInsightsData";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Activity, Clock, Database, TrendingUp, Users, Globe, Smartphone, Target, BarChart3, Calendar } from "lucide-react";
+import { Activity, Clock, Database, TrendingUp, Users, Globe, Smartphone, Target, BarChart3, Calendar, Heart, AlertCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Analytics = () => {
   const { insights, loading, getPersonaProgress } = useInsightsData();
@@ -29,6 +30,14 @@ const Analytics = () => {
   const totalPossibleVariants = insights.length * personas.length;
   const overallProgress = totalPossibleVariants > 0 ? Math.round((totalVariantsCreated / totalPossibleVariants) * 100) : 0;
 
+  // App metrics (pre-launch state)
+  const appMetrics = {
+    totalUsers: 0,
+    dailyActiveUsers: 0,
+    retentionWeek1: 0,
+    appStoreRating: 0
+  };
+
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <SidebarProvider>
@@ -50,6 +59,70 @@ const Analytics = () => {
                   <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                     Tableau de bord prêt pour les futures analyses d'usage et de comportement utilisateur
                   </p>
+                </div>
+
+                {/* Core KPIs - Vue d'ensemble */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                  <Card className={`${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} backdrop-blur-sm`}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Utilisateurs Total</CardTitle>
+                      <Users className="h-4 w-4 text-blue-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {loading ? '...' : appMetrics.totalUsers}
+                      </div>
+                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} flex items-center gap-1`}>
+                        <AlertCircle className="w-3 h-3 text-orange-400" />
+                        Pré-lancement
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className={`${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} backdrop-blur-sm`}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Actifs Quotidiens</CardTitle>
+                      <Activity className="h-4 w-4 text-purple-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {loading ? '...' : appMetrics.dailyActiveUsers}
+                      </div>
+                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        En attente du lancement
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className={`${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} backdrop-blur-sm`}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Rétention 7 jours</CardTitle>
+                      <Heart className="h-4 w-4 text-pink-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {loading ? '...' : `N/A`}
+                      </div>
+                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Données futures
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className={`${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} backdrop-blur-sm`}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Note App Store</CardTitle>
+                      <TrendingUp className="h-4 w-4 text-green-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {loading ? '...' : `N/A`}
+                      </div>
+                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Pas encore publié
+                      </p>
+                    </CardContent>
+                  </Card>
                 </div>
 
                 {/* Analyse comportementale utilisateur */}

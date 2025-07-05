@@ -28,8 +28,10 @@ import {
   TrendingUp,
   Download,
   Upload,
-  Wifi
+  Wifi,
+  FileText
 } from "lucide-react";
+import LogsMonitoringTab from "@/components/LogsMonitoringTab";
 
 interface ServerMetrics {
   status: 'online' | 'offline' | 'maintenance';
@@ -288,6 +290,7 @@ const Infrastructure = () => {
                         <TabsTrigger value="database">Base de Données</TabsTrigger>
                         <TabsTrigger value="security">Sécurité</TabsTrigger>
                         <TabsTrigger value="ssl">SSL & Domaines</TabsTrigger>
+                        <TabsTrigger value="logs">Logs</TabsTrigger>
                       </TabsList>
 
                       {/* Serveur */}
@@ -744,6 +747,11 @@ const Infrastructure = () => {
                             </CardContent>
                           </Card>
                         </div>
+                      </TabsContent>
+
+                      {/* Logs */}
+                      <TabsContent value="logs" className="space-y-6">
+                        <LogsMonitoringTab />
                       </TabsContent>
                     </Tabs>
                   </CardContent>

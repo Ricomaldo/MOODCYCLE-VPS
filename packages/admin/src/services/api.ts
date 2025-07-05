@@ -403,6 +403,34 @@ export interface IntelligencePatternsResponse {
   };
 }
 
+export interface LogStatsResponse {
+  totalRequests: number;
+  errorRate: number;
+  averageResponseTime: number;
+  recentErrors: Array<{
+    timestamp: string;
+    level: string;
+    message: string;
+    url?: string;
+    statusCode?: number;
+  }>;
+  topEndpoints: Array<{
+    endpoint: string;
+    count: number;
+    averageTime: number;
+  }>;
+  performanceMetrics: {
+    slowRequests: number;
+    fastRequests: number;
+    totalDataProcessed: number;
+  };
+  systemHealth: {
+    status: 'healthy' | 'warning' | 'error';
+    uptime: number;
+    lastUpdate: string;
+  };
+}
+
 export interface UserStoreData {
   userId: string;
   deviceId: string;
@@ -633,6 +661,10 @@ class ApiClient {
 
   async getIntelligencePatterns(): Promise<{ success: boolean; data: IntelligencePatternsResponse; timestamp: string }> {
     return this.deviceRequest('/api/stores/intelligence/patterns');
+  }
+
+  async getLogStats(): Promise<{ success: boolean; data: LogStatsResponse; timestamp: string }> {
+    return this.deviceRequest('/api/logs/analytics/stats');
   }
 }
 
