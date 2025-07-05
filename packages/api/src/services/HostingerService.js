@@ -1,10 +1,11 @@
 /**
  * HostingerService - Service d'intégration avec l'API Hostinger
  * Récupère les métriques serveur en temps réel
- * Version corrigée avec les vrais endpoints API
+ * Version corrigée avec les vrais endpoints API + module https natif
  */
 
-const axios = require('axios');
+const https = require('https');
+const { URL } = require('url');
 
 class HostingerService {
   constructor() {
@@ -16,6 +17,65 @@ class HostingerService {
     // Cache pour éviter trop d'appels API
     this.cache = new Map();
     this.cacheTimeout = 30000; // 30 secondes
+  }
+
+  /**
+   * Faire un appel HTTPS avec le module natif
+   */
+  async makeRequest(endpoint, options = {}) {
+    return new Promise((resolve, reject) => {
+      const url = new URL(endpoint, this.baseURL);
+      
+      const requestOptions = {
+        hostname: url.hostname,
+        port: 443,
+        path: url.pathname + url.search,
+        method: options.method || 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+          'User-Agent': 'MoodCycle-API/1.0',
+          ...options.headers
+        },
+        timeout: options.timeout || 10000
+      };
+
+      const req = https.request(requestOptions, (res) => {
+        let data = '';
+        
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+        
+        res.on('end', () => {
+          try {
+            const parsedData = JSON.parse(data);
+            resolve({
+              status: res.statusCode,
+              data: parsedData,
+              headers: res.headers
+            });
+          } catch (error) {
+            reject(new Error(`Invalid JSON response: ${data}`));
+          }
+        });
+      });
+
+      req.on('error', (error) => {
+        reject(error);
+      });
+
+      req.on('timeout', () => {
+        req.destroy();
+        reject(new Error('Request timeout'));
+      });
+
+      if (options.data) {
+        req.write(JSON.stringify(options.data));
+      }
+
+      req.end();
+    });
   }
 
   /**
@@ -38,21 +98,9 @@ class HostingerService {
       // ✅ VRAIS ENDPOINTS HOSTINGER API
       const [vpsInfo, vpsUsage] = await Promise.allSettled([
         // Informations générales du VPS
-        axios.get(`${this.baseURL}/vps/${this.serverId}`, {
-          headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json'
-          },
-          timeout: 10000
-        }),
+        this.makeRequest(`/vps/${this.serverId}`),
         // Métriques d'usage (CPU, RAM, disk)
-        axios.get(`${this.baseURL}/vps/${this.serverId}/usage`, {
-          headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json'
-          },
-          timeout: 10000
-        })
+        this.makeRequest(`/vps/${this.serverId}/usage`)
       ]);
 
       // Parser les réponses
@@ -96,13 +144,7 @@ class HostingerService {
       }
 
       // ✅ VRAI ENDPOINT DOMAINE
-      const response = await axios.get(`${this.baseURL}/domains/${this.domainId}`, {
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 10000
-      });
+      const response = await this.makeRequest(`/domains/${this.domainId}`);
 
       const domainInfo = this.parseDomainInfo(response.data);
       
@@ -139,14 +181,8 @@ class HostingerService {
 
       // ✅ VRAIS ENDPOINTS SÉCURITÉ HOSTINGER
       const [backupResponse, vpsInfoResponse] = await Promise.allSettled([
-        axios.get(`${this.baseURL}/vps/${this.serverId}/backups`, {
-          headers: { 'Authorization': `Bearer ${this.apiKey}` },
-          timeout: 10000
-        }),
-        axios.get(`${this.baseURL}/vps/${this.serverId}`, {
-          headers: { 'Authorization': `Bearer ${this.apiKey}` },
-          timeout: 10000
-        })
+        this.makeRequest(`/vps/${this.serverId}/backups`),
+        this.makeRequest(`/vps/${this.serverId}`)
       ]);
 
       const securityMetrics = this.parseSecurityMetrics(backupResponse, vpsInfoResponse);

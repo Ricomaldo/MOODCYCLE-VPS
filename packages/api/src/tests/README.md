@@ -183,7 +183,7 @@ npm run test:performance
    ```
 
 3. **Redémarrer si nécessaire :**
-   ```bash
+```bash
    ssh root@69.62.107.136 'pm2 restart moodcycle-api'
    ```
 

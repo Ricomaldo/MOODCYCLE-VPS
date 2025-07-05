@@ -1,10 +1,11 @@
 /**
  * Test des vrais endpoints Hostinger API
- * Version corrigée avec les bons chemins d'API
+ * Version corrigée avec les bons chemins d'API + module https natif
  */
 
 const HostingerService = require('../services/HostingerService');
-const axios = require('axios');
+const https = require('https');
+const { URL } = require('url');
 
 // Couleurs pour les logs
 const colors = {
@@ -31,6 +32,65 @@ class HostingerAPITester {
       failed: 0,
       errors: []
     };
+  }
+
+  /**
+   * Faire un appel HTTPS avec le module natif
+   */
+  async makeRequest(endpoint, options = {}) {
+    return new Promise((resolve, reject) => {
+      const url = new URL(endpoint, this.baseURL);
+      
+      const requestOptions = {
+        hostname: url.hostname,
+        port: 443,
+        path: url.pathname + url.search,
+        method: options.method || 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+          'User-Agent': 'MoodCycle-API-Test/1.0',
+          ...options.headers
+        },
+        timeout: options.timeout || 15000
+      };
+
+      const req = https.request(requestOptions, (res) => {
+        let data = '';
+        
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+        
+        res.on('end', () => {
+          try {
+            const parsedData = JSON.parse(data);
+            resolve({
+              status: res.statusCode,
+              data: parsedData,
+              headers: res.headers
+            });
+          } catch (error) {
+            reject(new Error(`Invalid JSON response: ${data}`));
+          }
+        });
+      });
+
+      req.on('error', (error) => {
+        reject(error);
+      });
+
+      req.on('timeout', () => {
+        req.destroy();
+        reject(new Error('Request timeout'));
+      });
+
+      if (options.data) {
+        req.write(JSON.stringify(options.data));
+      }
+
+      req.end();
+    });
   }
 
   log(message, color = 'reset') {
@@ -71,14 +131,7 @@ class HostingerAPITester {
     return this.test('VPS Info Endpoint (/vps/{id})', async () => {
       if (!this.apiKey) return false;
       
-      const response = await axios.get(`${this.baseURL}/vps/${this.serverId}`, {
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 15000
-      });
-      
+      const response = await this.makeRequest(`/vps/${this.serverId}`);
       return response.status === 200 && response.data;
     });
   }
@@ -87,14 +140,7 @@ class HostingerAPITester {
     return this.test('VPS Usage Endpoint (/vps/{id}/usage)', async () => {
       if (!this.apiKey) return false;
       
-      const response = await axios.get(`${this.baseURL}/vps/${this.serverId}/usage`, {
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 15000
-      });
-      
+      const response = await this.makeRequest(`/vps/${this.serverId}/usage`);
       return response.status === 200 && response.data;
     });
   }
@@ -103,14 +149,7 @@ class HostingerAPITester {
     return this.test('VPS Backups Endpoint (/vps/{id}/backups)', async () => {
       if (!this.apiKey) return false;
       
-      const response = await axios.get(`${this.baseURL}/vps/${this.serverId}/backups`, {
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 15000
-      });
-      
+      const response = await this.makeRequest(`/vps/${this.serverId}/backups`);
       return response.status === 200;
     });
   }
@@ -119,14 +158,7 @@ class HostingerAPITester {
     return this.test('Domain Info Endpoint (/domains/{id})', async () => {
       if (!this.apiKey || !this.domainId) return false;
       
-      const response = await axios.get(`${this.baseURL}/domains/${this.domainId}`, {
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 15000
-      });
-      
+      const response = await this.makeRequest(`/domains/${this.domainId}`);
       return response.status === 200 && response.data;
     });
   }
@@ -213,7 +245,7 @@ class HostingerAPITester {
   }
 
   async runAllTests() {
-    this.log(`\n${colors.bold}${colors.cyan}🧪 HOSTINGER API TESTS - Version Corrigée${colors.reset}\n`);
+    this.log(`\n${colors.bold}${colors.cyan}🧪 HOSTINGER API TESTS - Version Sans Dépendances${colors.reset}\n`);
     
     this.log(`${colors.yellow}Configuration:${colors.reset}`);
     this.log(`  API Key: ${this.apiKey ? '✅ Configured' : '❌ Missing'}`);
