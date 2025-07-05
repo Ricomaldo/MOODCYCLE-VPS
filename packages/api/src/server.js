@@ -8,7 +8,11 @@ const path = require('path');
 const claudeRateLimit = require('./middleware/claudeRateLimit');
 const deviceAuth = require('./middleware/deviceAuth');
 const fs = require('fs').promises;
-require('dotenv').config();
+
+// ✅ CHARGEMENT .ENV AVEC CHEMIN ABSOLU
+require('dotenv').config({ 
+  path: '/srv/www/internal/moodcycle-api/shared/.env' 
+});
 
 // Test nouveau système de déploiement
 const app = express();

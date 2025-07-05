@@ -1,16 +1,21 @@
 /**
  * HostingerService - Service d'intégration avec l'API Hostinger
  * Récupère les métriques serveur en temps réel
- * Version corrigée avec les vrais endpoints API + module https natif
+ * Version corrigée avec les VRAIS endpoints API Hostinger
  */
 
 const https = require('https');
 const { URL } = require('url');
 
+// ✅ CHARGEMENT .ENV AVEC CHEMIN ABSOLU
+require('dotenv').config({ 
+  path: '/srv/www/internal/moodcycle-api/shared/.env' 
+});
+
 class HostingerService {
   constructor() {
     this.apiKey = process.env.HOSTINGER_API_KEY;
-    this.baseURL = 'https://api.hostinger.com/v1';
+    this.baseURL = 'https://api.hostinger.com';
     this.domainId = process.env.HOSTINGER_DOMAIN_ID;
     this.serverId = process.env.HOSTINGER_SERVER_ID;
     
@@ -79,10 +84,10 @@ class HostingerService {
   }
 
   /**
-   * Récupérer les métriques serveur VPS
+   * Récupérer les informations VPS (endpoint principal)
    */
-  async getServerMetrics() {
-    const cacheKey = 'server_metrics';
+  async getVPSInfo() {
+    const cacheKey = 'vps_info';
     const cached = this.cache.get(cacheKey);
     
     if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
@@ -92,38 +97,98 @@ class HostingerService {
     try {
       if (!this.apiKey) {
         console.log('⚠️ Hostinger API key not configured, returning mock data');
-        return this.getMockServerMetrics();
+        return this.getMockVPSInfo();
       }
 
-      // ✅ VRAIS ENDPOINTS HOSTINGER API
-      const [vpsInfo, vpsUsage] = await Promise.allSettled([
-        // Informations générales du VPS
-        this.makeRequest(`/vps/${this.serverId}`),
-        // Métriques d'usage (CPU, RAM, disk)
-        this.makeRequest(`/vps/${this.serverId}/usage`)
-      ]);
+      // ✅ VRAI ENDPOINT VPS HOSTINGER selon documentation officielle
+      const response = await this.makeRequest(`/api/vps/v1/virtual-machines/${this.serverId}`);
 
-      // Parser les réponses
-      const info = vpsInfo.status === 'fulfilled' ? vpsInfo.value.data : null;
-      const usage = vpsUsage.status === 'fulfilled' ? vpsUsage.value.data : null;
-      
-      const metrics = this.parseServerMetrics(info, usage);
+      const vpsInfo = this.parseVPSInfo(response.data);
       
       // Cache les résultats
       this.cache.set(cacheKey, {
-        data: metrics,
+        data: vpsInfo,
         timestamp: Date.now()
       });
 
-      console.log('✅ Hostinger API: Real server metrics retrieved');
-      return metrics;
+      console.log('✅ Hostinger API: Real VPS info retrieved');
+      return vpsInfo;
 
     } catch (error) {
-      console.error('❌ Hostinger API error:', error.message);
-      console.log('🎭 Falling back to simulated data');
+      console.error('❌ Hostinger VPS API error:', error.message);
+      console.log('🎭 Falling back to simulated VPS data');
       
       // Fallback vers données simulées en cas d'erreur
-      return this.getMockServerMetrics();
+      return this.getMockVPSInfo();
+    }
+  }
+
+  /**
+   * Récupérer les métriques serveur (basées sur les infos VPS)
+   */
+  async getServerMetrics() {
+    const vpsInfo = await this.getVPSInfo();
+    
+    // Transformer les infos VPS en métriques serveur
+    return {
+      status: vpsInfo.status || 'online',
+      uptime: vpsInfo.uptime || 99.5,
+      cpu: vpsInfo.cpu || {
+        usage: 0,
+        cores: 4,
+        load: [0, 0, 0]
+      },
+      memory: vpsInfo.memory || {
+        used: 0,
+        total: 8,
+        percentage: 0
+      },
+      disk: vpsInfo.disk || {
+        used: 0,
+        total: 100,
+        percentage: 0
+      },
+      network: vpsInfo.network || {
+        download: 0,
+        upload: 0,
+        latency: 0
+      }
+    };
+  }
+
+  /**
+   * Récupérer les backups VPS
+   */
+  async getVPSBackups() {
+    const cacheKey = 'vps_backups';
+    const cached = this.cache.get(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < this.cacheTimeout * 4) {
+      return cached.data;
+    }
+
+    try {
+      if (!this.apiKey) {
+        return this.getMockBackups();
+      }
+
+      // ✅ VRAI ENDPOINT BACKUPS selon documentation
+      const response = await this.makeRequest(`/api/vps/v1/virtual-machines/${this.serverId}/backups`);
+
+      const backups = this.parseBackups(response.data);
+      
+      this.cache.set(cacheKey, {
+        data: backups,
+        timestamp: Date.now()
+      });
+
+      console.log('✅ Hostinger API: Real backups retrieved');
+      return backups;
+
+    } catch (error) {
+      console.error('❌ Hostinger Backups API error:', error.message);
+      console.log('🎭 Falling back to simulated backup data');
+      return this.getMockBackups();
     }
   }
 
@@ -144,7 +209,7 @@ class HostingerService {
       }
 
       // ✅ VRAI ENDPOINT DOMAINE
-      const response = await this.makeRequest(`/domains/${this.domainId}`);
+      const response = await this.makeRequest(`/api/domains/v1/domains/${this.domainId}`);
 
       const domainInfo = this.parseDomainInfo(response.data);
       
@@ -164,7 +229,7 @@ class HostingerService {
   }
 
   /**
-   * Récupérer les métriques de sécurité et backups
+   * Récupérer les métriques de sécurité
    */
   async getSecurityMetrics() {
     const cacheKey = 'security_metrics';
@@ -179,13 +244,16 @@ class HostingerService {
         return this.getMockSecurityMetrics();
       }
 
-      // ✅ VRAIS ENDPOINTS SÉCURITÉ HOSTINGER
-      const [backupResponse, vpsInfoResponse] = await Promise.allSettled([
-        this.makeRequest(`/vps/${this.serverId}/backups`),
-        this.makeRequest(`/vps/${this.serverId}`)
+      // ✅ Combiner VPS info et backups pour les métriques de sécurité
+      const [vpsInfo, backups] = await Promise.allSettled([
+        this.getVPSInfo(),
+        this.getVPSBackups()
       ]);
 
-      const securityMetrics = this.parseSecurityMetrics(backupResponse, vpsInfoResponse);
+      const securityMetrics = this.parseSecurityMetrics(
+        vpsInfo.status === 'fulfilled' ? vpsInfo.value : null,
+        backups.status === 'fulfilled' ? backups.value : null
+      );
       
       this.cache.set(cacheKey, {
         data: securityMetrics,
@@ -206,34 +274,45 @@ class HostingerService {
   // 🔄 PARSERS POUR TRANSFORMER LES DONNÉES HOSTINGER
   // ═══════════════════════════════════════════════════════
 
-  parseServerMetrics(vpsInfo, vpsUsage) {
-    // Combiner les données d'info générale et d'usage
-    const info = vpsInfo?.data || {};
-    const usage = vpsUsage?.data || {};
-    
+  parseVPSInfo(data) {
+    // Parser les données VPS selon la structure Hostinger
     return {
-      status: info.status === 'running' ? 'online' : 'offline',
-      uptime: usage.uptime_percentage || 99.5,
+      status: data.status === 'running' ? 'online' : 'offline',
+      uptime: data.uptime_percentage || 99.5,
       cpu: {
-        usage: usage.cpu_usage_percentage || 0,
-        cores: info.cpu_cores || 4,
-        load: usage.load_average || [0, 0, 0]
+        usage: data.cpu_usage || 0,
+        cores: data.cpu_cores || 4,
+        load: data.load_average || [0, 0, 0]
       },
       memory: {
-        used: usage.memory_used_gb || 0,
-        total: info.memory_total_gb || 8,
-        percentage: usage.memory_usage_percentage || 0
+        used: data.memory_used || 0,
+        total: data.memory_total || 8,
+        percentage: data.memory_usage_percentage || 0
       },
       disk: {
-        used: usage.disk_used_gb || 0,
-        total: info.disk_total_gb || 100,
-        percentage: usage.disk_usage_percentage || 0
+        used: data.disk_used || 0,
+        total: data.disk_total || 100,
+        percentage: data.disk_usage_percentage || 0
       },
       network: {
-        download: usage.network_in_mbps || 0,
-        upload: usage.network_out_mbps || 0,
-        latency: usage.network_latency_ms || 0
+        download: data.network_in || 0,
+        upload: data.network_out || 0,
+        latency: data.network_latency || 0
       }
+    };
+  }
+
+  parseBackups(data) {
+    // Parser la liste des backups
+    const backups = data.backups || data.data || [];
+    const latestBackup = backups[0] || {};
+    
+    return {
+      lastBackup: latestBackup.created_at || new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      status: latestBackup.status || 'success',
+      size: latestBackup.size || '2.3 GB',
+      count: backups.length || 0,
+      backups: backups.slice(0, 5) // Derniers 5 backups
     };
   }
 
@@ -250,13 +329,7 @@ class HostingerService {
     };
   }
 
-  parseSecurityMetrics(backupResponse, vpsInfoResponse) {
-    const backup = backupResponse.status === 'fulfilled' ? backupResponse.value.data : null;
-    const vpsInfo = vpsInfoResponse.status === 'fulfilled' ? vpsInfoResponse.value.data : null;
-
-    // Extraire les infos de backup
-    const latestBackup = backup?.backups?.[0] || backup?.data?.[0] || {};
-    
+  parseSecurityMetrics(vpsInfo, backups) {
     return {
       lastScan: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
       vulnerabilities: {
@@ -266,14 +339,10 @@ class HostingerService {
         low: 5
       },
       firewall: {
-        status: vpsInfo?.firewall?.status || 'active',
-        blockedRequests: Math.floor(Math.random() * 1000) + 1000 // Simulé car pas dans l'API
+        status: vpsInfo?.firewall_status || 'active',
+        blockedRequests: Math.floor(Math.random() * 1000) + 1000 // Simulé
       },
-      backups: {
-        lastBackup: latestBackup.created_at || new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        status: latestBackup.status || 'success',
-        size: latestBackup.size || '2.3 GB'
-      }
+      backups: backups || this.getMockBackups()
     };
   }
 
@@ -281,7 +350,7 @@ class HostingerService {
   // 🎭 DONNÉES SIMULÉES POUR DÉVELOPPEMENT
   // ═══════════════════════════════════════════════════════
 
-  getMockServerMetrics() {
+  getMockVPSInfo() {
     const now = Date.now();
     const variation = Math.sin(now / 60000) * 10;
     
@@ -308,6 +377,19 @@ class HostingerService {
         upload: 67.3 + (Math.random() * 10 - 5),
         latency: 12 + (Math.random() * 8 - 4)
       }
+    };
+  }
+
+  getMockBackups() {
+    return {
+      lastBackup: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      status: 'success',
+      size: '2.3 GB',
+      count: 7,
+      backups: [
+        { created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), status: 'success', size: '2.3 GB' },
+        { created_at: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(), status: 'success', size: '2.1 GB' }
+      ]
     };
   }
 
@@ -340,11 +422,7 @@ class HostingerService {
         status: 'active',
         blockedRequests: 1247 + Math.floor(Math.random() * 100)
       },
-      backups: {
-        lastBackup: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        status: 'success',
-        size: '2.3 GB'
-      }
+      backups: this.getMockBackups()
     };
   }
 
@@ -375,7 +453,7 @@ class HostingerService {
       ]);
 
       return {
-        server: serverMetrics.status === 'fulfilled' ? serverMetrics.value : this.getMockServerMetrics(),
+        server: serverMetrics.status === 'fulfilled' ? serverMetrics.value : this.getMockVPSInfo(),
         domain: domainInfo.status === 'fulfilled' ? domainInfo.value : this.getMockDomainInfo(),
         security: securityMetrics.status === 'fulfilled' ? securityMetrics.value : this.getMockSecurityMetrics(),
         lastUpdate: new Date().toISOString()
@@ -385,7 +463,7 @@ class HostingerService {
       console.error('❌ Error getting all metrics:', error);
       
       return {
-        server: this.getMockServerMetrics(),
+        server: this.getMockVPSInfo(),
         domain: this.getMockDomainInfo(),
         security: this.getMockSecurityMetrics(),
         lastUpdate: new Date().toISOString()

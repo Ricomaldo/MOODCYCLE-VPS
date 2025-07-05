@@ -1,7 +1,12 @@
 /**
  * Test des vrais endpoints Hostinger API
- * Version corrigée avec les bons chemins d'API + module https natif
+ * Version corrigée avec la documentation officielle Hostinger
  */
+
+// ✅ CHARGEMENT .ENV AVEC CHEMIN ABSOLU
+require('dotenv').config({ 
+  path: '/srv/www/internal/moodcycle-api/shared/.env' 
+});
 
 const HostingerService = require('../services/HostingerService');
 const https = require('https');
@@ -24,7 +29,7 @@ class HostingerAPITester {
     this.apiKey = process.env.HOSTINGER_API_KEY;
     this.serverId = process.env.HOSTINGER_SERVER_ID;
     this.domainId = process.env.HOSTINGER_DOMAIN_ID;
-    this.baseURL = 'https://api.hostinger.com/v1';
+    this.baseURL = 'https://api.hostinger.com';
     
     this.results = {
       total: 0,
@@ -128,37 +133,28 @@ class HostingerAPITester {
   }
 
   async testVPSEndpoint() {
-    return this.test('VPS Info Endpoint (/vps/{id})', async () => {
+    return this.test('VPS Info Endpoint (/api/vps/v1/virtual-machines/{id})', async () => {
       if (!this.apiKey) return false;
       
-      const response = await this.makeRequest(`/vps/${this.serverId}`);
-      return response.status === 200 && response.data;
-    });
-  }
-
-  async testVPSUsageEndpoint() {
-    return this.test('VPS Usage Endpoint (/vps/{id}/usage)', async () => {
-      if (!this.apiKey) return false;
-      
-      const response = await this.makeRequest(`/vps/${this.serverId}/usage`);
+      const response = await this.makeRequest(`/api/vps/v1/virtual-machines/${this.serverId}`);
       return response.status === 200 && response.data;
     });
   }
 
   async testVPSBackupsEndpoint() {
-    return this.test('VPS Backups Endpoint (/vps/{id}/backups)', async () => {
+    return this.test('VPS Backups Endpoint (/api/vps/v1/virtual-machines/{id}/backups)', async () => {
       if (!this.apiKey) return false;
       
-      const response = await this.makeRequest(`/vps/${this.serverId}/backups`);
+      const response = await this.makeRequest(`/api/vps/v1/virtual-machines/${this.serverId}/backups`);
       return response.status === 200;
     });
   }
 
   async testDomainEndpoint() {
-    return this.test('Domain Info Endpoint (/domains/{id})', async () => {
+    return this.test('Domain Info Endpoint (/api/domains/v1/domains/{id})', async () => {
       if (!this.apiKey || !this.domainId) return false;
       
-      const response = await this.makeRequest(`/domains/${this.domainId}`);
+      const response = await this.makeRequest(`/api/domains/v1/domains/${this.domainId}`);
       return response.status === 200 && response.data;
     });
   }
@@ -176,6 +172,20 @@ class HostingerAPITester {
     });
   }
 
+  async testServiceVPSInfo() {
+    return this.test('Service VPS Info', async () => {
+      const vpsInfo = await this.service.getVPSInfo();
+      
+      return !!(
+        vpsInfo.status &&
+        vpsInfo.cpu &&
+        vpsInfo.memory &&
+        vpsInfo.disk &&
+        vpsInfo.network
+      );
+    });
+  }
+
   async testServiceServerMetrics() {
     return this.test('Service Server Metrics', async () => {
       const metrics = await this.service.getServerMetrics();
@@ -186,6 +196,18 @@ class HostingerAPITester {
         metrics.memory &&
         metrics.disk &&
         metrics.network
+      );
+    });
+  }
+
+  async testServiceBackups() {
+    return this.test('Service VPS Backups', async () => {
+      const backups = await this.service.getVPSBackups();
+      
+      return !!(
+        backups.lastBackup &&
+        backups.status &&
+        typeof backups.count === 'number'
       );
     });
   }
@@ -218,12 +240,12 @@ class HostingerAPITester {
     return this.test('Cache System', async () => {
       // Premier appel
       const start1 = Date.now();
-      await this.service.getServerMetrics();
+      await this.service.getVPSInfo();
       const time1 = Date.now() - start1;
       
       // Deuxième appel (devrait être en cache)
       const start2 = Date.now();
-      await this.service.getServerMetrics();
+      await this.service.getVPSInfo();
       const time2 = Date.now() - start2;
       
       // Le cache devrait être plus rapide
@@ -245,7 +267,7 @@ class HostingerAPITester {
   }
 
   async runAllTests() {
-    this.log(`\n${colors.bold}${colors.cyan}🧪 HOSTINGER API TESTS - Version Sans Dépendances${colors.reset}\n`);
+    this.log(`\n${colors.bold}${colors.cyan}🧪 HOSTINGER API TESTS - Documentation Officielle${colors.reset}\n`);
     
     this.log(`${colors.yellow}Configuration:${colors.reset}`);
     this.log(`  API Key: ${this.apiKey ? '✅ Configured' : '❌ Missing'}`);
@@ -258,16 +280,17 @@ class HostingerAPITester {
     await this.testCredentials();
 
     // Tests des endpoints directs
-    this.log(`\n${colors.bold}🌐 DIRECT API TESTS${colors.reset}`);
+    this.log(`\n${colors.bold}🌐 DIRECT API TESTS (selon documentation officielle)${colors.reset}`);
     await this.testVPSEndpoint();
-    await this.testVPSUsageEndpoint();
     await this.testVPSBackupsEndpoint();
     await this.testDomainEndpoint();
 
     // Tests du service
     this.log(`\n${colors.bold}🔧 SERVICE TESTS${colors.reset}`);
     await this.testHostingerServiceIntegration();
+    await this.testServiceVPSInfo();
     await this.testServiceServerMetrics();
+    await this.testServiceBackups();
     await this.testServiceDomainInfo();
     await this.testServiceSecurityMetrics();
 

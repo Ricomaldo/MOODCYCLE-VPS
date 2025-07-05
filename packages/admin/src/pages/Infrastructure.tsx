@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AppHeader } from "@/components/AppHeader";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useInfrastructureData } from "@/hooks/useInfrastructureData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -100,103 +100,12 @@ interface SecurityMetrics {
 
 const Infrastructure = () => {
   const { isDarkMode } = useTheme();
-  const [serverMetrics, setServerMetrics] = useState<ServerMetrics | null>(null);
-  const [apiMetrics, setApiMetrics] = useState<ApiMetrics | null>(null);
-  const [securityMetrics, setSecurityMetrics] = useState<SecurityMetrics | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-
-  useEffect(() => {
-    loadInfrastructureData();
-    const interval = setInterval(loadInfrastructureData, 30000); // Refresh every 30s
-    return () => clearInterval(interval);
-  }, []);
-
-  const loadInfrastructureData = async () => {
-    try {
-      setLoading(true);
-      
-      // Simuler le chargement des données infrastructure
-      // En production, ceci appellerait les APIs Hostinger + monitoring
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      
-      // Données simulées réalistes
-      setServerMetrics({
-        status: 'online',
-        uptime: 99.8,
-        cpu: {
-          usage: 23,
-          cores: 4,
-          load: [0.8, 1.2, 0.6]
-        },
-        memory: {
-          used: 3.2,
-          total: 8,
-          percentage: 40
-        },
-        disk: {
-          used: 45,
-          total: 100,
-          percentage: 45
-        },
-        network: {
-          download: 125.5,
-          upload: 67.3,
-          latency: 12
-        },
-        ssl: {
-          valid: true,
-          expiresAt: '2024-12-15',
-          daysUntilExpiry: 45
-        }
-      });
-      
-      setApiMetrics({
-        status: 'healthy',
-        responseTime: 185,
-        requestsPerMinute: 42,
-        errorRate: 0.2,
-        endpoints: [
-          { path: '/api/insights', status: 200, responseTime: 120, lastCheck: new Date().toISOString() },
-          { path: '/api/phases', status: 200, responseTime: 95, lastCheck: new Date().toISOString() },
-          { path: '/api/closings', status: 200, responseTime: 110, lastCheck: new Date().toISOString() },
-          { path: '/api/vignettes', status: 200, responseTime: 140, lastCheck: new Date().toISOString() },
-          { path: '/api/chat', status: 200, responseTime: 320, lastCheck: new Date().toISOString() }
-        ],
-        database: {
-          status: 'connected',
-          connectionPool: 8,
-          queryTime: 25
-        }
-      });
-      
-      setSecurityMetrics({
-        lastScan: '2024-01-15T10:30:00Z',
-        vulnerabilities: {
-          critical: 0,
-          high: 0,
-          medium: 2,
-          low: 5
-        },
-        firewall: {
-          status: 'active',
-          blockedRequests: 1247
-        },
-        backups: {
-          lastBackup: '2024-01-15T02:00:00Z',
-          status: 'success',
-          size: '2.3 GB'
-        }
-      });
-      
-      setLastUpdate(new Date());
-      
-    } catch (error) {
-      console.error('Erreur lors du chargement des données infrastructure:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { metrics, loading, error, lastUpdate, refetch: loadInfrastructureData, clearCache } = useInfrastructureData();
+  
+  // Extraire les métriques depuis la réponse API
+  const serverMetrics = metrics?.server;
+  const apiMetrics = metrics?.api;
+  const securityMetrics = metrics?.security;
 
   const getStatusColor = (status: string) => {
     switch (status) {
