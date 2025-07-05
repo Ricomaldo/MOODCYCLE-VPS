@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const path = require('path');
 const claudeRateLimit = require('./middleware/claudeRateLimit');
 const deviceAuth = require('./middleware/deviceAuth');
+const analyticsLogger = require('./middleware/analyticsLogger');
 const fs = require('fs').promises;
 
 // ✅ CHARGEMENT .ENV AVEC CHEMIN ABSOLU
@@ -33,8 +34,10 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'X-Device-ID', 'Authorization']
 }));
 
-
 app.use(express.json());
+
+// Analytics Logger Middleware - AVANT les routes analytics
+app.use(analyticsLogger.middleware());
 
 // Dans server.js, après app.use(express.json())
 app.use((req, res, next) => {
@@ -163,6 +166,25 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy' });
 });
 
+// Endpoint pour récupérer les stats de logs analytics
+app.get('/api/logs/analytics/stats', deviceAuth, async (req, res) => {
+  try {
+    const stats = await analyticsLogger.getLogStats();
+    res.json({
+      success: true,
+      data: stats,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Error getting log stats:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get log stats'
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🌟 MoodCycle API running on port ${PORT}`);
+  console.log(`📊 Analytics logging enabled`);
 });

@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
+const analyticsLogger = require('../middleware/analyticsLogger');
 
 class AdvancedAnalyticsController {
   
@@ -7,6 +8,7 @@ class AdvancedAnalyticsController {
    * GET /api/analytics/behavior - Analytics comportementaux
    */
   async getBehaviorAnalytics(req, res) {
+    const startTime = Date.now();
     try {
       const storesPath = path.join(__dirname, '../data/stores.json');
       const data = await fs.readFile(storesPath, 'utf8');
@@ -15,6 +17,15 @@ class AdvancedAnalyticsController {
       // Analyser les données comportementales
       const behaviorAnalytics = this.analyzeBehaviorData(stores);
       
+      // Log des métriques
+      const processingTime = Date.now() - startTime;
+      await analyticsLogger.logDataMetrics(
+        '/api/analytics/behavior',
+        JSON.stringify(behaviorAnalytics).length,
+        processingTime,
+        stores.length
+      );
+      
       res.json({
         success: true,
         data: behaviorAnalytics,
@@ -22,6 +33,7 @@ class AdvancedAnalyticsController {
       });
     } catch (error) {
       console.error('❌ Error in getBehaviorAnalytics:', error);
+      await analyticsLogger.logAnalysisError('behavior', error, { endpoint: '/api/analytics/behavior' });
       res.status(500).json({
         success: false,
         error: 'Erreur analyse comportementale'
@@ -33,6 +45,7 @@ class AdvancedAnalyticsController {
    * GET /api/analytics/device - Analytics device
    */
   async getDeviceAnalytics(req, res) {
+    const startTime = Date.now();
     try {
       const storesPath = path.join(__dirname, '../data/stores.json');
       const data = await fs.readFile(storesPath, 'utf8');
@@ -41,6 +54,15 @@ class AdvancedAnalyticsController {
       // Analyser les données device
       const deviceAnalytics = this.analyzeDeviceData(stores);
       
+      // Log des métriques
+      const processingTime = Date.now() - startTime;
+      await analyticsLogger.logDataMetrics(
+        '/api/analytics/device',
+        JSON.stringify(deviceAnalytics).length,
+        processingTime,
+        stores.length
+      );
+      
       res.json({
         success: true,
         data: deviceAnalytics,
@@ -48,6 +70,7 @@ class AdvancedAnalyticsController {
       });
     } catch (error) {
       console.error('❌ Error in getDeviceAnalytics:', error);
+      await analyticsLogger.logAnalysisError('device', error, { endpoint: '/api/analytics/device' });
       res.status(500).json({
         success: false,
         error: 'Erreur analyse device'
@@ -59,6 +82,7 @@ class AdvancedAnalyticsController {
    * GET /api/analytics/performance - Analytics performance
    */
   async getPerformanceAnalytics(req, res) {
+    const startTime = Date.now();
     try {
       const storesPath = path.join(__dirname, '../data/stores.json');
       const data = await fs.readFile(storesPath, 'utf8');
@@ -67,6 +91,15 @@ class AdvancedAnalyticsController {
       // Analyser les performances
       const performanceAnalytics = this.analyzePerformanceData(stores);
       
+      // Log des métriques
+      const processingTime = Date.now() - startTime;
+      await analyticsLogger.logDataMetrics(
+        '/api/analytics/performance',
+        JSON.stringify(performanceAnalytics).length,
+        processingTime,
+        stores.length
+      );
+      
       res.json({
         success: true,
         data: performanceAnalytics,
@@ -74,6 +107,7 @@ class AdvancedAnalyticsController {
       });
     } catch (error) {
       console.error('❌ Error in getPerformanceAnalytics:', error);
+      await analyticsLogger.logAnalysisError('performance', error, { endpoint: '/api/analytics/performance' });
       res.status(500).json({
         success: false,
         error: 'Erreur analyse performance'
@@ -85,6 +119,7 @@ class AdvancedAnalyticsController {
    * GET /api/analytics/patterns - Patterns d'usage
    */
   async getUsagePatterns(req, res) {
+    const startTime = Date.now();
     try {
       const storesPath = path.join(__dirname, '../data/stores.json');
       const data = await fs.readFile(storesPath, 'utf8');
@@ -93,6 +128,15 @@ class AdvancedAnalyticsController {
       // Analyser les patterns d'usage
       const usagePatterns = this.analyzeUsagePatterns(stores);
       
+      // Log des métriques
+      const processingTime = Date.now() - startTime;
+      await analyticsLogger.logDataMetrics(
+        '/api/analytics/patterns',
+        JSON.stringify(usagePatterns).length,
+        processingTime,
+        stores.length
+      );
+      
       res.json({
         success: true,
         data: usagePatterns,
@@ -100,6 +144,7 @@ class AdvancedAnalyticsController {
       });
     } catch (error) {
       console.error('❌ Error in getUsagePatterns:', error);
+      await analyticsLogger.logAnalysisError('patterns', error, { endpoint: '/api/analytics/patterns' });
       res.status(500).json({
         success: false,
         error: 'Erreur analyse patterns'
@@ -111,6 +156,7 @@ class AdvancedAnalyticsController {
    * GET /api/analytics/crashes - Analytics crashes
    */
   async getCrashAnalytics(req, res) {
+    const startTime = Date.now();
     try {
       const storesPath = path.join(__dirname, '../data/stores.json');
       const data = await fs.readFile(storesPath, 'utf8');
@@ -119,6 +165,15 @@ class AdvancedAnalyticsController {
       // Analyser les crashes
       const crashAnalytics = this.analyzeCrashData(stores);
       
+      // Log des métriques
+      const processingTime = Date.now() - startTime;
+      await analyticsLogger.logDataMetrics(
+        '/api/analytics/crashes',
+        JSON.stringify(crashAnalytics).length,
+        processingTime,
+        stores.length
+      );
+      
       res.json({
         success: true,
         data: crashAnalytics,
@@ -126,6 +181,7 @@ class AdvancedAnalyticsController {
       });
     } catch (error) {
       console.error('❌ Error in getCrashAnalytics:', error);
+      await analyticsLogger.logAnalysisError('crashes', error, { endpoint: '/api/analytics/crashes' });
       res.status(500).json({
         success: false,
         error: 'Erreur analyse crashes'
@@ -137,6 +193,7 @@ class AdvancedAnalyticsController {
    * GET /api/analytics/dashboard - Dashboard complet
    */
   async getDashboard(req, res) {
+    const startTime = Date.now();
     try {
       const storesPath = path.join(__dirname, '../data/stores.json');
       const data = await fs.readFile(storesPath, 'utf8');
@@ -153,6 +210,21 @@ class AdvancedAnalyticsController {
         recommendations: this.generateRecommendations(stores)
       };
       
+      // Log des recommandations
+      await analyticsLogger.logRecommendations(
+        dashboard.recommendations,
+        { totalStores: stores.length, endpoint: '/api/analytics/dashboard' }
+      );
+      
+      // Log des métriques
+      const processingTime = Date.now() - startTime;
+      await analyticsLogger.logDataMetrics(
+        '/api/analytics/dashboard',
+        JSON.stringify(dashboard).length,
+        processingTime,
+        stores.length
+      );
+      
       res.json({
         success: true,
         data: dashboard,
@@ -160,6 +232,7 @@ class AdvancedAnalyticsController {
       });
     } catch (error) {
       console.error('❌ Error in getDashboard:', error);
+      await analyticsLogger.logAnalysisError('dashboard', error, { endpoint: '/api/analytics/dashboard' });
       res.status(500).json({
         success: false,
         error: 'Erreur génération dashboard'
