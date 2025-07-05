@@ -2,7 +2,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AppHeader } from "@/components/AppHeader";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useUserData } from "@/hooks/useUserData";
+import { useStoresData } from "@/hooks/useStoresData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,27 +20,42 @@ import {
   RefreshCw,
   Download,
   AlertCircle,
-  Trash2
+  Trash2,
+  Activity,
+  Zap,
+  Heart
 } from "lucide-react";
 
 const UserData = () => {
   const { isDarkMode } = useTheme();
   const { 
-    userData, 
-    metrics, 
+    storesData, 
+    analytics, 
+    intelligencePatterns,
     loading, 
     error, 
     lastUpdate, 
     refetch: loadUserData, 
     deleteUser, 
-    exportUserData 
-  } = useUserData();
+    exportData: exportUserData 
+  } = useStoresData();
 
   const getMaturityColor = (maturity: string) => {
     switch (maturity) {
       case 'discovery': return 'bg-blue-500/20 text-blue-400 border-blue-500/50';
       case 'learning': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
       case 'autonomous': return 'bg-green-500/20 text-green-400 border-green-500/50';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
+    }
+  };
+
+  const getPersonaColor = (persona: string) => {
+    switch (persona) {
+      case 'emma': return 'bg-pink-500/20 text-pink-400 border-pink-500/50';
+      case 'laure': return 'bg-purple-500/20 text-purple-400 border-purple-500/50';
+      case 'sylvie': return 'bg-green-500/20 text-green-400 border-green-500/50';
+      case 'christine': return 'bg-blue-500/20 text-blue-400 border-blue-500/50';
+      case 'clara': return 'bg-orange-500/20 text-orange-400 border-orange-500/50';
       default: return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
     }
   };
@@ -74,6 +89,9 @@ const UserData = () => {
                     <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                       Analyse des stores Zustand collectés depuis l'application mobile
                     </p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} mt-1`}>
+                      Dernière mise à jour: {lastUpdate.toLocaleString('fr-FR')}
+                    </p>
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -87,7 +105,7 @@ const UserData = () => {
                     </Button>
                     <Button
                       onClick={exportUserData}
-                      disabled={loading || userData.length === 0}
+                      disabled={loading || storesData.length === 0}
                       className="bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white"
                     >
                       <Download className="w-4 h-4 mr-2" />
@@ -120,16 +138,16 @@ const UserData = () => {
                   <Card className={`${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} backdrop-blur-sm`}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                        Utilisateurs Total
+                        Testeuses Total
                       </CardTitle>
                       <Users className="h-4 w-4 text-blue-400" />
                     </CardHeader>
                     <CardContent>
                       <div className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {loading ? '...' : metrics.totalUsers}
+                        {loading ? '...' : analytics?.totalUsers || 0}
                       </div>
                       <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Testeuses TestFlight
+                        Stores collectés
                       </p>
                     </CardContent>
                   </Card>
@@ -137,16 +155,16 @@ const UserData = () => {
                   <Card className={`${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} backdrop-blur-sm`}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                        Utilisateurs Actifs
+                        Engagement Moyen
                       </CardTitle>
                       <TrendingUp className="h-4 w-4 text-green-400" />
                     </CardHeader>
                     <CardContent>
                       <div className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {loading ? '...' : metrics.activeUsers}
+                        {loading ? '...' : `${analytics?.avgEngagement || 0} jours`}
                       </div>
                       <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Derniers 7 jours
+                        Utilisation moyenne
                       </p>
                     </CardContent>
                   </Card>
@@ -154,16 +172,16 @@ const UserData = () => {
                   <Card className={`${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} backdrop-blur-sm`}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                        Taux de Rétention
+                        Tracking Cycle
                       </CardTitle>
-                      <Target className="h-4 w-4 text-purple-400" />
+                      <Calendar className="h-4 w-4 text-purple-400" />
                     </CardHeader>
                     <CardContent>
                       <div className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {loading ? '...' : `${Math.round(metrics.retentionRate)}%`}
+                        {loading ? '...' : `${analytics?.cycleTracking.active || 0}/${analytics?.totalUsers || 0}`}
                       </div>
                       <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Utilisateurs récurrents
+                        Utilisatrices actives
                       </p>
                     </CardContent>
                   </Card>
@@ -171,16 +189,16 @@ const UserData = () => {
                   <Card className={`${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} backdrop-blur-sm`}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                        Temps Session Moyen
+                        IA Confiance
                       </CardTitle>
-                      <Clock className="h-4 w-4 text-orange-400" />
+                      <Brain className="h-4 w-4 text-orange-400" />
                     </CardHeader>
                     <CardContent>
                       <div className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {loading ? '...' : `${metrics.avgSessionTime}min`}
+                        {loading ? '...' : `${analytics?.intelligenceMetrics.avgConfidence || 0}%`}
                       </div>
                       <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Par session
+                        Confiance moyenne
                       </p>
                     </CardContent>
                   </Card>
@@ -201,85 +219,130 @@ const UserData = () => {
                       {/* Vue d'ensemble */}
                       <TabsContent value="overview" className="space-y-6">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                          {/* Répartition des maturités */}
+                          {/* Distribution maturité */}
                           <div className={`${isDarkMode ? 'bg-gray-700/30' : 'bg-gray-50'} rounded-lg p-6`}>
                             <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
-                              Niveaux de Maturité
+                              Distribution Maturité
                             </h3>
                             <div className="space-y-4">
-                              {['discovery', 'learning', 'autonomous'].map(level => {
-                                const count = userData.filter(u => 
-                                  u.stores.engagementStore?.maturity?.current === level
-                                ).length;
-                                const percentage = userData.length > 0 ? (count / userData.length) * 100 : 0;
-                                
-                                return (
-                                  <div key={level} className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                      <Badge className={getMaturityColor(level)}>
-                                        {level === 'discovery' ? 'Découverte' : 
-                                         level === 'learning' ? 'Apprentissage' : 'Autonome'}
-                                      </Badge>
-                                      <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                        {count} ({Math.round(percentage)}%)
-                                      </span>
-                                    </div>
-                                    <Progress value={percentage} className={`h-2 ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'}`} />
-                                  </div>
-                                );
-                              })}
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    Discovery
+                                  </span>
+                                </div>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.maturityDistribution.discovery || 0}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    Learning
+                                  </span>
+                                </div>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.maturityDistribution.learning || 0}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    Autonomous
+                                  </span>
+                                </div>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.maturityDistribution.autonomous || 0}
+                                </span>
+                              </div>
                             </div>
                           </div>
 
-                          {/* Métriques d'engagement */}
+                          {/* Métriques conversations */}
                           <div className={`${isDarkMode ? 'bg-gray-700/30' : 'bg-gray-50'} rounded-lg p-6`}>
-                            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
-                              Engagement par Fonctionnalité
+                            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 flex items-center gap-2`}>
+                              <MessageCircle className="w-5 h-5" />
+                              Conversations
                             </h3>
                             <div className="space-y-4">
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4 text-pink-400" />
-                                    <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                      Suivi de cycle
-                                    </span>
-                                  </div>
-                                  <span className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                    {Math.round(metrics.cycleTrackingRate)}%
-                                  </span>
-                                </div>
-                                <Progress value={metrics.cycleTrackingRate} className={`h-2 ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'}`} />
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Messages totaux
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.conversationMetrics.totalMessages || 0}
+                                </span>
                               </div>
-
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-2">
-                                    <MessageCircle className="w-4 h-4 text-blue-400" />
-                                    <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                      Chat avec Melune
-                                    </span>
-                                  </div>
-                                  <span className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                    {Math.round(metrics.chatEngagementRate)}%
-                                  </span>
-                                </div>
-                                <Progress value={metrics.chatEngagementRate} className={`h-2 ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'}`} />
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Moyenne par utilisateur
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.conversationMetrics.avgPerUser || 0}
+                                </span>
                               </div>
+                            </div>
+                          </div>
 
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-2">
-                                    <BookOpen className="w-4 h-4 text-green-400" />
-                                    <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                      Carnet personnel
-                                    </span>
-                                  </div>
-                                  <span className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                    {Math.round(metrics.notebookUsageRate)}%
-                                  </span>
-                                </div>
-                                <Progress value={metrics.notebookUsageRate} className={`h-2 ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'}`} />
+                          {/* Métriques notebook */}
+                          <div className={`${isDarkMode ? 'bg-gray-700/30' : 'bg-gray-50'} rounded-lg p-6`}>
+                            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 flex items-center gap-2`}>
+                              <BookOpen className="w-5 h-5" />
+                              Carnet Personnel
+                            </h3>
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Entrées totales
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.notebookMetrics.totalEntries || 0}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Moyenne par utilisateur
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.notebookMetrics.avgPerUser || 0}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Métriques cycle */}
+                          <div className={`${isDarkMode ? 'bg-gray-700/30' : 'bg-gray-50'} rounded-lg p-6`}>
+                            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 flex items-center gap-2`}>
+                              <Activity className="w-5 h-5" />
+                              Suivi Cycle
+                            </h3>
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Cycles réguliers
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.storeBreakdown.cycleStore.regularCycles || 0}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Durée moyenne
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.storeBreakdown.cycleStore.avgCycleLength || 0} jours
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Observations totales
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.storeBreakdown.cycleStore.observationsCount || 0}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -288,219 +351,210 @@ const UserData = () => {
 
                       {/* Personas */}
                       <TabsContent value="personas" className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {userData.map((user, index) => (
-                            <Card key={user.userId} className={`${isDarkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
-                              <CardHeader className="pb-3">
-                                <CardTitle className={`text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                  {user.stores.userStore?.profile?.prenom || `Utilisateur ${index + 1}`}
-                                </CardTitle>
-                                <CardDescription className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                  Persona: {user.stores.userStore?.persona?.assigned || 'Non assigné'}
-                                </CardDescription>
-                              </CardHeader>
-                              <CardContent>
-                                <div className="space-y-3">
-                                  <div className="flex items-center justify-between">
-                                    <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                      Âge
-                                    </span>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <div className={`${isDarkMode ? 'bg-gray-700/30' : 'bg-gray-50'} rounded-lg p-6`}>
+                            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
+                              Distribution des Personas
+                            </h3>
+                            <div className="space-y-3">
+                              {analytics?.storeBreakdown.userStore.personaDistribution && 
+                                Object.entries(analytics.storeBreakdown.userStore.personaDistribution).map(([persona, count]) => (
+                                  <div key={persona} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <Badge className={getPersonaColor(persona)}>
+                                        {persona.charAt(0).toUpperCase() + persona.slice(1)}
+                                      </Badge>
+                                    </div>
                                     <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                      {user.stores.userStore?.profile?.ageRange || 'N/A'}
+                                      {count} utilisateurs
                                     </span>
                                   </div>
-                                  
-                                  <div className="flex items-center justify-between">
-                                    <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                      Confiance persona
-                                    </span>
-                                    <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                      {user.stores.userStore?.persona?.confidence ? 
-                                        `${Math.round(user.stores.userStore.persona.confidence * 100)}%` : 'N/A'}
-                                    </span>
-                                  </div>
-                                  
-                                  <div className="flex items-center justify-between">
-                                    <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                      Profil complété
-                                    </span>
-                                    <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                      {user.stores.userStore?.profile?.completed ? '✅' : '❌'}
-                                    </span>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </div>
-                      </TabsContent>
+                                ))
+                              }
+                            </div>
+                          </div>
 
-                      {/* Engagement */}
-                      <TabsContent value="engagement" className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {userData.map((user, index) => (
-                            <Card key={user.userId} className={`${isDarkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
-                              <CardHeader className="pb-3">
-                                <CardTitle className={`text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                  {user.stores.userStore?.profile?.prenom || `Utilisateur ${index + 1}`}
-                                </CardTitle>
-                                <CardDescription className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                  Maturité: {user.stores.engagementStore?.maturity?.current || 'N/A'}
-                                </CardDescription>
-                              </CardHeader>
-                              <CardContent>
-                                <div className="space-y-3">
-                                  <div className="flex items-center justify-between">
-                                    <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                      Jours d'usage
-                                    </span>
-                                    <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                      {user.stores.engagementStore?.metrics?.daysUsed || 0}
-                                    </span>
-                                  </div>
-                                  
-                                  <div className="flex items-center justify-between">
-                                    <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                      Conversations
-                                    </span>
-                                    <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                      {user.stores.engagementStore?.metrics?.conversationsStarted || 0}
-                                    </span>
-                                  </div>
-                                  
-                                  <div className="flex items-center justify-between">
-                                    <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                      Entrées carnet
-                                    </span>
-                                    <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                      {user.stores.engagementStore?.metrics?.notebookEntriesCreated || 0}
-                                    </span>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))}
+                          <div className={`${isDarkMode ? 'bg-gray-700/30' : 'bg-gray-50'} rounded-lg p-6`}>
+                            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
+                              Profils Complétés
+                            </h3>
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Onboarding terminé
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.storeBreakdown.userStore.completedProfiles || 0}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Taux de completion
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {analytics?.totalUsers ? 
+                                    Math.round(((analytics?.storeBreakdown.userStore.completedProfiles || 0) / analytics.totalUsers) * 100) : 0}%
+                                </span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </TabsContent>
 
                       {/* Intelligence */}
                       <TabsContent value="intelligence" className="space-y-6">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                          {userData.map((user, index) => {
-                            const intelligence = user.stores.userIntelligence;
-                            const observations = intelligence?.observationPatterns;
-                            
-                            return (
-                              <Card key={user.userId} className={`${isDarkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
-                                <CardHeader className="pb-3">
-                                  <CardTitle className={`text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                    {user.stores.userStore?.profile?.prenom || `Utilisateur ${index + 1}`} - Intelligence
-                                  </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                  <div className="space-y-4">
-                                    <div className="flex items-center gap-2">
-                                      <Brain className="w-4 h-4 text-purple-400" />
-                                      <span className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                        Apprentissage
-                                      </span>
-                                    </div>
-                                    
-                                    <div className="space-y-2">
-                                      <div className="flex items-center justify-between">
-                                        <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                          Confiance
-                                        </span>
-                                        <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                          {intelligence?.learning?.confidence || 0}%
-                                        </span>
-                                      </div>
-                                      
-                                      <div className="flex items-center justify-between">
-                                        <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                          Consistance
-                                        </span>
-                                        <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                          {observations?.consistency ? 
-                                            `${Math.round(observations.consistency * 100)}%` : 'N/A'}
-                                        </span>
-                                      </div>
-                                      
-                                      <div className="flex items-center justify-between">
-                                        <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                          Observations totales
-                                        </span>
-                                        <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                          {observations?.totalObservations || 0}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            );
-                          })}
+                          <div className={`${isDarkMode ? 'bg-gray-700/30' : 'bg-gray-50'} rounded-lg p-6`}>
+                            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
+                              Distribution Confiance IA
+                            </h3>
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Faible (&lt; 30%)
+                                </span>
+                                <span className={`font-semibold text-red-400`}>
+                                  {intelligencePatterns?.confidenceDistribution.low || 0}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Moyenne (30-70%)
+                                </span>
+                                <span className={`font-semibold text-yellow-400`}>
+                                  {intelligencePatterns?.confidenceDistribution.medium || 0}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Élevée (&gt; 70%)
+                                </span>
+                                <span className={`font-semibold text-green-400`}>
+                                  {intelligencePatterns?.confidenceDistribution.high || 0}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className={`${isDarkMode ? 'bg-gray-700/30' : 'bg-gray-50'} rounded-lg p-6`}>
+                            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
+                              Signaux d'Autonomie
+                            </h3>
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Corrections prédictions
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {intelligencePatterns?.autonomySignals.distribution.correctsPredictions || 0}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Changements manuels
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {intelligencePatterns?.autonomySignals.distribution.manualPhaseChanges || 0}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Observations détaillées
+                                </span>
+                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                  {intelligencePatterns?.autonomySignals.distribution.detailedObservations || 0}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </TabsContent>
 
-                      {/* Détails Utilisateurs */}
+                      {/* Détails utilisateurs */}
                       <TabsContent value="details" className="space-y-6">
                         <div className="space-y-4">
-                          {userData.map((user, index) => (
-                            <Card key={user.userId} className={`${isDarkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
-                              <CardHeader>
+                          {storesData.map((store, index) => (
+                            <Card key={store.deviceId} className={`${isDarkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
+                              <CardHeader className="pb-3">
                                 <div className="flex items-center justify-between">
-                                  <CardTitle className={`text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                    {user.stores.userStore?.profile?.prenom || `Utilisateur ${index + 1}`}
-                                  </CardTitle>
+                                  <div className="flex items-center gap-3">
+                                    <div className={`w-10 h-10 rounded-full ${getPersonaColor(store.stores.userStore.persona.assigned)} flex items-center justify-center`}>
+                                      <span className="text-sm font-semibold">
+                                        {store.stores.userStore.persona.assigned.charAt(0).toUpperCase()}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <CardTitle className={`text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                        Utilisateur #{index + 1}
+                                      </CardTitle>
+                                      <CardDescription className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        {store.deviceId} • {store.metadata.platform} • {store.metadata.appVersion}
+                                      </CardDescription>
+                                    </div>
+                                  </div>
                                   <div className="flex items-center gap-2">
-                                    <Badge variant="outline" className={`${isDarkMode ? 'border-gray-500 text-gray-300' : 'border-gray-400 text-gray-600'}`}>
-                                      {user.metadata.platform}
-                                    </Badge>
-                                    <Badge variant="outline" className={`${isDarkMode ? 'border-gray-500 text-gray-300' : 'border-gray-400 text-gray-600'}`}>
-                                      v{user.metadata.appVersion}
+                                    <Badge className={getMaturityColor(store.stores.engagementStore.maturity.current)}>
+                                      {store.stores.engagementStore.maturity.current}
                                     </Badge>
                                     <Button
-                                      onClick={() => handleDeleteUser(user.deviceId)}
                                       variant="ghost"
                                       size="sm"
-                                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                      onClick={() => handleDeleteUser(store.deviceId)}
+                                      className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
                                     >
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
                                   </div>
                                 </div>
-                                <CardDescription className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                  Device ID: {user.deviceId} • Dernière sync: {new Date(user.lastSync).toLocaleDateString('fr-FR')}
-                                </CardDescription>
                               </CardHeader>
                               <CardContent>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                  <div className="space-y-2">
-                                    <h4 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Profil</h4>
-                                    <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} space-y-1`}>
-                                      <div>Âge: {user.stores.userStore?.profile?.ageRange || 'N/A'}</div>
-                                      <div>Persona: {user.stores.userStore?.persona?.assigned || 'N/A'}</div>
-                                      <div>Complété: {user.stores.userStore?.profile?.completed ? '✅' : '❌'}</div>
+                                  <div>
+                                    <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                                      Profil
+                                    </h4>
+                                    <div className="space-y-1">
+                                      <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        Âge: {store.stores.userStore.profile.ageRange}
+                                      </div>
+                                      <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        Parcours: {store.stores.userStore.profile.journeyChoice}
+                                      </div>
+                                      <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        Complété: {store.stores.userStore.profile.completed ? 'Oui' : 'Non'}
+                                      </div>
                                     </div>
                                   </div>
-                                  
-                                  <div className="space-y-2">
-                                    <h4 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Cycle</h4>
-                                    <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} space-y-1`}>
-                                      <div>Durée: {user.stores.cycleStore?.length || 'N/A'} jours</div>
-                                      <div>Observations: {user.stores.cycleStore?.observations?.length || 0}</div>
-                                      <div>Dernières règles: {user.stores.cycleStore?.lastPeriodDate ? 
-                                        new Date(user.stores.cycleStore.lastPeriodDate).toLocaleDateString('fr-FR') : 'N/A'}</div>
+                                  <div>
+                                    <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                                      Engagement
+                                    </h4>
+                                    <div className="space-y-1">
+                                      <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        Jours: {store.stores.engagementStore.metrics.daysUsed}
+                                      </div>
+                                      <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        Sessions: {store.stores.engagementStore.metrics.sessionsCount}
+                                      </div>
+                                      <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        Conversations: {store.stores.engagementStore.metrics.conversationsStarted}
+                                      </div>
                                     </div>
                                   </div>
-                                  
-                                  <div className="space-y-2">
-                                    <h4 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Activité</h4>
-                                    <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} space-y-1`}>
-                                      <div>Sessions: {user.metadata.sessionCount}</div>
-                                      <div>Messages: {user.stores.chatStore?.messages?.length || 0}</div>
-                                      <div>Entrées: {user.stores.notebookStore?.entries?.length || 0}</div>
+                                  <div>
+                                    <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                                      Intelligence
+                                    </h4>
+                                    <div className="space-y-1">
+                                      <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        Confiance: {store.stores.intelligenceStore.confidence}%
+                                      </div>
+                                      <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        Observations: {store.stores.intelligenceStore.totalObservations}
+                                      </div>
+                                      <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        Consistance: {Math.round((store.stores.intelligenceStore.consistency || 0) * 100)}%
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -512,26 +566,6 @@ const UserData = () => {
                     </Tabs>
                   </CardContent>
                 </Card>
-
-                {/* Note sur la collecte de données */}
-                <Card className={`${isDarkMode ? 'bg-blue-900/20 border-blue-500/30' : 'bg-blue-100/50 border-blue-300'} backdrop-blur-sm`}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <AlertCircle className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-1`}>
-                          Collecte de Données en Temps Réel
-                        </h3>
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                          Cette page affiche les données collectées depuis l'endpoint `/api/userdata/all`. 
-                          Les testeuses TestFlight peuvent synchroniser leurs stores Zustand via l'endpoint `/api/userdata/sync`.
-                          Dernière mise à jour: {lastUpdate.toLocaleString('fr-FR')}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
               </div>
             </main>
           </div>

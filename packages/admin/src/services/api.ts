@@ -358,6 +358,29 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  // ✅ NOUVELLES MÉTHODES POUR STORES
+  async getStoresAnalytics(): Promise<{ success: boolean; data: any; timestamp: string }> {
+    return this.deviceRequest('/api/stores/analytics');
+  }
+
+  async getAllStores(): Promise<{ success: boolean; data: any[]; count: number; timestamp: string }> {
+    return this.deviceRequest('/api/stores/all');
+  }
+
+  async getStoresByDevice(deviceId: string): Promise<{ success: boolean; data: any; timestamp: string }> {
+    return this.deviceRequest(`/api/stores/${deviceId}`);
+  }
+
+  async deleteStoresByDevice(deviceId: string): Promise<{ success: boolean; message: string; deviceId: string }> {
+    return this.deviceRequest(`/api/stores/${deviceId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getIntelligencePatterns(): Promise<{ success: boolean; data: any; timestamp: string }> {
+    return this.deviceRequest('/api/stores/intelligence/patterns');
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);
